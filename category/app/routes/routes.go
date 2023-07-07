@@ -19,21 +19,16 @@ func ApiRoutes() *echo.Echo {
 	router := echo.New()
 	router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowOrigins: []string{"http://localhost:4200"},
-			AllowMethods: []string{http.MethodGet},
+			AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 		}),
 	)
 	router.GET("/categories", categoryController.ListCategory)
 	router.GET("/categories/:slug", categoryController.GetCategory)
 
-	router.Group("/api", middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins: []string{"http://localhost:4200"},
-			AllowMethods: []string{http.MethodPost, http.MethodPut, http.MethodDelete},
-		}),
-		authMiddleware.AuthMiddleware,
-	)
-	router.POST("/api/categories", categoryController.CreateCategory)
-	router.PUT("/api/categories/:slug", categoryController.UpdateCategory)
-	router.DELETE("/api/categories/:slug", categoryController.DeleteCategory)
+	routerAuth := router.Group("/api", authMiddleware.AuthMiddleware)
+	routerAuth.POST("/categories", categoryController.CreateCategory)
+	routerAuth.PUT("/categories/:slug", categoryController.UpdateCategory)
+	routerAuth.DELETE("/categories/:slug", categoryController.DeleteCategory)
 
 	return router
 }

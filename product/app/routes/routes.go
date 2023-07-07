@@ -19,23 +19,18 @@ func ApiRoutes() *echo.Echo {
 	router := echo.New()
 	router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowOrigins: []string{"http://localhost:4200"},
-			AllowMethods: []string{http.MethodGet},
+			AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 		}),
 	)
 	router.GET("/products", productController.ListProduct)
 	router.GET("/products/:slug", productController.GetProduct)
 	router.GET("/products/category/:id", productController.GetProductByCategory)
 
-	router.Group("/api", middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins: []string{"http://localhost:4200"},
-			AllowMethods: []string{http.MethodPost, http.MethodPut, http.MethodDelete},
-		}), 
-		authMiddleware.AuthMiddleware,
-	)
-	router.POST("/api/products", productController.CreateProduct)
-	router.PUT("/api/products/:slug", productController.UpdateProduct)
-	router.DELETE("/api/products/:slug", productController.DeleteProduct)
-	router.GET("/api/products/user/:id", productController.GetProductByUser)
+	routerAuth := router.Group("/api", authMiddleware.AuthMiddleware)
+	routerAuth.POST("/products", productController.CreateProduct)
+	routerAuth.PUT("/products/:slug", productController.UpdateProduct)
+	routerAuth.DELETE("/products/:slug", productController.DeleteProduct)
+	routerAuth.GET("/products/user/:id", productController.GetProductByUser)
 
 	return router
 }

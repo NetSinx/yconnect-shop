@@ -19,19 +19,15 @@ func ApiRoutes() *echo.Echo {
 	router := echo.New()
 	router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowOrigins: []string{"http://localhost:4200"},
-			AllowMethods: []string{http.MethodGet},
+			AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 		}),
-		auth.AuthMiddleware,
 	)
-	router.GET("/users", userController.ListUsers)
-	router.GET("/users/:id", userController.FindUser)
-
-	router.Group("/api", middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:4200"},
-		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
-	}))
-	router.POST("/api/users/sign-up", userController.RegisterUser)
-	router.POST("/api/users/sign-in", userController.LoginUser)
+	router.POST("/users/sign-up", userController.RegisterUser)
+	router.POST("/users/sign-in", userController.LoginUser)
+	
+	routerAuth := router.Group("/api", auth.AuthMiddleware)
+	routerAuth.GET("/users", userController.ListUsers)
+	routerAuth.GET("/users/:id", userController.FindUser)
 
 	return router
 }
