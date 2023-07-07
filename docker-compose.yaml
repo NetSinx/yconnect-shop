@@ -1,0 +1,98 @@
+version: '3.9'
+
+services:
+  product-db:
+    container_name: db-product
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - yconnect-net
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: "netsinx"
+      MYSQL_PASSWORD: "tes123"
+      MYSQL_DATABASE: "yconnect_shop"
+
+  product:
+    container_name: product-service
+    image: product-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - product-db
+    networks:
+      - yconnect-net
+      - kong-network
+    environment:
+      - DB_USER=netsinx
+      - DB_PASS=tes123
+      - DB_HOST=db-product
+      - DB_PORT=3306
+      - DB_DBNAME=yconnect_shop
+
+  category-db:
+    container_name: db-category
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - yconnect-net
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: "netsinx"
+      MYSQL_PASSWORD: "tes123"
+      MYSQL_DATABASE: "yconnect_shop"
+
+  category:
+    container_name: category-service
+    image: category-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - category-db
+    networks:
+      - yconnect-net
+      - kong-network
+    environment:
+      - DB_USER=netsinx
+      - DB_PASS=tes123
+      - DB_HOST=db-category
+      - DB_PORT=3306
+      - DB_DBNAME=yconnect_shop
+
+  user-db:
+    container_name: db-user
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - yconnect-net
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: "netsinx"
+      MYSQL_PASSWORD: "tes123"
+      MYSQL_DATABASE: "yconnect_shop"
+
+  user:
+    container_name: user-service
+    image: user-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - user-db
+    networks:
+      - yconnect-net
+      - kong-network
+    environment:
+      - DB_USER=netsinx
+      - DB_PASS=tes123
+      - DB_HOST=db-user
+      - DB_PORT=3306
+      - DB_DBNAME=yconnect_shop
+
+networks:
+  yconnect-net:
+    external: true
+  kong-network:
+    external: true
