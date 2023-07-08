@@ -9,9 +9,9 @@ services:
     networks:
       - yconnect-net
     environment:
-      MYSQL_ROOT_PASSWORD: "@087878504814"
-      MYSQL_USER: "yasin"
-      MYSQL_PASSWORD: "yasinah22123"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: "netsinx"
+      MYSQL_PASSWORD: "tes123"
       MYSQL_DATABASE: "yconnect_shop"
 
   product:
@@ -25,8 +25,8 @@ services:
       - yconnect-net
       - kong-network
     environment:
-      - DB_USER=yasin
-      - DB_PASS=yasinah22123
+      - DB_USER=netsinx
+      - DB_PASS=tes123
       - DB_HOST=db-product
       - DB_PORT=3306
       - DB_DBNAME=yconnect_shop
@@ -39,9 +39,9 @@ services:
     networks:
       - yconnect-net
     environment:
-      MYSQL_ROOT_PASSWORD: "@087878504814"
-      MYSQL_USER: "yasin"
-      MYSQL_PASSWORD: "yasinah22123"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: "netsinx"
+      MYSQL_PASSWORD: "tes123"
       MYSQL_DATABASE: "yconnect_shop"
 
   category:
@@ -55,8 +55,8 @@ services:
       - yconnect-net
       - kong-network
     environment:
-      - DB_USER=yasin
-      - DB_PASS=yasinah22123
+      - DB_USER=netsinx
+      - DB_PASS=tes123
       - DB_HOST=db-category
       - DB_PORT=3306
       - DB_DBNAME=yconnect_shop
@@ -69,9 +69,9 @@ services:
     networks:
       - yconnect-net
     environment:
-      MYSQL_ROOT_PASSWORD: "@087878504814"
-      MYSQL_USER: "yasin"
-      MYSQL_PASSWORD: "yasinah22123"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: "netsinx"
+      MYSQL_PASSWORD: "tes123"
       MYSQL_DATABASE: "yconnect_shop"
 
   user:
@@ -85,8 +85,8 @@ services:
       - yconnect-net
       - kong-network
     environment:
-      - DB_USER=yasin
-      - DB_PASS=yasinah22123
+      - DB_USER=netsinx
+      - DB_PASS=tes123
       - DB_HOST=db-user
       - DB_PORT=3306
       - DB_DBNAME=yconnect_shop
