@@ -234,7 +234,7 @@ func (u userController) GetUser(c echo.Context) error {
 	getId, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	id := uint(getId)
 
-	findUser, err := u.userService.FindUser(users, id)
+	findUser, err := u.userService.GetUser(users, id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,

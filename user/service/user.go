@@ -51,7 +51,7 @@ func (u userService) UpdateUser(users model.User, id uint) error {
 }
 
 func (u userService) GetUser(users model.User, id uint) (model.User, error) {
-	findUser, err := u.userRepository.FindUser(users, id)
+	findUser, err := u.userRepository.GetUser(users, id)
 	if err != nil {
 		return users, errors.New("user cannot be found")
 	}
