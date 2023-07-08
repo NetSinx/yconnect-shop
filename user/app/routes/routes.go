@@ -27,7 +27,7 @@ func ApiRoutes() *echo.Echo {
 	
 	routerAuth := router.Group("/api", auth.AuthMiddleware)
 	routerAuth.GET("/users", userController.ListUsers)
-	routerAuth.GET("/users/:id", userController.FindUser)
+	routerAuth.GET("/users/:id", userController.GetUser)
 
 	return router
 }
