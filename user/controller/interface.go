@@ -7,7 +7,7 @@ type UserContr interface {
 	LoginUser(c echo.Context) error
 	ListUsers(c echo.Context) error
 	UpdateUser(c echo.Context) error
-	FindUser(c echo.Context) error
+	GetUser(c echo.Context) error
 	DeleteUser(c echo.Context) error
 	GetProductFromUser(c echo.Context) error
 }

@@ -41,7 +41,7 @@ func (u userRepository) ListUsers(users []model.User) ([]model.User, error) {
 	return users, nil
 }
 
-func (u userRepository) FindUser(users model.User, id uint) (model.User, error) {
+func (u userRepository) GetUser(users model.User, id uint) (model.User, error) {
 	if err := u.DB.First(&users, "id = ?", id).Error; err != nil {
 		return users, err
 	}

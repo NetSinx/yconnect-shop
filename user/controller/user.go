@@ -227,7 +227,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 	})
 }
 
-func (u userController) FindUser(c echo.Context) error {
+func (u userController) GetUser(c echo.Context) error {
 	var users model.User
 	var preloadProduct utils.PreloadProducts
 
@@ -244,7 +244,7 @@ func (u userController) FindUser(c echo.Context) error {
 	}
 
 
-	responseData, err := http.Get(fmt.Sprintf("http://localhost:8000/products/user/%d", findUser.Id))
+	responseData, err := http.Get(fmt.Sprintf("http://localhost:8000/api/products/user/%d", findUser.Id))
 	if err != nil {
 		return c.JSON(http.StatusOK, utils.SuccessGet{
 			Code: http.StatusOK,
