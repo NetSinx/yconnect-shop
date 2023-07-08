@@ -134,7 +134,7 @@ func (u userController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	jwtToken := utils.JWTAuth()
+	jwtToken := utils.JWTAuth(user.Username)
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"code": strconv.Itoa(http.StatusOK),
