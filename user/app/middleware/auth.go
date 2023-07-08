@@ -36,7 +36,7 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			},
 		}
 
-		token, _ := jwt.ParseWithClaims(apiToken, claims, func(t *jwt.Token) (interface{}, error) {
+		token, _ := jwt.ParseWithClaims(apiToken, &claims, func(t *jwt.Token) (interface{}, error) {
 				return []byte("netsinxadmin"), nil
 		})
 	
