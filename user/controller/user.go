@@ -158,7 +158,7 @@ func (u userController) ListUsers(c echo.Context) error {
 	for i, user := range listUsers {
 		var preloadProduct utils.PreloadProducts
 
-		responseData, err := http.Get(fmt.Sprintf("http://localhost:8000/api/products/user/%d", user.Id))
+		responseData, err := http.Get(fmt.Sprintf("http://product-service:8081/api/products/user/%d", user.Id))
 		if err != nil {
 			return c.JSON(http.StatusOK, utils.SuccessGet{
 				Code: http.StatusOK,
@@ -244,7 +244,7 @@ func (u userController) GetUser(c echo.Context) error {
 	}
 
 
-	responseData, err := http.Get(fmt.Sprintf("http://localhost:8000/api/products/user/%d", findUser.Id))
+	responseData, err := http.Get(fmt.Sprintf("http://product-service:8081/api/products/user/%d", findUser.Id))
 	if err != nil {
 		return c.JSON(http.StatusOK, utils.SuccessGet{
 			Code: http.StatusOK,
