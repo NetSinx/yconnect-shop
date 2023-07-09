@@ -173,7 +173,7 @@ func (cc categoryController) GetCategory(c echo.Context) error {
 		})
 	}
 
-	responseData, err := http.Get(fmt.Sprintf("http://product-service:8081/products/category/%d", getCategory.Id))
+	responseData, err := http.Get(fmt.Sprintf("http://kong-gateway:8000/products/category/%d", getCategory.Id))
 	if err != nil {
 		return c.JSON(http.StatusOK, utils.SuccessGetData{
 			Code: http.StatusOK,
