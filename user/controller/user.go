@@ -160,11 +160,12 @@ func (u userController) ListUsers(c echo.Context) error {
 
 		responseData, err := http.Get(fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id))
 		if err != nil {
-			return c.JSON(http.StatusOK, utils.SuccessGet{
-				Code: http.StatusOK,
-				Status: "OK",
-				Data: listUsers,
-			})
+			// return c.JSON(http.StatusOK, utils.SuccessGet{
+			// 	Code: http.StatusOK,
+			// 	Status: "OK",
+			// 	Data: listUsers,
+			// })
+			return err
 		}
 
 		if err := json.NewDecoder(responseData.Body).Decode(&preloadProduct); err != nil {
