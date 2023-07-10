@@ -157,8 +157,15 @@ func (u userController) ListUsers(c echo.Context) error {
 
 	for i, user := range listUsers {
 		var preloadProduct utils.PreloadProducts
+		var httpClient http.Client
 
-		responseData, err := http.Get(fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id))
+		token := utils.JWTAuth(user.Username)
+
+		httpReq, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id), nil)
+
+		httpReq.Header.Add("Authorization", token)
+
+		responseData, err := httpClient.Do(httpReq)
 		if err != nil {
 			return c.JSON(http.StatusOK, utils.SuccessGet{
 				Code: http.StatusOK,
@@ -243,8 +250,15 @@ func (u userController) GetUser(c echo.Context) error {
 		})
 	}
 
+	var httpClient http.Client
 
-	responseData, err := http.Get(fmt.Sprintf("http://kong-gateway:8000/products/user/%d", findUser.Id))
+	token := utils.JWTAuth(findUser.Username)
+
+	httpReq, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", findUser.Id), nil)
+
+	httpReq.Header.Add("Authorization", token)
+
+	responseData, err := httpClient.Do(httpReq)
 	if err != nil {
 		return c.JSON(http.StatusOK, utils.SuccessGet{
 			Code: http.StatusOK,

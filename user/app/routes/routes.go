@@ -6,6 +6,7 @@ import (
 	"github.com/NetSinx/yconnect-shop/user/controller"
 	"github.com/NetSinx/yconnect-shop/user/repository"
 	"github.com/NetSinx/yconnect-shop/user/service"
+	auth "github.com/NetSinx/yconnect-shop/user/app/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -23,8 +24,10 @@ func ApiRoutes() *echo.Echo {
 	)
 	router.POST("/users/sign-up", userController.RegisterUser)
 	router.POST("/users/sign-in", userController.LoginUser)
-	router.GET("/users", userController.ListUsers)
-	router.GET("/users/:id", userController.GetUser)
+
+	routerAuth := router.Group("/api", auth.AuthMiddleware)
+	routerAuth.GET("/users", userController.ListUsers)
+	routerAuth.GET("/users/:id", userController.GetUser)
 
 	return router
 }
