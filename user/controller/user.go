@@ -154,19 +154,11 @@ func (u userController) ListUsers(c echo.Context) error {
 			Message: "Maaf, ada kesalahan pada server",
 		})
 	}
-	
 
 	for i, user := range listUsers {
 		var preloadProduct utils.PreloadProducts
 
-		jwtToken := utils.JWTAuth(user.Username)
-
-		var httpReq http.Client
-
-		responseData, err := httpReq.Do(&http.Request{
-			Header: map[string][]string{"Authorization": {jwtToken}},
-			RequestURI: fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id),
-		})
+		responseData, err := http.Get(fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id))
 		if err != nil {
 			return c.JSON(http.StatusOK, utils.SuccessGet{
 				Code: http.StatusOK,

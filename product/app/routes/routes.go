@@ -3,7 +3,6 @@ package routes
 import (
 	"net/http"
 	"github.com/NetSinx/yconnect-shop/product/app/config"
-	authMiddleware "github.com/NetSinx/yconnect-shop/product/app/middleware"
 	"github.com/NetSinx/yconnect-shop/product/controller"
 	"github.com/NetSinx/yconnect-shop/product/repository"
 	"github.com/NetSinx/yconnect-shop/product/service"
@@ -25,12 +24,10 @@ func ApiRoutes() *echo.Echo {
 	router.GET("/products", productController.ListProduct)
 	router.GET("/products/:slug", productController.GetProduct)
 	router.GET("/products/category/:id", productController.GetProductByCategory)
-
-	routerAuth := router.Group("/api", authMiddleware.AuthMiddleware)
-	routerAuth.POST("/products", productController.CreateProduct)
-	routerAuth.PUT("/products/:slug", productController.UpdateProduct)
-	routerAuth.DELETE("/products/:slug", productController.DeleteProduct)
-	routerAuth.GET("/products/user/:id", productController.GetProductByUser)
+	router.POST("/products", productController.CreateProduct)
+	router.PUT("/products/:slug", productController.UpdateProduct)
+	router.DELETE("/products/:slug", productController.DeleteProduct)
+	router.GET("/products/user/:id", productController.GetProductByUser)
 
 	return router
 }
