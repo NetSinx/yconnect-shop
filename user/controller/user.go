@@ -161,11 +161,12 @@ func (u userController) ListUsers(c echo.Context) error {
 
 		jwtToken := utils.JWTAuth(user.Username)
 
-		var httpReq http.Request
+		var httpReq http.Client
 
-		httpReq.Header.Add("Authorization", jwtToken)
-
-		responseData, err := http.Get(fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id))
+		responseData, err := httpReq.Do(&http.Request{
+			Header: map[string][]string{"Authorization": {jwtToken}},
+			RequestURI: fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id),
+		})
 		if err != nil {
 			return c.JSON(http.StatusOK, utils.SuccessGet{
 				Code: http.StatusOK,
