@@ -161,17 +161,20 @@ func (u userController) ListUsers(c echo.Context) error {
 
 		token := utils.JWTAuth(user.Username)
 
-		httpReq, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id), nil)
-
-		httpReq.Header.Add("Authorization", token)
-
-		responseData, err := httpClient.Do(httpReq)
+		httpReq, err := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id), nil)
 		if err != nil {
 			return c.JSON(http.StatusOK, utils.SuccessGet{
 				Code: http.StatusOK,
 				Status: "OK",
 				Data: listUsers,
 			})
+		}
+
+		httpReq.Header.Add("Authorization", token)
+
+		responseData, err := httpClient.Do(httpReq)
+		if err != nil {
+			return err
 		}
 
 		if err := json.NewDecoder(responseData.Body).Decode(&preloadProduct); err != nil {
@@ -254,17 +257,20 @@ func (u userController) GetUser(c echo.Context) error {
 
 	token := utils.JWTAuth(findUser.Username)
 
-	httpReq, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", findUser.Id), nil)
-
-	httpReq.Header.Add("Authorization", token)
-
-	responseData, err := httpClient.Do(httpReq)
+	httpReq, err := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", findUser.Id), nil)
 	if err != nil {
 		return c.JSON(http.StatusOK, utils.SuccessGet{
 			Code: http.StatusOK,
 			Status: "OK",
 			Data: findUser,
 		})
+	}
+
+	httpReq.Header.Add("Authorization", token)
+
+	responseData, err := httpClient.Do(httpReq)
+	if err != nil {
+		return err
 	}
 
 	if err := json.NewDecoder(responseData.Body).Decode(&preloadProduct); err != nil {
