@@ -41,7 +41,7 @@ func (u userRepository) ListUsers(users []model.User) ([]model.User, error) {
 	return users, nil
 }
 
-func (u userRepository) GetUser(users model.User, id uint) (model.User, error) {
+func (u userRepository) GetUser(users model.User, id string) (model.User, error) {
 	if err := u.DB.First(&users, "id = ?", id).Error; err != nil {
 		return users, err
 	}
@@ -49,7 +49,7 @@ func (u userRepository) GetUser(users model.User, id uint) (model.User, error) {
 	return users, nil
 }
 
-func (u userRepository) UpdateUser(users model.User, id uint) error {
+func (u userRepository) UpdateUser(users model.User, id string) error {
 	if err := u.DB.Where("id = ?", id).Updates(&users).Error; err != nil {
 		return err
 	}
@@ -61,8 +61,8 @@ func (u userRepository) UpdateUser(users model.User, id uint) error {
 	return nil
 }
 
-func (u userRepository) DeleteUser(users model.User, id uint) error {
-	if err := u.DB.Where("id = ?", id).Delete(&users).Error; err != nil {
+func (u userRepository) DeleteUser(users model.User, id string) error {
+	if err := u.DB.Delete(&users, "id = ?", id).Error; err != nil {
 		return err
 	}
 

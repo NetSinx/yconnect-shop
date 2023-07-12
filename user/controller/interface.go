@@ -9,6 +9,4 @@ type UserContr interface {
 	UpdateUser(c echo.Context) error
 	GetUser(c echo.Context) error
 	DeleteUser(c echo.Context) error
-	GetProductFromUser(c echo.Context) error
-	TestHTTP(c echo.Context) error
 }

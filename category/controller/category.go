@@ -26,8 +26,6 @@ func (cc categoryController) ListCategory(c echo.Context) error {
 
 	listCategories, err := cc.categoryService.ListCategory(categories)
 	if err != nil {
-		fmt.Printf("Error message: %v", err)
-
 		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
 			Code: http.StatusInternalServerError,
 			Status: "Internal Server Error",
@@ -77,8 +75,6 @@ func (cc categoryController) CreateCategory(c echo.Context) error {
 	}
 
 	if err := cc.categoryService.CreateCategory(*categories); err != nil {
-		fmt.Printf("Error message: %v", err)
-
 		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
 			Code: http.StatusConflict,
 			Status: "Data Conflict",
@@ -111,8 +107,6 @@ func (cc categoryController) UpdateCategory(c echo.Context) error {
 	slug := c.Param("slug")
 
 	if err := cc.categoryService.UpdateCategory(*categories, slug); (err != nil && err.Error() == "record not found") {
-		fmt.Printf("Error message: %v", err.Error())
-
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,
 			Status: "Not Found",
@@ -121,8 +115,6 @@ func (cc categoryController) UpdateCategory(c echo.Context) error {
 	} 
 	
 	if err := cc.categoryService.UpdateCategory(*categories, slug); (err != nil && err.Error() != "record not found") {
-		fmt.Printf("Error message: %v", err.Error())
-
 		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
 			Code: http.StatusConflict,
 			Status: "Data Conflict",
@@ -157,15 +149,13 @@ func (cc categoryController) DeleteCategory(c echo.Context) error {
 	})
 }
 
-func (cc categoryController) GetCategory(c echo.Context) error {
+func (cc categoryController) GetCategoryBySlug(c echo.Context) error {
 	var categories model.Category
 	var preloadProduct utils.PreloadProducts
 
 	slug := c.Param("slug")
 
-	getCategory, err := cc.categoryService.GetCategory(categories, slug); if err != nil {
-		fmt.Printf("Error message: %v", err)
-
+	getCategory, err := cc.categoryService.GetCategoryBySlug(categories, slug); if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,
 			Status: "Not Found",
@@ -187,6 +177,27 @@ func (cc categoryController) GetCategory(c echo.Context) error {
 	}
 
 	getCategory.Product = append(getCategory.Product, preloadProduct.Data...)
+
+	return c.JSON(http.StatusOK, utils.SuccessGetData{
+		Code: http.StatusOK,
+		Status: "OK",
+		Data: getCategory,
+	})
+}
+
+func (cc categoryController) GetCategoryById(c echo.Context) error {
+	var category model.Category
+
+	id := c.Param("id")
+
+	getCategory, err := cc.categoryService.GetCategoryById(category, id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
+			Code: http.StatusNotFound,
+			Status: "Not Found",
+			Message: "Category cannot be found!",
+		})
+	}
 
 	return c.JSON(http.StatusOK, utils.SuccessGetData{
 		Code: http.StatusOK,

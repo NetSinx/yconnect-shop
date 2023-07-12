@@ -42,7 +42,7 @@ func (u userService) ListUsers(users []model.User) ([]model.User, error) {
 	return listUsers, nil
 }
 
-func (u userService) UpdateUser(users model.User, id uint) error {
+func (u userService) UpdateUser(users model.User, id string) error {
 	if err := u.userRepository.UpdateUser(users, id); err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (u userService) UpdateUser(users model.User, id uint) error {
 	return nil
 }
 
-func (u userService) GetUser(users model.User, id uint) (model.User, error) {
+func (u userService) GetUser(users model.User, id string) (model.User, error) {
 	findUser, err := u.userRepository.GetUser(users, id)
 	if err != nil {
 		return users, errors.New("user cannot be found")
@@ -59,7 +59,7 @@ func (u userService) GetUser(users model.User, id uint) (model.User, error) {
 	return findUser, nil
 }
 
-func (u userService) DeleteUser(users model.User, id uint) error {
+func (u userService) DeleteUser(users model.User, id string) error {
 	if err := u.userRepository.DeleteUser(users, id); err != nil {
 		return errors.New("user cannot be found")
 	}

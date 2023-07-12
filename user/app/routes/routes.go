@@ -28,6 +28,8 @@ func ApiRoutes() *echo.Echo {
 	routerAuth := router.Group("/api", auth.AuthMiddleware)
 	routerAuth.GET("/users", userController.ListUsers)
 	routerAuth.GET("/users/:id", userController.GetUser)
+	routerAuth.PUT("/users/:id", userController.UpdateUser)
+	routerAuth.DELETE("/users/:id", userController.DeleteUser)
 
 	return router
 }

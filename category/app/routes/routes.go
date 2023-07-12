@@ -23,7 +23,8 @@ func ApiRoutes() *echo.Echo {
 		}),
 	)
 	router.GET("/categories", categoryController.ListCategory)
-	router.GET("/categories/:slug", categoryController.GetCategory)
+	router.GET("/categories/id/:id", categoryController.GetCategoryById)
+	router.GET("/categories/slug/:slug", categoryController.GetCategoryBySlug)
 
 	routerAuth := router.Group("/api", auth.AuthMiddleware)
 	routerAuth.POST("/categories", categoryController.CreateCategory)

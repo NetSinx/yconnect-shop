@@ -9,5 +9,6 @@ type CategoryRepo interface {
 	CreateCategory(categories model.Category) error
 	UpdateCategory(categories model.Category, slug string) error
 	DeleteCategory(category model.Category, slug string) error
-	GetCategory(categories model.Category, slug string) (model.Category, error)
+	GetCategoryBySlug(categories model.Category, slug string) (model.Category, error)
+	GetCategoryById(categories model.Category, id string) (model.Category, error)
 }

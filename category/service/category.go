@@ -53,8 +53,16 @@ func (c categoryService) DeleteCategory(category model.Category, slug string) er
 	return nil
 }
 
-func (c categoryService) GetCategory(categories model.Category, slug string) (model.Category, error) {
-	getCategory, err := c.categoryRepo.GetCategory(categories, slug); if err != nil {
+func (c categoryService) GetCategoryBySlug(categories model.Category, slug string) (model.Category, error) {
+	getCategory, err := c.categoryRepo.GetCategoryBySlug(categories, slug); if err != nil {
+		return getCategory, errors.New("cannot get category")
+	}
+
+	return getCategory, nil
+}
+
+func (c categoryService) GetCategoryById(categories model.Category, id string) (model.Category, error) {
+	getCategory, err := c.categoryRepo.GetCategoryById(categories, id); if err != nil {
 		return getCategory, errors.New("cannot get category")
 	}
 

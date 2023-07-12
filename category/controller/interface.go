@@ -9,5 +9,6 @@ type CategoryContr interface {
 	CreateCategory(c echo.Context) error
 	UpdateCategory(c echo.Context) error
 	DeleteCategory(c echo.Context) error
-	GetCategory(c echo.Context) error
+	GetCategoryBySlug(c echo.Context) error
+	GetCategoryById(c echo.Context) error
 }

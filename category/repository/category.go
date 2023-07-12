@@ -54,8 +54,16 @@ func(c categoryRepository) DeleteCategory(category model.Category, slug string) 
 	return nil
 }
 
-func(c categoryRepository) GetCategory(categories model.Category, slug string) (model.Category, error) {
+func(c categoryRepository) GetCategoryBySlug(categories model.Category, slug string) (model.Category, error) {
 	if err := c.DB.First(&categories, "slug = ?", slug).Error; err != nil {
+		return categories, err
+	}
+
+	return categories, nil
+}
+
+func (c categoryRepository)	GetCategoryById(categories model.Category, id string) (model.Category, error) {
+	if err := c.DB.Where("id = ?", id).First(&categories).Error; err != nil {
 		return categories, err
 	}
 

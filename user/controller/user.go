@@ -161,20 +161,17 @@ func (u userController) ListUsers(c echo.Context) error {
 
 		token := utils.JWTAuth(user.Username)
 
-		httpReq, err := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id), nil)
+		httpReq, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", user.Id), nil)
+
+		httpReq.Header.Add("Authorization", token)
+
+		responseData, err := httpClient.Do(httpReq)
 		if err != nil {
 			return c.JSON(http.StatusOK, utils.SuccessGet{
 				Code: http.StatusOK,
 				Status: "OK",
 				Data: listUsers,
 			})
-		}
-
-		httpReq.Header.Add("Authorization", token)
-
-		responseData, err := httpClient.Do(httpReq)
-		if err != nil {
-			return err
 		}
 
 		if err := json.NewDecoder(responseData.Body).Decode(&preloadProduct); err != nil {
@@ -210,8 +207,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 		})
 	}
 
-	getId, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	id := uint(getId)
+	id := c.Param("id")
 
 	err := u.userService.UpdateUser(*users, id)
 	if (err != nil  && err.Error() != "record not found") {
@@ -241,8 +237,7 @@ func (u userController) GetUser(c echo.Context) error {
 	var users model.User
 	var preloadProduct utils.PreloadProducts
 
-	getId, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	id := uint(getId)
+	id := c.Param("id")
 
 	findUser, err := u.userService.GetUser(users, id)
 	if err != nil {
@@ -257,20 +252,17 @@ func (u userController) GetUser(c echo.Context) error {
 
 	token := utils.JWTAuth(findUser.Username)
 
-	httpReq, err := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", findUser.Id), nil)
+	httpReq, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/products/user/%d", findUser.Id), nil)
+
+	httpReq.Header.Add("Authorization", token)
+
+	responseData, err := httpClient.Do(httpReq)
 	if err != nil {
 		return c.JSON(http.StatusOK, utils.SuccessGet{
 			Code: http.StatusOK,
 			Status: "OK",
 			Data: findUser,
 		})
-	}
-
-	httpReq.Header.Add("Authorization", token)
-
-	responseData, err := httpClient.Do(httpReq)
-	if err != nil {
-		return err
 	}
 
 	if err := json.NewDecoder(responseData.Body).Decode(&preloadProduct); err != nil {
@@ -289,8 +281,7 @@ func (u userController) GetUser(c echo.Context) error {
 func (u userController) DeleteUser(c echo.Context) error {
 	var users model.User
 
-	getId, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	id := uint(getId)
+	id := c.Param("id")
 
 	if err := u.userService.DeleteUser(users, id); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
