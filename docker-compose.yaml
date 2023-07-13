@@ -26,7 +26,7 @@ services:
       - kong-network
     environment:
       - DB_USER=netsinx
-      - DB_PASS=tes123
+      - DB_PASS=test123
       - DB_HOST=db-product
       - DB_PORT=3306
       - DB_DBNAME=yconnect_shop
@@ -88,6 +88,36 @@ services:
       - DB_USER=netsinx
       - DB_PASS=tes123
       - DB_HOST=db-user
+      - DB_PORT=3306
+      - DB_DBNAME=yconnect_shop
+
+  cart-db:
+    container_name: db-cart
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - yconnect-net
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: "netsinx"
+      MYSQL_PASSWORD: "tes123"
+      MYSQL_DATABASE: "yconnect_shop"
+
+  cart:
+    container_name: cart-service
+    image: cart-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - cart-db
+    networks:
+      - yconnect-net
+      - kong-network
+    environment:
+      - DB_USER=netsinx
+      - DB_PASS=tes123
+      - DB_HOST=db-cart
       - DB_PORT=3306
       - DB_DBNAME=yconnect_shop
 
