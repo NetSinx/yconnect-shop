@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+
 	"github.com/NetSinx/yconnect-shop/product/app/config"
 	"github.com/NetSinx/yconnect-shop/product/app/model"
 	"github.com/NetSinx/yconnect-shop/product/service"
@@ -33,6 +35,34 @@ func (p productController) ListProduct(c echo.Context) error {
 			Status: "Internal Server Error",
 			Message: "Sorry, there was a server failure!",
 		})
+	}
+
+	for i, product := range listProducts {
+		var preloadCategory utils.PreloadCategory
+		var preloadUser utils.PreloadUser
+		var httpClient http.Client
+
+		reqCategory, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/categories/id/%d", product.CategoryId), nil)
+		
+		reqUser, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/users/%d", product.SellerId), nil)
+
+		resCategory, _ := httpClient.Do(reqCategory)
+
+		resUser, err := httpClient.Do(reqUser)
+		if err != nil {
+			return c.JSON(http.StatusOK, utils.SuccessGetData{
+				Code: http.StatusOK,
+				Status: "OK",
+				Data: listProducts,
+			})
+		}
+
+		json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
+
+		json.NewDecoder(resUser.Body).Decode(&preloadUser)
+
+		listProducts[i].Category = preloadCategory.Data
+		listProducts[i].User = preloadUser.Data
 	}
 
 	return c.JSON(http.StatusOK, utils.SuccessGetData{
@@ -129,11 +159,14 @@ func (p productController) DeleteProduct(c echo.Context) error {
 }
 
 func (p productController) GetProduct(c echo.Context) error {
-	var products model.Product
+	var product model.Product
+	var preloadCategory utils.PreloadCategory
+	var preloadUser utils.PreloadUser
+	var httpClient http.Client
 
 	slug := c.Param("slug")
 
-	getProducts, err := p.productService.GetProduct(products, slug)
+	getProduct, err := p.productService.GetProduct(product, slug)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,
@@ -142,10 +175,33 @@ func (p productController) GetProduct(c echo.Context) error {
 		})
 	}
 
+	reqCategory, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/categories/id/%d", getProduct.CategoryId), nil)
+
+	reqUser, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/users/%d", getProduct.SellerId), nil)
+
+	resCategory, _ := httpClient.Do(reqCategory)
+
+	resUser, err := httpClient.Do(reqUser)
+	if err != nil {
+		return c.JSON(http.StatusOK, utils.SuccessGetData{
+			Code: http.StatusOK,
+			Status: "OK",
+			Data: getProduct,
+		})
+	}
+
+	json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
+
+	json.NewDecoder(resUser.Body).Decode(&preloadUser)
+
+	getProduct.Category = preloadCategory.Data
+
+	getProduct.User = preloadUser.Data
+
 	return c.JSON(http.StatusOK, utils.SuccessGetData{
 		Code: http.StatusOK,
 		Status: "OK",
-		Data: getProducts,
+		Data: getProduct,
 	})
 }
 
@@ -160,6 +216,35 @@ func (p productController) GetProductByCategory(c echo.Context) error {
 			Status: http.StatusText(http.StatusInternalServerError),
 			Message: "Maaf, ada kesalahan pada server!",
 		})
+	}
+
+	for i, product := range products {
+		var preloadCategory utils.PreloadCategory
+		var preloadUser utils.PreloadUser
+		var httpClient http.Client
+
+		reqCategory, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/categories/id/%d", product.CategoryId), nil)
+	
+		reqUser, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/users/%d", product.SellerId), nil)
+	
+		resCategory, _ := httpClient.Do(reqCategory)
+	
+		resUser, err := httpClient.Do(reqUser)
+		if err != nil {
+			return c.JSON(http.StatusOK, utils.SuccessGetData{
+				Code: http.StatusOK,
+				Status: "OK",
+				Data: products,
+			})
+		}
+	
+		json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
+	
+		json.NewDecoder(resUser.Body).Decode(&preloadUser)
+	
+		products[i].Category = preloadCategory.Data
+	
+		products[i].User = preloadUser.Data
 	}
 
 	return c.JSON(http.StatusOK, utils.SuccessGetData{
@@ -180,6 +265,35 @@ func (p productController) GetProductByUser(c echo.Context) error {
 			Status: http.StatusText(http.StatusInternalServerError),
 			Message: "Maaf, ada kesalahan pada server!",
 		})
+	}
+
+	for i, product := range products {
+		var preloadCategory utils.PreloadCategory
+		var preloadUser utils.PreloadUser
+		var httpClient http.Client
+
+		reqCategory, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/categories/id/%d", product.CategoryId), nil)
+	
+		reqUser, _ := http.NewRequest("GET", fmt.Sprintf("http://kong-gateway:8000/users/%d", product.SellerId), nil)
+	
+		resCategory, _ := httpClient.Do(reqCategory)
+	
+		resUser, err := httpClient.Do(reqUser)
+		if err != nil {
+			return c.JSON(http.StatusOK, utils.SuccessGetData{
+				Code: http.StatusOK,
+				Status: "OK",
+				Data: products,
+			})
+		}
+	
+		json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
+	
+		json.NewDecoder(resUser.Body).Decode(&preloadUser)
+	
+		products[i].Category = preloadCategory.Data
+	
+		products[i].User = preloadUser.Data
 	}
 
 	return c.JSON(http.StatusOK, utils.SuccessGetData{

@@ -5,14 +5,6 @@ import "time"
 type User struct {
 	Id        uint        `json:"id" gorm:"primaryKey"`
 	Name      string      `json:"name"`
-	Username  string      `json:"username" gorm:"unique"`
-	Email     string      `json:"email" gorm:"unique" validate:"email"`
-	Alamat    string      `json:"alamat"`
-	NoTelp    string      `json:"no_telp" gorm:"unique"`
-	Password  string      `json:"password"`
-	Product		[]Product		`json:"product" gorm:"-"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }
 
 type Product struct {
@@ -24,6 +16,8 @@ type Product struct {
 	SellerId    uint       `json:"seller_id" form:"seller_id"`
 	Price				int        `json:"price" form:"price" validate:"required"`
 	Stock				int        `json:"stock" form:"stock" validate:"required"`
+	Category    Category   `json:"category" gorm:"-"`
+	User        User       `json:"user" gorm:"-"`
 	CreatedAt		time.Time
 	UpdatedAt		time.Time
 }
@@ -32,7 +26,4 @@ type Category struct {
 	Id        uint        `json:"id" gorm:"primaryKey"`
 	Name      string      `json:"name" gorm:"unique" validate:"required,min=3"`
 	Slug      string      `json:"slug" gorm:"unique" validate:"required,min=3,lowercase"`
-	Product		[]Product   `json:"product" gorm:"-"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }

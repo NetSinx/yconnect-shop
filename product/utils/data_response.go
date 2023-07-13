@@ -11,15 +11,15 @@ type SuccessGetData struct {
 }
 
 type PreloadCategory struct {
-	Code   int              `json:"code"`
-	Status string           `json:"status"`
-	Data   []model.Category `json:"data"`
+	Code   int            `json:"code"`
+	Status string         `json:"status"`
+	Data   model.Category `json:"data"`
 }
 
 type PreloadUser struct {
-	Code   int          `json:"code"`
-	Status string       `json:"status"`
-	Data   []model.User	`json:"data"`
+	Code   int        `json:"code"`
+	Status string     `json:"status"`
+	Data   model.User	`json:"data"`
 }
 
 type SuccessCUD struct {
