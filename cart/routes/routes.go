@@ -2,10 +2,9 @@ package routes
 
 import (
 	"net/http"
-
 	"github.com/NetSinx/yconnect-shop/cart/config"
 	"github.com/NetSinx/yconnect-shop/cart/controller"
-	// auth "github.com/NetSinx/yconnect-shop/cart/middleware"
+	auth "github.com/NetSinx/yconnect-shop/cart/middleware"
 	"github.com/NetSinx/yconnect-shop/cart/repository"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -20,6 +19,7 @@ func ApiRoutes() *echo.Echo {
 		AllowOrigins: []string{"http://localhost:4200"},
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 	}),
+	auth.AuthMiddleware(),
 	)
 
 	router.GET("/carts", cartController.ListCart)
