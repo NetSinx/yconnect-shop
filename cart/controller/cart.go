@@ -75,7 +75,7 @@ func (cart cartController) ListCart(c echo.Context) error {
 	})
 }
 
-func (cart cartController) CreateCart(c echo.Context) error {
+func (cart cartController) AddToCart(c echo.Context) error {
 	var cartModel model.Cart
 
 	if err := c.Bind(&cartModel); err != nil {
@@ -86,7 +86,7 @@ func (cart cartController) CreateCart(c echo.Context) error {
 		})
 	}
 
-	createCart, err := cart.cartRepository.CreateCart(cartModel)
+	createCart, err := cart.cartRepository.AddToCart(cartModel)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
 			Code: http.StatusConflict,
@@ -105,6 +105,8 @@ func (cart cartController) CreateCart(c echo.Context) error {
 func (cart cartController) UpdateCart(c echo.Context) error {
 	var cartModel model.Cart
 
+	getId := c.Param("id")
+
 	if err := c.Bind(&cartModel); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
 			Code: http.StatusBadRequest,
@@ -112,8 +114,6 @@ func (cart cartController) UpdateCart(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-
-	getId := c.Param("id")
 
 	updateCart, err := cart.cartRepository.UpdateCart(cartModel, getId)
 	if err != nil {
@@ -135,12 +135,12 @@ func (cart cartController) UpdateCart(c echo.Context) error {
 	})
 }
 
-func (cart cartController) DeleteCart(c echo.Context) error {
+func (cart cartController) DeleteProductInCart(c echo.Context) error {
 	var cartModel model.Cart
 
 	id := c.Param("id")
 
-	if err := cart.cartRepository.DeleteCart(cartModel, id); err != nil {
+	if err := cart.cartRepository.DeleteProductInCart(cartModel, id); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,
 			Status: http.StatusText(http.StatusNotFound),

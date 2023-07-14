@@ -3,6 +3,7 @@ module github.com/NetSinx/yconnect-shop/cart
 go 1.19
 
 require (
+	github.com/NetSinx/yconnect-shop/product v0.0.0-20230713031401-0df4dacdb3f5
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.10.2

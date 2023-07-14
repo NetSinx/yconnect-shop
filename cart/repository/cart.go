@@ -23,7 +23,7 @@ func (c cartRepository) ListCart(cart []model.Cart) ([]model.Cart, error) {
 	return cart, nil
 }
 
-func (c cartRepository) CreateCart(cart model.Cart) (model.Cart, error) {
+func (c cartRepository) AddToCart(cart model.Cart) (model.Cart, error) {
 	if err := c.db.Create(&cart).Error; err != nil {
 		return cart, err
 	}
@@ -43,8 +43,8 @@ func (c cartRepository) UpdateCart(cart model.Cart, id string) (model.Cart, erro
 	return cart, nil
 }
 
-func (c cartRepository) DeleteCart(cart model.Cart, id string) error {
-	if err := c.db.Delete(&cart, "id = ?", id).Error; err != nil {
+func (c cartRepository) DeleteProductInCart(cart model.Cart, slug string) error {
+	if err := c.db.Delete(&cart, "slug = ?", slug).Error; err != nil {
 		return err
 	}
 

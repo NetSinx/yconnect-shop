@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"github.com/NetSinx/yconnect-shop/cart/config"
 	"github.com/NetSinx/yconnect-shop/cart/controller"
-	auth "github.com/NetSinx/yconnect-shop/cart/middleware"
+	// auth "github.com/NetSinx/yconnect-shop/cart/middleware"
 	"github.com/NetSinx/yconnect-shop/cart/repository"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -19,13 +19,13 @@ func ApiRoutes() *echo.Echo {
 		AllowOrigins: []string{"http://localhost:4200"},
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 	}),
-	auth.AuthMiddleware(),
+	// auth.AuthMiddleware(),
 	)
 
 	router.GET("/carts", cartController.ListCart)
-	router.POST("/carts", cartController.CreateCart)
+	router.POST("/carts", cartController.AddToCart)
 	router.PUT("/carts/:id", cartController.UpdateCart)
-	router.DELETE("/carts/:id", cartController.DeleteCart)
+	router.DELETE("/carts/:id", cartController.DeleteProductInCart)
 	router.GET("/carts/id/:id", cartController.GetCartById)
 	router.GET("/carts/slug/:slug", cartController.GetCartBySlug)
 
