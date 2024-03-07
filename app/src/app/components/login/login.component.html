@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="row justify-content-center align-items-center" style="height: 90vh;">
+    <div class="col-lg-4 col-md-8 col-9 bg-light rounded shadow px-5 pt-3 pb-5">
+      <div class="d-flex justify-content-center">
+        <img src="../../../assets/y-logo.png" width="70" class="rounded-circle">
+      </div>
+      <h1 class="text-center">Login</h1>
+      <div class="form-login mt-4">
+        <form action="" method="POST">
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" name="email" id="email" placeholder="Email">
+            <label for="email">Email</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+            <label for="password">Password</label>
+          </div>
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <p class="text-center">Tidak punya akun? <a routerLink="/register">Daftar</a></p>
+          <div class="row mt-4 px-2">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

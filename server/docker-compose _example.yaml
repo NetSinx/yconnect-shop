@@ -1,0 +1,173 @@
+version: '3.9'
+
+services:
+  kong-db:
+    container_name: kong-db
+    image: postgres
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - kong-network
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=kong
+      - POSTGRES_PASSWORD=test123
+      - POSTGRES_DB=kong
+
+  api-gateway:
+    container_name: kong-gateway
+    image: kong/kong-gateway:3.3.1.0
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - kong-db
+    networks:
+      - kong-network
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+      - "8002:8002"
+      - "8445:8445"
+      - "8003:8003"
+      - "8004:8004"
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=kong-db
+      - KONG_PG_USER=kong
+      - KONG_PG_PASSWORD=test123
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001
+      - KONG_ADMIN_GUI_URL=http://localhost:8002
+      - KONG_LICENSE_DATA
+
+  product-db:
+    container_name: db-product
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - yconnect-net
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "test_db"
+
+  product:
+    container_name: product-service
+    image: product-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - product-db
+    networks:
+      - yconnect-net
+      - kong-network
+    environment:
+      - DB_USER=test
+      - DB_PASS=test123
+      - DB_HOST=db-product
+      - DB_PORT=3306
+      - DB_DBNAME=test_db
+
+  category-db:
+    container_name: db-category
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - yconnect-net
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "test_db"
+
+  category:
+    container_name: category-service
+    image: category-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - category-db
+    networks:
+      - yconnect-net
+      - kong-network
+    environment:
+      - DB_USER=test
+      - DB_PASS=test123
+      - DB_HOST=db-category
+      - DB_PORT=3306
+      - DB_DBNAME=test_db
+
+  user-db:
+    container_name: db-user
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - yconnect-net
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "test_db"
+
+  user:
+    container_name: user-service
+    image: user-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - user-db
+    networks:
+      - yconnect-net
+      - kong-network
+    environment:
+      - DB_USER=test
+      - DB_PASS=test123
+      - DB_HOST=db-user
+      - DB_PORT=3306
+      - DB_DBNAME=test_db
+  
+  cart-db:
+    container_name: db-cart
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - yconnect-net
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "test_db"
+
+  cart:
+    container_name: cart-service
+    image: cart-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - cart-db
+    networks:
+      - yconnect-net
+      - kong-network
+    environment:
+      - DB_USER=test
+      - DB_PASSWORD=test123
+      - DB_HOST=db-cart
+      - DB_PORT=3306
+      - DB_DATABASE=test_db
+
+networks:
+  yconnect-net:
+    external: true
+  kong-network:
+    external: true

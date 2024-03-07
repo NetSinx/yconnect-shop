@@ -1,0 +1,50 @@
+@media (min-width: 1025px) {  
+  .active-link {
+    display: none;
+  }
+
+  .nav-link {
+    margin: 0 5px;
+  }
+
+  .nav-link.my-link:after {
+    content: '';
+    display: block;
+    background-color: rgb(44, 44, 44);
+    width: 0;
+    height: 4px;
+    transition: all;
+    transition-duration: 300ms;
+  }
+
+  .nav-link.my-link:hover:after {
+    width: 100%;
+  }
+
+  .nav-link.active {
+
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .nav-link:hover {
+    background-color: rgb(199, 199, 199);
+    color: black;
+  }
+
+  .nav-link.active {
+    background-color: rgb(199, 199, 199);
+    color: black;
+  }
+
+  .nav-item {
+    padding: 5px 0;
+  }
+
+  .nav-link {
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 30px;
+  }
+}

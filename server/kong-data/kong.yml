@@ -1,0 +1,104 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+- name: category-service
+  host: category-service
+  port: 8080
+  protocol: http
+  path: /categories
+  retries: 3
+  routes:
+  - name: category-route
+    paths:
+    - /categories
+
+- name: product-service
+  host: product-service
+  port: 8081
+  protocol: http
+  path: /products
+  retries: 3
+  routes:
+  - name: product-route
+    paths:
+    - /products
+
+- name: get-category-product
+  host: product-service
+  port: 8081
+  protocol: http
+  path: /products/category
+  retries: 3
+  routes:
+  - name: get-category-product
+    paths:
+    - /products/category
+
+- name: get-user-product
+  host: product-service
+  port: 8081
+  protocol: http
+  path: /products/user
+  retries: 3
+  routes:
+  - name: get-user-product
+    paths:
+    - /products/user
+
+- name: user-service
+  host: user-service
+  port: 8082
+  protocol: http
+  path: /users
+  retries: 3
+  routes:
+  - name: user-route
+    paths:
+    - /users
+
+- name: login-service
+  host: user-service
+  port: 8082
+  protocol: http
+  path: /users/sign-in
+  routes:
+  - name: login-route
+    paths:
+    - /users/sign-in
+    methods:
+      - POST
+
+- name: register-service
+  host: user-service
+  port: 8082
+  protocol: http
+  path: /users/sign-up
+  routes:
+  - name: register-route
+    paths:
+    - /users/sign-up
+    methods:
+      - POST
+
+
+plugins:
+- name: proxy-cache
+  config:
+    response_code:
+      - 200
+      - 404
+      - 301
+    request_method:
+      - GET
+    content_type:
+      - application/json; charset=UTF-8
+    strategy: memory
+
+- name: jwt
+  service: user-service
+  config:
+    key_claim_name: key
+    claims_to_verify: 
+      - exp
+    maximum_expiration: 3600

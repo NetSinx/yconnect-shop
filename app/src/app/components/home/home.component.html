@@ -1,0 +1,48 @@
+<div class="mb-4 hero-bg">
+  <div class="d-flex justify-content-center align-items-center"
+    style="background-color: rgba(0, 0, 0, 0.6);height: 85vh;">
+    <div class="text-white text-center">
+      <h1 class="display-5 fw-bold mb-4">Pondok Ayam Bakar Pak Yasin</h1>
+      <div class="container">
+        <p class="fs-4">Kami menjual berbagai makanan & minuman dengan yang disajikan dengan cita rasa yang lokal, nikmat,
+        dan sedap.</p>
+      </div>
+      <button class="btn btn-primary fs-5 mt-5">Lihat Menu</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="text-center mb-4 d-flex justify-content-center">
+    <h2 class="title-menu font-sans fw-bold">Menu Makanan</h2>
+  </div>
+
+  <div class="row justify-content-center mb-5">
+    <form action="" class="input-group w-75">
+      <input type="text" class="form-control" placeholder="Cari makanan atau minuman...">
+      <button class="btn btn-primary">Cari</button>
+    </form>
+  </div>
+
+  <div class="row pt-3 justify-content-center" *ngIf="products.length != 0 else not_available">
+    <div class="col-lg-4 mb-4" *ngFor="let product of products">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/products/{{ product.id }}" class="card-product position-relative text-decoration-none" *ngFor="let img of product.images">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img src="http://localhost:8000{{ img.name }}">
+          </div>
+          <div class="card-body">
+            <h2>{{ product.price | currency:'IDR':'Rp'}}</h2>
+            <h4>{{ product.name }}</h4>
+            <p><b>Stock: </b>{{ product.stock }}</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+    
+  <ng-template #not_available>
+    <p class="fs-4 text-center">Makanan & minuman sedang tidak tersedia.</p>
+  </ng-template>
+</div>

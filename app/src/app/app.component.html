@@ -1,0 +1,15 @@
+<div *ngIf="errors else no_error">
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-center" style="height: 100vh;">
+      <div class="col-lg text-center">
+        <h1>{{ errors.status }}</h1>
+        <p class="fs-3">{{ errors.statusText }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #no_error>
+  <app-navbar></app-navbar>
+  <router-outlet></router-outlet>
+</ng-template>

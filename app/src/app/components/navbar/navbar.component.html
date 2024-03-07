@@ -1,0 +1,43 @@
+<nav class="navbar navbar-expand-lg bg-light shadow sticky-top">
+  <div class="container">
+    <a class="navbar-brand" routerLink="">
+      <img src="../../assets/y-logo.png" width="40">
+      Y-Connect Shop
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav fs-5">
+        <li class="nav-item">
+          <a class="nav-link my-link active" routerLink="">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link my-link" href="#">About</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">Categories</a>
+          <ul class="dropdown-menu" *ngIf="categories">
+            <li *ngFor="let category of categories">
+              <a class="dropdown-item" href="#">{{ category.name }}</a>
+              <hr class="dropdown-divider">
+            </li>
+            <li *ngIf="categories.length === 0">
+              <a class="dropdown-item" href="#">Kategori tidak tersedia</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link my-link" href="#">Contact Us</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto fs-5">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login" routerLinkActive="active-link">Login <i class="bi bi-box-arrow-in-right fs-4"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

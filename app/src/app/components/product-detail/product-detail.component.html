@@ -1,0 +1,66 @@
+<div class="container">
+  <nav aria-label="breadcrumb" class="mt-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Order</li>
+    </ol>
+  </nav>
+  <hr>
+  <div class="row mt-4" *ngIf="product">
+    <div class="col-lg-6 mb-3">
+      <div class="card overflow-hidden" *ngFor="let img of product.images">
+        <img src="http://localhost:8000{{ img.name }}" class="card-img-top" width="500">
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title text-center">{{ product.name }}</h2>
+          <hr>
+          <div class="card-text mb-5">
+            <table [cellPadding]="5">
+              <tr>
+                <td><b>Description</b></td>
+                <td>:</td>
+                <td>{{ product.description }}</td>
+              </tr>
+              <tr>
+                <td><b>Price</b></td>
+                <td>:</td>
+                <td>{{ product.price | currency:'IDR':'Rp' }}</td>
+              </tr>
+              <tr>
+                <td><b>Stock</b></td>
+                <td>:</td>
+                <td>{{ product.stock }}</td>
+              </tr>
+            </table>
+          </div>
+            <button class="btn btn-primary me-3">Tambah ke Keranjang</button>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+              Beli Sekarang
+            </button>
+            
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+              aria-labelledby="staticBackdropLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    ...
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
