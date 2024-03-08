@@ -3,8 +3,8 @@ module github.com/NetSinx/yconnect-shop/server/category
 go 1.19
 
 require (
-	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20230828021627-0eb690e7a2d3
-	github.com/go-playground/validator/v10 v10.15.1
+	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240308001431-0382d8b4e31e
+	github.com/go-playground/validator/v10 v10.15.3
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.1
 	gorm.io/driver/mysql v1.5.1
@@ -24,8 +24,8 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	golang.org/x/crypto v0.12.0 // indirect
-	golang.org/x/net v0.14.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
+	golang.org/x/crypto v0.13.0 // indirect
+	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
 )
