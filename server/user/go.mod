@@ -3,8 +3,8 @@ module github.com/NetSinx/yconnect-shop/server/user
 go 1.19
 
 require (
-	github.com/NetSinx/yconnect-shop/server/cart v0.0.0-20230907140707-ae15822c5c66
-	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20230907140707-ae15822c5c66
+	github.com/NetSinx/yconnect-shop/server/cart v0.0.0-20240307234312-76c934135031
+	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240307234312-76c934135031
 	github.com/go-playground/validator/v10 v10.15.3
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/joho/godotenv v1.5.1
