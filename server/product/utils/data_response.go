@@ -33,3 +33,7 @@ type ErrServer struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
+
+type ResponseCSRF struct {
+	CSRFToken string `json:"csrf_token"`
+}

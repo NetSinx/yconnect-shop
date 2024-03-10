@@ -21,9 +21,17 @@ func TestListProduct(t *testing.T) {
 }
 
 func TestCreateProduct(t *testing.T) {
+	var genCSRF utils.ResponseCSRF
+	var respData utils.ErrServer
+	var httpClient http.Client
+	var httpCookie http.Cookie
+
 	body := `{
 		"name": "Ayam Bakar",
 		"slug": "ayam-bakar",
+		"images": {
+			"name": "ayam_bakar.jpg"
+		},
 		"description": "Ayam bakar sedap dengan cita rasa yang nikmat dan luar biasa",
 		"category_id": 1,
 		"seller_id": 1,
@@ -31,14 +39,29 @@ func TestCreateProduct(t *testing.T) {
 		"stock": 10
 	}`
 
-	response, _ := http.Post("http://localhost:8081/product", "application/json", strings.NewReader(body))
+	resp_gen_csrf, err := http.Get("http://localhost:8081/gencsrf")
+	if resp_gen_csrf.StatusCode != 200 || err != nil {
+		json.NewDecoder(resp_gen_csrf.Body).Decode(&respData)
+
+		t.Fatalf("Error Status Code: %d, Error Message: %s", resp_gen_csrf.StatusCode, respData.Message)
+	}
+	
+	json.NewDecoder(resp_gen_csrf.Body).Decode(&genCSRF)
+	
+	request, _ := http.NewRequest("POST", "http://localhost:8081/product", strings.NewReader(body))
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Add("XSRF-Token", genCSRF.CSRFToken)
+
+	httpCookie.Name = "_csrf"
+	httpCookie.Value = genCSRF.CSRFToken
+	request.AddCookie(&httpCookie)
+
+	response, _ := httpClient.Do(request)
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
-
 		json.NewDecoder(response.Body).Decode(&respData)
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+		t.Fatalf("Error Status Code: %d, Error Message: %s, csrf: %s, header: %s, cookie: %v", response.StatusCode, respData.Message,genCSRF.CSRFToken, request.Header.Get("XSRF-Token"), request.Cookies())
 	}
 }
 

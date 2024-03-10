@@ -48,17 +48,6 @@ func (p productController) CreateProduct(c echo.Context) error {
 	var products model.Product
 	var img []model.Image
 
-	category_id, _ := strconv.ParseUint(c.FormValue("category_id"), 10, 32)
-	seller_id, _ := strconv.ParseUint(c.FormValue("seller_id"), 10, 32)
-
-	products.Name = c.FormValue("name")
-	products.Slug = c.FormValue("slug")
-	products.Description = c.FormValue("description")
-	products.CategoryId = uint(category_id)
-	products.SellerId = uint(seller_id)
-	products.Price, _ = strconv.Atoi(c.FormValue("price"))
-	products.Stock, _ = strconv.Atoi(c.FormValue("stock"))
-
 	imageProduct, err := c.MultipartForm()
 	if err != nil {
 		return err
@@ -83,7 +72,11 @@ func (p productController) CreateProduct(c echo.Context) error {
 	
 		dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
 		if err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+				Code: http.StatusBadRequest,
+				Status: http.StatusText(http.StatusBadRequest),
+				Message: err.Error(),
+			})
 		}
 		defer dst.Close()
 	
