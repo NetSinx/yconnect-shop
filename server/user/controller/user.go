@@ -26,6 +26,21 @@ func UserController(userServ service.UserServ) userController {
 func (u userController) RegisterUser(c echo.Context) error {
 	var users model.User
 
+	avatar, _ := c.FormFile("avatar")
+	if err := os.MkdirAll("assets/images", os.ModePerm); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
+			Code: http.StatusInternalServerError,
+			Status: http.StatusText(http.StatusInternalServerError),
+			Message: err.Error(),
+		})
+	}
+
+	src, _ := avatar.Open()
+
+	dst, _ := os.Create(fmt.Sprintf("assets/images/%v", avatar.Filename))
+
+	io.Copy(dst, src)
+
 	if err := c.Bind(&users); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
 			Code: http.StatusBadRequest,
