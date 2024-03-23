@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/product/app/model"
+	"github.com/NetSinx/yconnect-shop/server/seller/model/entity"
 	cartModel "github.com/NetSinx/yconnect-shop/server/cart/model"
 )
 
@@ -26,7 +26,7 @@ type SuccessGet struct {
 type PreloadSeller struct {
 	Code   int							`json:"code"`
 	Status string						`json:"status"`
-	Data   model.Seller	`json:"data"`
+	Data   entity.Seller	`json:"data"`
 }
 
 type PreloadCarts struct {
