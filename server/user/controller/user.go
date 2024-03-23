@@ -261,27 +261,6 @@ func (u userController) GetUser(c echo.Context) error {
 	})
 }
 
-func (u userController) GetSeller(c echo.Context) error {
-	var users model.User
-
-	id := c.Param("id")
-
-	getSeller, err := u.userService.GetSeller(users, id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
-			Message: "Seller tidak ditemukan!",
-		}) 
-	}
-
-	return c.JSON(http.StatusOK, utils.SuccessGet{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
-		Data: getSeller,
-	})
-}
-
 func (u userController) DeleteUser(c echo.Context) error {
 	var users model.User
 

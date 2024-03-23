@@ -23,10 +23,10 @@ type SuccessGet struct {
 	Data   interface{} `json:"data"`
 }
 
-type PreloadProducts struct {
+type PreloadSeller struct {
 	Code   int							`json:"code"`
 	Status string						`json:"status"`
-	Data   []model.Product	`json:"data"`
+	Data   model.Seller	`json:"data"`
 }
 
 type PreloadCarts struct {

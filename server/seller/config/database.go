@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
-	"github.com/NetSinx/yconnect-shop/server/user/app/model"
-	"github.com/NetSinx/yconnect-shop/server/user/utils"
+	"github.com/NetSinx/yconnect-shop/server/seller/model/entity"
+	"github.com/NetSinx/yconnect-shop/server/seller/utils"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -12,12 +12,12 @@ import (
 
 var DB *gorm.DB
 
-func ConnectDB() {
-	var users model.User
+func ConfigDB() {
+	var seller entity.Seller
 
 	godotenv.Load()
 
-	initDb := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+	loadEnv := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 													os.Getenv("DB_USER"),
 													os.Getenv("DB_PASS"),
 													os.Getenv("DB_HOST"),
@@ -25,12 +25,11 @@ func ConnectDB() {
 													os.Getenv("DB_DBNAME"),
 												)
 
-	db, err := gorm.Open(mysql.Open(initDb), &gorm.Config{})
+	initDb, err := gorm.Open(mysql.Open(loadEnv), &gorm.Config{})
 	if err != nil {
 		utils.LogPanic(err)
 	}
 
-	
-	db.AutoMigrate(&users)
-	DB = db
+	initDb.AutoMigrate(&seller)
+	DB = initDb
 }

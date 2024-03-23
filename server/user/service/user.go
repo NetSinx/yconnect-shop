@@ -100,16 +100,16 @@ func (u userService) ListUsers(users []model.User) ([]model.User, error) {
 	}
 
 	for i := range listUsers {
-		var preloadProduct utils.PreloadProducts
+		var preloadSeller utils.PreloadSeller
 		var preloadCart utils.PreloadCarts
 		
-		respProduct, err := http.Get(fmt.Sprintf("http://product-service:8081/product/seller/%d", listUsers[i].Id))
+		respProduct, err := http.Get(fmt.Sprintf("http://seller-service:8084/seller/%d", listUsers[i].Id))
 		if err != nil {
 			return listUsers, nil
 		} else if respProduct.StatusCode == 200 {
-			json.NewDecoder(respProduct.Body).Decode(&preloadProduct)
+			json.NewDecoder(respProduct.Body).Decode(&preloadSeller)
 			
-			listUsers[i].Seller.Product = preloadProduct.Data
+			listUsers[i].Seller = preloadSeller.Data
 		}
 
 		respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", listUsers[i].Id))
@@ -161,26 +161,6 @@ func (u userService) GetUser(users model.User, id string) (model.User, error) {
 		}
 
 	return findUser, nil
-}
-
-func (u userService) GetSeller(users model.User, id string) (model.User, error) {
-	getSeller, err := u.userRepository.GetSeller(users, id)
-	if err != nil {
-		return users, err
-	}
-
-	resp, err := http.Get(fmt.Sprintf("http://product-service:8081/product/seller/%d", getSeller.Id))
-	if err != nil {
-		return users, nil
-	} else if resp.StatusCode == 200 {
-		var preloadProduct utils.PreloadProducts
-
-		json.NewDecoder(resp.Body).Decode(&preloadProduct)
-	
-		getSeller.Seller.Product = preloadProduct.Data
-	}
-
-	return getSeller, nil
 }
 
 func (u userService) DeleteUser(users model.User, id string) error {

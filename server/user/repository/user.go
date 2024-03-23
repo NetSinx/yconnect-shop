@@ -39,7 +39,7 @@ func (u userRepository) LoginUser(userLogin model.UserLogin) (model.User, error)
 }
 
 func (u userRepository) ListUsers(users []model.User) ([]model.User, error) {
-	if err := u.DB.Preload("Seller").Find(&users).Error; err != nil {
+	if err := u.DB.Find(&users).Error; err != nil {
 		return nil, err
 	}
 
@@ -47,7 +47,7 @@ func (u userRepository) ListUsers(users []model.User) ([]model.User, error) {
 }
 
 func (u userRepository) UpdateUser(users model.User, id string) error {
-	if err := u.DB.Where("id = ?", id).Updates(&model.User{Name: users.Name, Username: users.Username, Avatar: users.Avatar, Email: users.Email, Alamat: users.Alamat, NoTelp: users.NoTelp, Password: users.Password, Token: users.Token, Seller: users.Seller, Cart: users.Cart}).Error; err != nil {
+	if err := u.DB.Where("id = ?", id).Updates(&model.User{Name: users.Name, Username: users.Username, Avatar: users.Avatar, Email: users.Email, Alamat: users.Alamat, NoTelp: users.NoTelp, Password: users.Password, Token: users.Token, Cart: users.Cart}).Error; err != nil {
 		return err
 	}
 	
@@ -60,14 +60,6 @@ func (u userRepository) UpdateUser(users model.User, id string) error {
 
 func (u userRepository) GetUser(users model.User, id string) (model.User, error) {
 	if err := u.DB.First(&users, "id = ?", id).Error; err != nil {
-		return users, err
-	}
-
-	return users, nil
-}
-
-func (u userRepository) GetSeller(users model.User, id string) (model.User, error) {
-	if err := u.DB.Preload("Seller").First(&users, "id = ?", id).Error; err != nil {
 		return users, err
 	}
 
