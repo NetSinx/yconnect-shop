@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"net/http"
 	"github.com/NetSinx/yconnect-shop/server/product/app/config"
 	"github.com/NetSinx/yconnect-shop/server/product/controller"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
@@ -16,17 +17,13 @@ func ApiRoutes() *echo.Echo {
 
 	router := echo.New()
 	router.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "header:XSRF-Token",
+		TokenLookup: "cookie:xsrf",
+		CookiePath: "/",
+		CookieHTTPOnly: true,
+		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure: true,
 	}))
 
-	router.GET("/gencsrf", func(c echo.Context) error {
-		csrf := c.Get("csrf")
-
-		return c.JSON(200, map[string]interface{}{
-			"csrf_token": csrf,
-		})
-	})
 	router.GET("/product", productController.ListProduct)
 	router.GET("/product/:id", productController.GetProduct)
 	router.GET("/product/category/:id", productController.GetProductByCategory)
