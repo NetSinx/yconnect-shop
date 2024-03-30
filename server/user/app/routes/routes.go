@@ -10,7 +10,7 @@ import (
 )
 
 func ApiRoutes() *echo.Echo {
-	userRepository := repository.UserRepository(config.DB)
+	userRepository := repository.UserRepository(config.ConnectDB())
 	userService := service.UserService(userRepository)
 	userController := controller.UserController(userService)
 

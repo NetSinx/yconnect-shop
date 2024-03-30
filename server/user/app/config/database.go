@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func ConnectDB() {
+func ConnectDB() *gorm.DB {
 	var users model.User
 
 	godotenv.Load()
@@ -28,6 +28,7 @@ func ConnectDB() {
 		utils.LogPanic(err)
 	}
 
-	
 	db.AutoMigrate(&users)
+
+	return db
 }
