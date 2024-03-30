@@ -10,8 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
 func ConnectDB() {
 	var users model.User
 
@@ -32,5 +30,4 @@ func ConnectDB() {
 
 	
 	db.AutoMigrate(&users)
-	DB = db
 }
