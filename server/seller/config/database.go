@@ -10,9 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
-func ConfigDB() {
+func ConfigDB() *gorm.DB {
 	var seller entity.Seller
 
 	godotenv.Load()
@@ -31,5 +29,6 @@ func ConfigDB() {
 	}
 
 	initDb.AutoMigrate(&seller)
-	DB = initDb
+	
+	return initDb
 }
