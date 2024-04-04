@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"github.com/NetSinx/yconnect-shop/server/seller/model/domain"
@@ -25,7 +24,7 @@ func (ss sellerService) ListSeller() ([]entity.Seller, error) {
 
 	listSeller, err := ss.SellerRepository.ListSeller()
 	if err != nil {
-		return []entity.Seller{}, errors.New("seller tidak ditemukan")
+		return []entity.Seller{}, fmt.Errorf("seller tidak ditemukan")
 	}
 
 	for i := range listSeller {

@@ -8,13 +8,13 @@ import (
 type Seller struct {
 	Id        uint             `json:"id" gorm:"primaryKey"`
 	Name      string           `json:"name" form:"name"`
-	Username  string           `json:"username" form:"username" gorm:"unique"`
-	Avatar    string           `json:"avatar" form:"avatar"`
-	Email     string           `json:"email" form:"email" gorm:"unique"`
-	Alamat    string           `json:"alamat" form:"alamat"`
-	NoTelp    string           `json:"no_telp" form:"no_telp" gorm:"unique"`
+	Username  string           `json:"username" gorm:"unique"`
+	Avatar    string           `json:"avatar"`
+	Email     string           `json:"email" gorm:"unique"`
+	Alamat    string           `json:"alamat"`
+	NoTelp    string           `json:"no_telp" gorm:"unique"`
 	Product   []model.Product  `json:"product" gorm:"-"`
-	UserID    uint             `json:"user_id"`
+	UserID    uint             `json:"user_id" `
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
