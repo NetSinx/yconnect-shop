@@ -32,13 +32,13 @@ func (c categoryService) ListCategory(categories []model.Category) ([]model.Cate
 		var preloadProduct utils.PreloadProducts
 
 		responseData, err := http.Get(fmt.Sprintf("http://product-service:8081/product/category/%d", category.Id))
-		if err != nil {
+		if err != nil || responseData.StatusCode != 200 {
 			return categories, nil
-		} else if responseData.StatusCode == 200 {
-			json.NewDecoder(responseData.Body).Decode(&preloadProduct)
-			
-			categories[i].Product = preloadProduct.Data
 		}
+		
+		json.NewDecoder(responseData.Body).Decode(&preloadProduct)
+		
+		categories[i].Product = preloadProduct.Data
 	}
 
 	return categories, nil
