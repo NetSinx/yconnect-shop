@@ -1,14 +1,17 @@
 package domain
 
-import "github.com/NetSinx/yconnect-shop/server/product/app/model"
+import (
+	modelProd "github.com/NetSinx/yconnect-shop/server/product/app/model"
+	modelUser "github.com/NetSinx/yconnect-shop/server/user/app/model"
+)
 
-type ErrorResponse struct {
+type Response struct {
 	Code    int    `json:"code"`
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
 
-type FindAllResponse struct {
+type SuccessResponse struct {
 	Code   int         `json:"code"`
 	Status string      `json:"status"`
 	Data   interface{} `json:"data"`
@@ -17,5 +20,11 @@ type FindAllResponse struct {
 type GetProductResponse struct {
 	Code   int    					`json:"code"`
 	Status string 					`json:"status"`
-	Data   []model.Product	`json:"data"`
+	Data   []modelProd.Product	`json:"data"`
+}
+
+type GetUserResponse struct {
+	Code   int    					`json:"code"`
+	Status string 					`json:"status"`
+	Data   modelUser.User	`json:"data"`
 }

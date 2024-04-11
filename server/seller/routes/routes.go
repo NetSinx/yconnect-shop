@@ -16,6 +16,10 @@ func APIRoutes() *echo.Echo {
 	router := echo.New()
 
 	router.GET("/seller", sellerController.ListSeller)
+	router.POST("/seller/:username", sellerController.RegisterSeller)
+	router.PUT("/seller/:username", sellerController.UpdateSeller)
+	router.DELETE("/seller/:username", sellerController.DeleteSeller)
+	router.GET("/seller/:username", sellerController.GetSeller)
 
 	return router
 }

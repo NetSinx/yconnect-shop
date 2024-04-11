@@ -6,4 +6,8 @@ import (
 
 type SellerCtrllr interface {
 	ListSeller(c echo.Context) error
+	RegisterSeller(c echo.Context) error
+	UpdateSeller(c echo.Context) error
+	DeleteSeller(c echo.Context) error
+	GetSeller(c echo.Context) error
 }
