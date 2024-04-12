@@ -3,15 +3,18 @@ package config
 import (
 	"fmt"
 	"os"
-	"github.com/NetSinx/yconnect-shop/server/user/app/model"
-	"github.com/NetSinx/yconnect-shop/server/user/utils"
+	"github.com/NetSinx/yconnect-shop/server/product/model"
+	"github.com/NetSinx/yconnect-shop/server/product/utils"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func ConnectDB() *gorm.DB {
-	var users model.User
+var DB *gorm.DB
+
+func ConnectDB() {
+	var products model.Product
+	var images model.Image
 
 	godotenv.Load()
 
@@ -21,14 +24,14 @@ func ConnectDB() *gorm.DB {
 													os.Getenv("DB_HOST"),
 													os.Getenv("DB_PORT"),
 													os.Getenv("DB_DBNAME"),
-												)
-
+	)
+	
 	db, err := gorm.Open(mysql.Open(initDb), &gorm.Config{})
 	if err != nil {
-		utils.LogPanic(err)
+		utils.PanicError(err)
 	}
 
-	db.AutoMigrate(&users)
+	db.AutoMigrate(&products, &images)
 
-	return db
+	DB = db
 }

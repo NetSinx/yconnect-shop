@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/product/app/model"
+	"github.com/NetSinx/yconnect-shop/server/product/model"
 )
 
 type SuccessData struct {

@@ -35,9 +35,19 @@ func (sc sellerController) ListSeller(c echo.Context) error {
 }
 
 func (sc sellerController) RegisterSeller(c echo.Context) error {
+	var seller domain.Seller
+
 	username := c.Param("username")
 
-	regSeller, err := sc.SellerService.RegisterSeller(username)
+	if err := c.Bind(&seller); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.Response{
+			Code: http.StatusBadRequest,
+			Status: http.StatusText(http.StatusBadRequest),
+			Message: "request user tidak sesuai",
+		})
+	}
+
+	regSeller, err := sc.SellerService.RegisterSeller(username, seller)
 	if err != nil && err.Error() == "seller sudah terdaftar" {
 		return echo.NewHTTPError(http.StatusConflict, domain.Response{
 			Code: http.StatusConflict,
@@ -48,6 +58,12 @@ func (sc sellerController) RegisterSeller(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, domain.Response{
 			Code: http.StatusNotFound,
 			Status: http.StatusText(http.StatusNotFound),
+			Message: err.Error(),
+		})
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.Response{
+			Code: http.StatusBadRequest,
+			Status: http.StatusText(http.StatusBadRequest),
 			Message: err.Error(),
 		})
 	}
@@ -93,10 +109,17 @@ func (sc sellerController) UpdateSeller(c echo.Context) error {
 func (sc sellerController) DeleteSeller(c echo.Context) error {
 	username := c.Param("username")
 
-	if err := sc.SellerService.DeleteSeller(username); err != nil {
+	err := sc.SellerService.DeleteSeller(username)
+	if err != nil && err.Error() == "seller tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.Response{
 			Code: http.StatusNotFound,
 			Status: http.StatusText(http.StatusNotFound),
+			Message: err.Error(),
+		})
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.Response{
+			Code: http.StatusInternalServerError,
+			Status: http.StatusText(http.StatusInternalServerError),
 			Message: err.Error(),
 		})
 	}

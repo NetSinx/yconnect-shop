@@ -6,6 +6,8 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/seller/repository"
 	"github.com/NetSinx/yconnect-shop/server/seller/service"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"net/http"
 )
 
 func APIRoutes() *echo.Echo {
@@ -14,7 +16,23 @@ func APIRoutes() *echo.Echo {
 	sellerController := controller.SellerController(sellerService)
 
 	router := echo.New()
+	router.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLookup: "header:xsrf",
+		CookieName: "xsrf",
+		CookiePath: "/",
+		CookieHTTPOnly: true,
+		CookieSameSite: http.SameSiteStrictMode,
+		CookieMaxAge: 30,
+		CookieSecure: true,
+	}))
 
+	router.GET("/gencsrf", func(c echo.Context) error {
+		csrfToken := c.Get("csrf")
+
+		return c.JSON(200, map[string]interface{}{
+			"csrf_token": csrfToken,
+		})
+	})
 	router.GET("/seller", sellerController.ListSeller)
 	router.POST("/seller/:username", sellerController.RegisterSeller)
 	router.PUT("/seller/:username", sellerController.UpdateSeller)

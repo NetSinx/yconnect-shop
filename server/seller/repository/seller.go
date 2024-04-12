@@ -45,7 +45,11 @@ func (sr sellerRepository) UpdateSeller(username string, seller entity.Seller) (
 func (sr sellerRepository) DeleteSeller(username string) error {
 	var seller entity.Seller
 
-	if err := sr.DB.Where("username = ?", username).Delete(&seller, "username = ?", username).Error; err != nil {
+	if err := sr.DB.First(&seller, "username = ?", username).Error; err != nil {
+		return err
+	}
+
+	if err := sr.DB.Delete(&seller, "username = ?", username).Error; err != nil {
 		return err
 	}
 
@@ -55,7 +59,7 @@ func (sr sellerRepository) DeleteSeller(username string) error {
 func (sr sellerRepository) GetSeller(username string) (entity.Seller, error) {
 	var seller entity.Seller
 
-	if err := sr.DB.First(&seller, username).Error; err != nil {
+	if err := sr.DB.First(&seller, "username = ?", username).Error; err != nil {
 		return entity.Seller{}, err
 	}
 

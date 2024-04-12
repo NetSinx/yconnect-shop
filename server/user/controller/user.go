@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"github.com/NetSinx/yconnect-shop/server/user/app/model"
+	"github.com/NetSinx/yconnect-shop/server/user/model"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/labstack/echo/v4"
@@ -26,7 +26,44 @@ func UserController(userServ service.UserServ) userController {
 func (u userController) RegisterUser(c echo.Context) error {
 	var users model.User
 
-	avatar, _ := c.FormFile("avatar")
+	avatar, err := c.FormFile("avatar")
+	if err != nil {
+		if err := c.Bind(&users); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+				Code: http.StatusBadRequest,
+				Status: http.StatusText(http.StatusBadRequest),
+				Message: "Request yang dikirim tidak sesuai!",
+			})
+		}
+	
+		err := u.userService.RegisterUser(users)
+		if err != nil && err.Error() == "request tidak sesuai" {
+			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+				Code: http.StatusBadRequest,
+				Status: http.StatusText(http.StatusBadRequest),
+				Message: "Request yang dikirim tidak sesuai!",
+			})
+		// } else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
+			// return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
+				// Code: http.StatusInternalServerError,
+				// Status: http.StatusText(http.StatusInternalServerError),
+				// Message: "Maaf, ada kesalahan pada server!",
+			// })
+		} else if err != nil {
+			return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
+				Code: http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Message: "User sudah pernah dibuat!",
+			})
+		}
+	
+		return c.JSON(http.StatusOK, utils.SuccessCUD{
+			Code: http.StatusOK,
+			Status: http.StatusText(http.StatusOK),
+			Message: "Registrasi user berhasil!",
+		})
+	}
+
 	if err := os.MkdirAll("assets/images", os.ModePerm); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
 			Code: http.StatusInternalServerError,
@@ -36,9 +73,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 	}
 
 	src, _ := avatar.Open()
-
 	dst, _ := os.Create(fmt.Sprintf("assets/images/%v", avatar.Filename))
-
 	io.Copy(dst, src)
 
 	if err := c.Bind(&users); err != nil {
@@ -49,19 +84,19 @@ func (u userController) RegisterUser(c echo.Context) error {
 		})
 	}
 
-	err := u.userService.RegisterUser(users)
+	err = u.userService.RegisterUser(users)
 	if err != nil && err.Error() == "request tidak sesuai" {
 		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
 			Code: http.StatusBadRequest,
 			Status: http.StatusText(http.StatusBadRequest),
 			Message: "Request yang dikirim tidak sesuai!",
 		})
-	} else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
-			Message: "Maaf, ada kesalahan pada server!",
-		})
+	// } else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
+		// return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
+			// Code: http.StatusInternalServerError,
+			// Status: http.StatusText(http.StatusInternalServerError),
+			// Message: "Maaf, ada kesalahan pada server!",
+		// })
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
 			Code: http.StatusConflict,
@@ -138,9 +173,9 @@ func (u userController) ListUsers(c echo.Context) error {
 func (u userController) UpdateUser(c echo.Context) error {
 	var users model.User
 
-	id := c.Param("id")
+	username := c.Param("username")
 
-	getUser, _ := u.userService.GetUser(users, id)
+	getUser, _ := u.userService.GetUser(users, username)
 	
 	avatar, err := c.FormFile("avatar")
 	if err != nil {
@@ -148,7 +183,15 @@ func (u userController) UpdateUser(c echo.Context) error {
 
 		os.Remove("." + getUser.Avatar)
 
-		err = u.userService.UpdateUser(users, id)
+		if err := c.Bind(&users); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+				Code: http.StatusBadRequest,
+				Status: http.StatusText(http.StatusBadRequest),
+				Message: "Request yang dikirim tidak sesuai!",
+			})
+		}
+
+		err = u.userService.UpdateUser(users, username)
 		if err != nil && err.Error() == "request tidak sesuai" {
 			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
 				Code: http.StatusBadRequest,
@@ -212,7 +255,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 		})
 	}
 	
-	err = u.userService.UpdateUser(users, id)
+	err = u.userService.UpdateUser(users, username)
 	if err != nil && err.Error() == "user tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,
@@ -243,9 +286,9 @@ func (u userController) UpdateUser(c echo.Context) error {
 func (u userController) GetUser(c echo.Context) error {
 	var users model.User
 
-	id := c.Param("id")
+	username := c.Param("username")
 
-	findUser, err := u.userService.GetUser(users, id)
+	findUser, err := u.userService.GetUser(users, username)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,
@@ -264,15 +307,15 @@ func (u userController) GetUser(c echo.Context) error {
 func (u userController) DeleteUser(c echo.Context) error {
 	var users model.User
 
-	id := c.Param("id")
+	username := c.Param("username")
 
-	user, _ := u.userService.GetUser(users, id)
+	user, _ := u.userService.GetUser(users, username)
 
 	if user.Avatar != "" {
 		os.Remove("." + user.Avatar)
 	}
 
-	err := u.userService.DeleteUser(users, id)
+	err := u.userService.DeleteUser(users, username)
 	if err != nil && err.Error() == "gagal hapus user" {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,

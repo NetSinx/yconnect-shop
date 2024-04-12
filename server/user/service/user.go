@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/user/app/model"
+	"github.com/NetSinx/yconnect-shop/server/user/model"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/go-playground/validator/v10"
@@ -30,9 +30,7 @@ func (u userService) RegisterUser(users model.User) error {
 	}
 
 	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 15)
-
 	users.Password = string(passwdHash)
-
 	reqUser := []byte(fmt.Sprintf(`{"username": "%s"}`, users.Username))
 
 	_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
@@ -42,14 +40,12 @@ func (u userService) RegisterUser(users model.User) error {
 
 	if users.Username == "netsinx_15" {
 		reqJwt := []byte(`{"key": "jwtnetsinxadmin", "secret": "netsinxadmin", "algorithm": "HS512"}`)
-
 		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
 		if err != nil {
 			return errors.New("token gagal dibuat")
 		}
 	} else {
 		reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
-
 		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
 		if err != nil {
 			return errors.New("token gagal dibuat")
@@ -103,7 +99,7 @@ func (u userService) ListUsers(users []model.User) ([]model.User, error) {
 		var preloadSeller utils.PreloadSeller
 		var preloadCart utils.PreloadCarts
 		
-		respProduct, err := http.Get(fmt.Sprintf("http://seller-service:8084/seller/%d", listUsers[i].Id))
+		respProduct, err := http.Get(fmt.Sprintf("http://seller-service:8084/seller/%s", listUsers[i].Username))
 		if err != nil {
 			return listUsers, nil
 		} else if respProduct.StatusCode == 200 {
@@ -125,7 +121,7 @@ func (u userService) ListUsers(users []model.User) ([]model.User, error) {
 	return listUsers, nil
 }
 
-func (u userService) UpdateUser(users model.User, id string) error {
+func (u userService) UpdateUser(users model.User, username string) error {
 	if err := validator.New().Struct(users); err != nil {
 		return err
 	}
@@ -133,7 +129,7 @@ func (u userService) UpdateUser(users model.User, id string) error {
 	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 15)
 	users.Password = string(passwdHash)
 
-	err := u.userRepository.UpdateUser(users, id)
+	err := u.userRepository.UpdateUser(users, username)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return errors.New("user tidak ditemukan")
 	} else if err != nil && err != gorm.ErrRecordNotFound {
@@ -143,8 +139,8 @@ func (u userService) UpdateUser(users model.User, id string) error {
 	return nil
 }
 
-func (u userService) GetUser(users model.User, id string) (model.User, error) {
-	findUser, err := u.userRepository.GetUser(users, id)
+func (u userService) GetUser(users model.User, username string) (model.User, error) {
+	findUser, err := u.userRepository.GetUser(users, username)
 	if err != nil {
 		return users, err
 	}
@@ -163,21 +159,24 @@ func (u userService) GetUser(users model.User, id string) (model.User, error) {
 	return findUser, nil
 }
 
-func (u userService) DeleteUser(users model.User, id string) error {
+func (u userService) DeleteUser(users model.User, username string) error {
 	var httpClient http.Client
 	
-	getUser, err := u.userRepository.GetUser(users, id)
-	if err != nil {
-		return err
-	}
-
-	req, _ := http.NewRequest("DELETE", fmt.Sprintf("http://kong-gateway:8001/consumers/%s", getUser.Username), nil)
-	
-	httpClient.Do(req)
-	
-	if err := u.userRepository.DeleteUser(users, id); err != nil {
+	if err := u.userRepository.DeleteUser(users, username); err != nil {
 		return errors.New("gagal hapus user")
 	}
+	
+	getUser, err := u.userRepository.GetUser(users, username)
+	if err != nil {
+		return errors.New("gagal hapus user")
+	}
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("http://kong-gateway:8001/consumers/%s", getUser.Username), nil)
+	if err != nil {
+		return nil
+	}
+	
+	httpClient.Do(req)
 
 	return nil
 }

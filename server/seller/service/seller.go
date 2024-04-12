@@ -43,15 +43,14 @@ func (ss sellerService) ListSeller() ([]entity.Seller, error) {
 	return listSeller, nil
 }
 
-func (ss sellerService) RegisterSeller(username string) (entity.Seller, error) {
-	var sellerValidity entity.Seller
+func (ss sellerService) RegisterSeller(username string, sellerValidity domain.Seller) (entity.Seller, error) {
 	var respUser domain.GetUserResponse
 
-	if err := validator.New().Struct(&sellerValidity); err != nil {
+	if err := validator.New().Struct(sellerValidity); err != nil {
 		return entity.Seller{}, err
 	}
 
-	resp, err := http.Get(fmt.Sprintf("http://localhost:8082/user/%s", username))
+	resp, err := http.Get(fmt.Sprintf("http://user-service:8082/user/%s", username))
 	if err != nil || resp.StatusCode != 200 {
 		return entity.Seller{}, fmt.Errorf("seller gagal registrasi. user tidak ditemukan")
 	}
@@ -80,7 +79,7 @@ func (ss sellerService) RegisterSeller(username string) (entity.Seller, error) {
 func (ss sellerService) UpdateSeller(username string) (entity.Seller, error) {
 	var userResp domain.GetUserResponse
 
-	respUpdSeller, err := http.Get(fmt.Sprintf("http://localhost:8082/user/%s", username))
+	respUpdSeller, err := http.Get(fmt.Sprintf("http://user-service:8082/user/%s", username))
 	if err != nil {
 		return entity.Seller{}, fmt.Errorf("service user sedang bermasalah")
 	} else if respUpdSeller.StatusCode != 200 {
@@ -111,8 +110,11 @@ func (ss sellerService) UpdateSeller(username string) (entity.Seller, error) {
 }
 
 func (ss sellerService) DeleteSeller(username string) error {
-	if err := ss.SellerRepository.DeleteSeller(username); err != nil {
+	err := ss.SellerRepository.DeleteSeller(username)
+	if err != nil && err == gorm.ErrRecordNotFound {
 		return fmt.Errorf("seller tidak ditemukan")
+	} else if err != nil {
+		return err
 	}
 
 	return nil

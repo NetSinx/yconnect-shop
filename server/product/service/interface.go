@@ -1,6 +1,6 @@
 package service
 
-import "github.com/NetSinx/yconnect-shop/server/product/app/model"
+import "github.com/NetSinx/yconnect-shop/server/product/model"
 
 type ProductServ interface {
 	ListProduct(products []model.Product) ([]model.Product, error)

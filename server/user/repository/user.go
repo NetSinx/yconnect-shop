@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/user/app/model"
+	"github.com/NetSinx/yconnect-shop/server/user/model"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"gorm.io/gorm"
 )
@@ -46,32 +46,32 @@ func (u userRepository) ListUsers(users []model.User) ([]model.User, error) {
 	return users, nil
 }
 
-func (u userRepository) UpdateUser(users model.User, id string) error {
-	if err := u.DB.Where("id = ?", id).Updates(&model.User{Name: users.Name, Username: users.Username, Avatar: users.Avatar, Email: users.Email, Alamat: users.Alamat, NoTelp: users.NoTelp, Password: users.Password, Token: users.Token, Cart: users.Cart}).Error; err != nil {
+func (u userRepository) UpdateUser(users model.User, username string) error {
+	if err := u.DB.Where("username = ?", username).Updates(&model.User{Name: users.Name, Username: users.Username, Avatar: users.Avatar, Email: users.Email, Alamat: users.Alamat, NoTelp: users.NoTelp, Password: users.Password, Token: users.Token, Cart: users.Cart}).Error; err != nil {
 		return err
 	}
 	
-	if err := u.DB.First(&users, "id = ?", id).Error; err != nil {
+	if err := u.DB.First(&users, "username = ?", username).Error; err != nil {
 		return err
 	}
 	
 	return nil
 }
 
-func (u userRepository) GetUser(users model.User, id string) (model.User, error) {
-	if err := u.DB.First(&users, "id = ?", id).Error; err != nil {
+func (u userRepository) GetUser(users model.User, username string) (model.User, error) {
+	if err := u.DB.First(&users, "username = ?", username).Error; err != nil {
 		return users, err
 	}
 
 	return users, nil
 }
 
-func (u userRepository) DeleteUser(users model.User, id string) error {
-	if err := u.DB.First(&users, "id = ?", id).Error; err != nil {
+func (u userRepository) DeleteUser(users model.User, username string) error {
+	if err := u.DB.First(&users, "username = ?", username).Error; err != nil {
 		return err
 	}
 	
-	if err := u.DB.Delete(&users, "id = ?", id).Error; err != nil {
+	if err := u.DB.Delete(&users, "username = ?", username).Error; err != nil {
 		return err
 	}
 

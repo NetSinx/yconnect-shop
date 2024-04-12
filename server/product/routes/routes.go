@@ -2,7 +2,7 @@ package routes
 
 import (
 	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/product/app/config"
+	"github.com/NetSinx/yconnect-shop/server/product/config"
 	"github.com/NetSinx/yconnect-shop/server/product/controller"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
@@ -24,6 +24,13 @@ func ApiRoutes() *echo.Echo {
 		CookieSecure: true,
 	}))
 
+	router.GET("/gencsrf", func(c echo.Context) error {
+		csrf := c.Get("csrf")
+
+		return c.JSON(http.StatusOK, map[string]interface{} {
+			"csrf_token": csrf,
+		})
+	})
 	router.GET("/product", productController.ListProduct)
 	router.GET("/product/:id", productController.GetProduct)
 	router.GET("/product/category/:id", productController.GetProductByCategory)

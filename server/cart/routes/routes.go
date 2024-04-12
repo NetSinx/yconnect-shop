@@ -18,13 +18,21 @@ func ApiRoutes() *echo.Echo {
 
 	router := echo.New()
 	router.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "cookie:xsrf",
+		TokenLookup: "header:xsrf",
 		CookiePath: "/",
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure: true,
+		CookieMaxAge: 30,
 	}))
 
+	router.GET("/gencsrf", func(c echo.Context) error {
+		csrf := c.Get("csrf")
+
+		return c.JSON(http.StatusOK, map[string]interface{} {
+			"csrf_token": csrf,
+		})
+	})
 	router.GET("/cart", cartController.ListCart)
 	router.POST("/cart/:id", cartController.AddToCart)
 	router.PUT("/cart/:id", cartController.UpdateCart)

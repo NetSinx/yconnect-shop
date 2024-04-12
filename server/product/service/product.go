@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/product/app/model"
+	"github.com/NetSinx/yconnect-shop/server/product/model"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
 	"github.com/NetSinx/yconnect-shop/server/product/utils"
 	"github.com/go-playground/validator/v10"
