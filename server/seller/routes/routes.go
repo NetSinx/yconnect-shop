@@ -26,13 +26,6 @@ func APIRoutes() *echo.Echo {
 		CookieSecure: true,
 	}))
 
-	router.GET("/gencsrf", func(c echo.Context) error {
-		csrfToken := c.Get("csrf")
-
-		return c.JSON(200, map[string]interface{}{
-			"csrf_token": csrfToken,
-		})
-	})
 	router.GET("/seller", sellerController.ListSeller)
 	router.POST("/seller/:username", sellerController.RegisterSeller)
 	router.PUT("/seller/:username", sellerController.UpdateSeller)
