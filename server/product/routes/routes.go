@@ -18,7 +18,9 @@ func ApiRoutes() *echo.Echo {
 	router := echo.New()
 	router.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		TokenLookup: "header:xsrf",
+		CookieName: "xsrf",
 		CookiePath: "/",
+		CookieMaxAge: 30,
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure: true,

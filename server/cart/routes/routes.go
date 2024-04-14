@@ -20,6 +20,7 @@ func ApiRoutes() *echo.Echo {
 	router.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		TokenLookup: "header:xsrf",
 		CookiePath: "/",
+		CookieName: "xsrf",
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure: true,
