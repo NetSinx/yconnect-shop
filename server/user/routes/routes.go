@@ -26,7 +26,7 @@ func ApiRoutes() *echo.Echo {
 		CookieSecure: true,
 	}))
 
-	router.GET("/gencsrf", func(c echo.Context) error {
+	router.GET("/user/gencsrf", func(c echo.Context) error {
 		csrfToken := c.Get("csrf")
 
 		return c.JSON(200, map[string]interface{}{
