@@ -27,6 +27,13 @@ func ApiRoutes() *echo.Echo {
 		CookieMaxAge: 30,
 	}))
 
+	router.GET("/cart/gencsrf", func(c echo.Context) error {
+		csrf := c.Get("csrf")
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"csrf_token": csrf
+		})
+	})
 	router.GET("/cart", cartController.ListCart)
 	router.POST("/cart/:id", cartController.AddToCart)
 	router.PUT("/cart/:id", cartController.UpdateCart)
