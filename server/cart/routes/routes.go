@@ -31,7 +31,7 @@ func ApiRoutes() *echo.Echo {
 		csrf := c.Get("csrf")
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"csrf_token": csrf
+			"csrf_token": csrf,
 		})
 	})
 	router.GET("/cart", cartController.ListCart)
