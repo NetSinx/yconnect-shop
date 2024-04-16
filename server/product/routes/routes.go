@@ -34,12 +34,12 @@ func ApiRoutes() *echo.Echo {
 		})
 	})
 	router.GET("/product", productController.ListProduct)
-	router.GET("/product/:id", productController.GetProduct)
-	router.GET("/product/category/:id", productController.GetProductByCategory)
+	router.GET("/product/:slug", productController.GetProduct)
 	router.POST("/product", productController.CreateProduct)
-	router.PUT("/product/:id", productController.UpdateProduct)
-	router.DELETE("/product/:id", productController.DeleteProduct)
+	router.PUT("/product/:slug", productController.UpdateProduct)
+	router.DELETE("/product/:slug", productController.DeleteProduct)
 	router.GET("/product/seller/:id", productController.GetProductBySeller)
+	router.GET("/product/category/:id", productController.GetProductByCategory)
 
 	return router
 }

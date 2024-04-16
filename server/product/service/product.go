@@ -67,12 +67,12 @@ func (p productService) CreateProduct(products model.Product, image []model.Imag
 	return product, nil
 }
 
-func (p productService) UpdateProduct(products model.Product, image []model.Image, id uint) (model.Product, error) {
+func (p productService) UpdateProduct(products model.Product, image []model.Image, slug string, id string) (model.Product, error) {
 	if err := validator.New().Struct(products); err != nil {
 		return products, errors.New("request tidak sesuai")
 	}
 
-	product, err := p.productRepository.UpdateProduct(products, image, id)
+	product, err := p.productRepository.UpdateProduct(products, image, slug, id)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return products, errors.New("produk tidak bisa ditemukan")
 	} else if err != nil {
@@ -82,8 +82,8 @@ func (p productService) UpdateProduct(products model.Product, image []model.Imag
 	return product, nil
 }
 
-func (p productService) DeleteProduct(products model.Product, image []model.Image, id string) error {
-	err := p.productRepository.DeleteProduct(products, image, id)
+func (p productService) DeleteProduct(products model.Product, image []model.Image, slug string, id string) error {
+	err := p.productRepository.DeleteProduct(products, image, slug, id)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return errors.New("produk tidak ditemukan")
 	} else if err != nil {
@@ -93,11 +93,11 @@ func (p productService) DeleteProduct(products model.Product, image []model.Imag
 	return nil
 }
 
-func (p productService) GetProduct(products model.Product, id string) (model.Product, error) {
+func (p productService) GetProduct(products model.Product, slug string) (model.Product, error) {
 	var preloadCategory utils.PreloadCategory
 	var preloadUser utils.PreloadUser
 
-	getProducts, err := p.productRepository.GetProduct(products, id)
+	getProducts, err := p.productRepository.GetProduct(products, slug)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return products, errors.New("produk tidak ditemukan")
 	}
@@ -121,4 +121,22 @@ func (p productService) GetProduct(products model.Product, id string) (model.Pro
 	}
 
 	return getProducts, nil
+}
+
+func (p productService) GetProductByCategory(products []model.Product, id string) ([]model.Product, error) {
+	getProdByCate, err := p.productRepository.GetProductByCategory(products, id)
+	if err != nil {
+		return nil, fmt.Errorf("product tidak ditemukan")
+	}
+
+	return getProdByCate, nil
+}
+
+func (p productService) GetProductBySeller(products []model.Product, id string) ([]model.Product, error) {
+	getProdBySeller, err := p.productRepository.GetProductBySeller(products, id)
+	if err != nil {
+		return nil, fmt.Errorf("product tidak ditemukan")
+	}
+
+	return getProdBySeller, nil
 }

@@ -6,9 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
-	"github.com/NetSinx/yconnect-shop/server/product/config"
 	"github.com/NetSinx/yconnect-shop/server/product/model"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
 	"github.com/NetSinx/yconnect-shop/server/product/utils"
@@ -128,8 +126,7 @@ func (p productController) CreateProduct(c echo.Context) error {
 func (p productController) UpdateProduct(c echo.Context) error {
 	var products model.Product
 
-	id := c.Param("id")
-	getId, _ := strconv.ParseUint(id, 32, 10)
+	slug := c.Param("slug")
 
 	imageProduct, err := c.MultipartForm()
 	if err != nil {
@@ -138,7 +135,7 @@ func (p productController) UpdateProduct(c echo.Context) error {
 
 	images := imageProduct.File["images"]
 
-	getProduct, err := p.productService.GetProduct(products, id)
+	getProduct, err := p.productService.GetProduct(products, slug)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
 			Code: http.StatusInternalServerError,
@@ -169,7 +166,7 @@ func (p productController) UpdateProduct(c echo.Context) error {
 				return err
 			}
 
-			getProduct.Image = append(getProduct.Image, model.Image{Name: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt), ProductID: uint(getId)})
+			getProduct.Image = append(getProduct.Image, model.Image{Name: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt), ProductID: uint(getProduct.Id)})
 
 		} else {
 			dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
@@ -185,7 +182,7 @@ func (p productController) UpdateProduct(c echo.Context) error {
 			os.Remove("." + getProduct.Image[i].Name)
 
 			getProduct.Image[i].Name = fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)
-			getProduct.Image[i].ProductID = uint(getId)
+			getProduct.Image[i].ProductID = uint(getProduct.Id)
 		}
 	}
 
@@ -199,7 +196,7 @@ func (p productController) UpdateProduct(c echo.Context) error {
 		})
 	}
 
-	product, err := p.productService.UpdateProduct(products, products.Image, uint(getId))
+	product, err := p.productService.UpdateProduct(products, products.Image, slug, fmt.Sprintf("%d", getProduct.Id))
 	if err != nil && err.Error() == "request tidak sesuai" {
 		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
 			Code: http.StatusBadRequest,
@@ -236,9 +233,9 @@ func (p productController) UpdateProduct(c echo.Context) error {
 func (p productController) DeleteProduct(c echo.Context) error {
 	var products model.Product
 
-	id := c.Param("id")
+	slug := c.Param("slug")
 
-	getProduct, err := p.productService.GetProduct(products, id)
+	getProduct, err := p.productService.GetProduct(products, slug)
 	if err != nil && err.Error() == "produk tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,
@@ -257,7 +254,7 @@ func (p productController) DeleteProduct(c echo.Context) error {
 		os.Remove("." + image.Name)
 	}
 
-	if err := p.productService.DeleteProduct(products, getProduct.Image, id); err != nil {
+	if err := p.productService.DeleteProduct(products, getProduct.Image, slug, fmt.Sprintf("%d", getProduct.Id)); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,
 			Status: http.StatusText(http.StatusNotFound),
@@ -275,9 +272,9 @@ func (p productController) DeleteProduct(c echo.Context) error {
 func (p productController) GetProduct(c echo.Context) error {
 	var product model.Product
 
-	id := c.Param("id")
+	slug := c.Param("slug")
 
-	getProduct, err := p.productService.GetProduct(product, id)
+	getProduct, err := p.productService.GetProduct(product, slug)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
 			Code: http.StatusNotFound,
@@ -298,18 +295,19 @@ func (p productController) GetProductByCategory(c echo.Context) error {
 
 	id := c.Param("id")
 
-	if err := config.DB.Preload("Image").Find(&products, "category_id = ?", id).Error; err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
-			Message: "Maaf, ada kesalahan pada server!",
+	getProdByCate, err := p.productService.GetProductByCategory(products, id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
+			Code: http.StatusNotFound,
+			Status: http.StatusText(http.StatusNotFound),
+			Message: err.Error(),
 		})
 	}
 
 	return c.JSON(http.StatusOK, utils.SuccessData{
 		Code: http.StatusOK,
 		Status: http.StatusText(http.StatusOK),
-		Data: products,
+		Data: getProdByCate,
 	})
 }
 
@@ -318,17 +316,18 @@ func (p productController) GetProductBySeller(c echo.Context) error {
 
 	id := c.Param("id")
 
-	if err := config.DB.Preload("Image").Find(&products, "seller_id = ?", id).Error; err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
-			Message: "Maaf, ada kesalahan pada server!",
+	getProdBySeller, err := p.productService.GetProductBySeller(products, id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
+			Code: http.StatusNotFound,
+			Status: http.StatusText(http.StatusNotFound),
+			Message: err.Error(),
 		})
 	}
 
 	return c.JSON(http.StatusOK, utils.SuccessData{
 		Code: http.StatusOK,
 		Status: http.StatusText(http.StatusOK),
-		Data: products,
+		Data: getProdBySeller,
 	})
 }
