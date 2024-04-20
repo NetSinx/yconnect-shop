@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
-	"github.com/NetSinx/yconnect-shop/server/user/model"
+	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -11,7 +11,7 @@ import (
 )
 
 func ConnectDB() *gorm.DB {
-	var users model.User
+	var users entity.User
 
 	godotenv.Load()
 

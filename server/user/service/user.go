@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/user/model"
+
+	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
+	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/go-playground/validator/v10"
@@ -24,7 +26,7 @@ func UserService(userRepo repository.UserRepo) userService {
 	}
 }
 
-func (u userService) RegisterUser(users model.User) error {
+func (u userService) RegisterUser(users entity.User) error {
 	if err := validator.New().Struct(users); err != nil {
 		return errors.New("request tidak sesuai")
 	}
@@ -60,7 +62,7 @@ func (u userService) RegisterUser(users model.User) error {
 	return nil
 }
 
-func (u userService) LoginUser(userLogin model.UserLogin) (string, error) {
+func (u userService) LoginUser(userLogin entity.UserLogin) (string, error) {
 	if userLogin.Email != "" {
 		containsAt := false
 
@@ -89,15 +91,15 @@ func (u userService) LoginUser(userLogin model.UserLogin) (string, error) {
 	return users.Token, nil
 }
 
-func (u userService) ListUsers(users []model.User) ([]model.User, error) {
+func (u userService) ListUsers(users []entity.User) ([]entity.User, error) {
 	listUsers, err := u.userRepository.ListUsers(users)
 	if err != nil {
 		return nil, err
 	}
 
 	for i := range listUsers {
-		var preloadSeller utils.PreloadSeller
-		var preloadCart utils.PreloadCarts
+		var preloadSeller domain.PreloadSeller
+		var preloadCart domain.PreloadCarts
 		
 		respProduct, err := http.Get(fmt.Sprintf("http://seller-service:8084/seller/%s", listUsers[i].Username))
 		if err != nil {
@@ -121,7 +123,7 @@ func (u userService) ListUsers(users []model.User) ([]model.User, error) {
 	return listUsers, nil
 }
 
-func (u userService) UpdateUser(users model.User, username string) error {
+func (u userService) UpdateUser(users entity.User, username string) error {
 	if err := validator.New().Struct(users); err != nil {
 		return err
 	}
@@ -139,7 +141,15 @@ func (u userService) UpdateUser(users model.User, username string) error {
 	return nil
 }
 
-func (u userService) GetUser(users model.User, username string) (model.User, error) {
+func (u userService) VerifyEmail(verifyEmail entity.VerifyEmail) (string, error) {
+	if err := u.userRepository.VerifyEmail(verifyEmail); err != nil {
+		return "", fmt.Errorf("email yang ingin diverifikasi tidak sesuai")
+	}
+
+	return utils.GenerateOTP(), nil
+}
+
+func (u userService) GetUser(users entity.User, username string) (entity.User, error) {
 	findUser, err := u.userRepository.GetUser(users, username)
 	if err != nil {
 		return users, err
@@ -149,7 +159,7 @@ func (u userService) GetUser(users model.User, username string) (model.User, err
 		if err != nil {
 			return findUser, nil
 		} else if respCart.StatusCode != 200 {
-			var preloadCart utils.PreloadCarts
+			var preloadCart domain.PreloadCarts
 
 			json.NewDecoder(respCart.Body).Decode(&preloadCart)
 			
@@ -159,7 +169,7 @@ func (u userService) GetUser(users model.User, username string) (model.User, err
 	return findUser, nil
 }
 
-func (u userService) DeleteUser(users model.User, username string) error {
+func (u userService) DeleteUser(users entity.User, username string) error {
 	var httpClient http.Client
 	
 	if err := u.userRepository.DeleteUser(users, username); err != nil {

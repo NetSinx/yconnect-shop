@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/user/model"
+	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"gorm.io/gorm"
 )
@@ -16,7 +16,7 @@ func UserRepository(db *gorm.DB) userRepository {
 	}
 }
 
-func (u userRepository) RegisterUser(users model.User) error {
+func (u userRepository) RegisterUser(users entity.User) error {
 	if err := u.DB.Create(&users).Error; err != nil {
 		return err
 	}
@@ -24,12 +24,12 @@ func (u userRepository) RegisterUser(users model.User) error {
 	return nil
 }
 
-func (u userRepository) LoginUser(userLogin model.UserLogin) (model.User, error) {
-	var users model.User
+func (u userRepository) LoginUser(userLogin entity.UserLogin) (entity.User, error) {
+	var users entity.User
 
 	jwtToken := utils.JWTAuth(userLogin.Username, userLogin.Email)
 
-	u.DB.Where("username = ? OR email = ?", userLogin.Username, userLogin.Email).Updates(&model.User{Token: jwtToken})
+	u.DB.Where("username = ? OR email = ?", userLogin.Username, userLogin.Email).Updates(&entity.User{Token: jwtToken})
 	
 	if err := u.DB.Select("username", "password", "token").First(&users, "email = ? OR username = ?", userLogin.Email, userLogin.Username).Error; err != nil {
 		return users, err
@@ -38,7 +38,7 @@ func (u userRepository) LoginUser(userLogin model.UserLogin) (model.User, error)
 	return users, nil
 }
 
-func (u userRepository) ListUsers(users []model.User) ([]model.User, error) {
+func (u userRepository) ListUsers(users []entity.User) ([]entity.User, error) {
 	if err := u.DB.Find(&users).Error; err != nil {
 		return nil, err
 	}
@@ -46,8 +46,8 @@ func (u userRepository) ListUsers(users []model.User) ([]model.User, error) {
 	return users, nil
 }
 
-func (u userRepository) UpdateUser(users model.User, username string) error {
-	if err := u.DB.Where("username = ?", username).Updates(&model.User{Name: users.Name, Username: users.Username, Avatar: users.Avatar, Email: users.Email, Alamat: users.Alamat, NoTelp: users.NoTelp, Password: users.Password, Token: users.Token, Cart: users.Cart}).Error; err != nil {
+func (u userRepository) UpdateUser(users entity.User, username string) error {
+	if err := u.DB.Where("username = ?", username).Updates(&entity.User{Name: users.Name, Username: users.Username, Avatar: users.Avatar, Email: users.Email, Alamat: users.Alamat, NoTelp: users.NoTelp, Password: users.Password, Token: users.Token, Cart: users.Cart}).Error; err != nil {
 		return err
 	}
 	
@@ -58,7 +58,17 @@ func (u userRepository) UpdateUser(users model.User, username string) error {
 	return nil
 }
 
-func (u userRepository) GetUser(users model.User, username string) (model.User, error) {
+func (u userRepository) VerifyEmail(verifyEmail entity.VerifyEmail) error {
+	var user entity.User
+
+	if err := u.DB.First(&user, "email = ?", verifyEmail.Email).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u userRepository) GetUser(users entity.User, username string) (entity.User, error) {
 	if err := u.DB.First(&users, "username = ?", username).Error; err != nil {
 		return users, err
 	}
@@ -66,7 +76,7 @@ func (u userRepository) GetUser(users model.User, username string) (model.User, 
 	return users, nil
 }
 
-func (u userRepository) DeleteUser(users model.User, username string) error {
+func (u userRepository) DeleteUser(users entity.User, username string) error {
 	if err := u.DB.First(&users, "username = ?", username).Error; err != nil {
 		return err
 	}

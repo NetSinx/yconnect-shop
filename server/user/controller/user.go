@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"github.com/NetSinx/yconnect-shop/server/user/model"
+	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
-	"github.com/NetSinx/yconnect-shop/server/user/utils"
+	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,12 +24,13 @@ func UserController(userServ service.UserServ) userController {
 }
 
 func (u userController) RegisterUser(c echo.Context) error {
-	var users model.User
+	var users entity.User
+	users.EmailVerified = false
 
 	avatar, err := c.FormFile("avatar")
 	if err != nil {
 		if err := c.Bind(&users); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+			return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 				Code: http.StatusBadRequest,
 				Status: http.StatusText(http.StatusBadRequest),
 				Message: "Request yang dikirim tidak sesuai!",
@@ -38,26 +39,26 @@ func (u userController) RegisterUser(c echo.Context) error {
 	
 		err := u.userService.RegisterUser(users)
 		if err != nil && err.Error() == "request tidak sesuai" {
-			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+			return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 				Code: http.StatusBadRequest,
 				Status: http.StatusText(http.StatusBadRequest),
 				Message: "Request yang dikirim tidak sesuai!",
 			})
-		// } else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
-			// return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-				// Code: http.StatusInternalServerError,
-				// Status: http.StatusText(http.StatusInternalServerError),
-				// Message: "Maaf, ada kesalahan pada server!",
-			// })
+		} else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
+			return echo.NewHTTPError(http.StatusInternalServerError, domain.ErrServer{
+				Code: http.StatusInternalServerError,
+				Status: http.StatusText(http.StatusInternalServerError),
+				Message: "Maaf, ada kesalahan pada server!",
+			})
 		} else if err != nil {
-			return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
+			return echo.NewHTTPError(http.StatusConflict, domain.ErrServer{
 				Code: http.StatusConflict,
 				Status: http.StatusText(http.StatusConflict),
 				Message: "User sudah pernah dibuat!",
 			})
 		}
 	
-		return c.JSON(http.StatusOK, utils.SuccessCUD{
+		return c.JSON(http.StatusOK, domain.SuccessCUD{
 			Code: http.StatusOK,
 			Status: http.StatusText(http.StatusOK),
 			Message: "Registrasi user berhasil!",
@@ -65,7 +66,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 	}
 
 	if err := os.MkdirAll("assets/images", os.ModePerm); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.ErrServer{
 			Code: http.StatusInternalServerError,
 			Status: http.StatusText(http.StatusInternalServerError),
 			Message: err.Error(),
@@ -77,7 +78,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 	io.Copy(dst, src)
 
 	if err := c.Bind(&users); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 			Code: http.StatusBadRequest,
 			Status: http.StatusText(http.StatusBadRequest),
 			Message: "Request yang dikirim tidak sesuai!",
@@ -86,26 +87,26 @@ func (u userController) RegisterUser(c echo.Context) error {
 
 	err = u.userService.RegisterUser(users)
 	if err != nil && err.Error() == "request tidak sesuai" {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 			Code: http.StatusBadRequest,
 			Status: http.StatusText(http.StatusBadRequest),
 			Message: "Request yang dikirim tidak sesuai!",
 		})
-	// } else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
-		// return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			// Code: http.StatusInternalServerError,
-			// Status: http.StatusText(http.StatusInternalServerError),
-			// Message: "Maaf, ada kesalahan pada server!",
-		// })
+	} else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.ErrServer{
+			Code: http.StatusInternalServerError,
+			Status: http.StatusText(http.StatusInternalServerError),
+			Message: "Maaf, ada kesalahan pada server!",
+		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusConflict, domain.ErrServer{
 			Code: http.StatusConflict,
 			Status: http.StatusText(http.StatusConflict),
 			Message: "User sudah pernah dibuat!",
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessCUD{
+	return c.JSON(http.StatusOK, domain.SuccessCUD{
 		Code: http.StatusOK,
 		Status: http.StatusText(http.StatusOK),
 		Message: "Registrasi user berhasil!",
@@ -113,10 +114,10 @@ func (u userController) RegisterUser(c echo.Context) error {
 }
 
 func (u userController) LoginUser(c echo.Context) error {
-	var userLogin model.UserLogin
+	var userLogin entity.UserLogin
 
 	if err := c.Bind(&userLogin); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 			Code: http.StatusBadRequest,
 			Status: http.StatusText(http.StatusBadRequest),
 			Message: "Request yang dikirim tidak sesuai!",
@@ -125,19 +126,19 @@ func (u userController) LoginUser(c echo.Context) error {
 
 	jwtToken, err := u.userService.LoginUser(userLogin)
 	if err != nil && err.Error() == "email atau password salah" {
-		return echo.NewHTTPError(http.StatusUnauthorized, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusUnauthorized, domain.ErrServer{
 			Code: http.StatusUnauthorized,
 			Status: http.StatusText(http.StatusUnauthorized),
 			Message: "Email atau password Anda salah!",
 		})
 	} else if err != nil && err.Error() == "email tidak mengandung karakter '@'" {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 			Code: http.StatusBadRequest,
 			Status: http.StatusText(http.StatusBadRequest),
 			Message: err.Error(),
 		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusUnauthorized, domain.ErrServer{
 			Code: http.StatusUnauthorized,
 			Status: http.StatusText(http.StatusUnauthorized),
 			Message: "Email atau password Anda salah!",
@@ -152,18 +153,18 @@ func (u userController) LoginUser(c echo.Context) error {
 }
 
 func (u userController) ListUsers(c echo.Context) error {
-	var users []model.User
+	var users []entity.User
 	
 	listUsers, err := u.userService.ListUsers(users)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.ErrServer{
 			Code: http.StatusInternalServerError,
 			Status: http.StatusText(http.StatusInternalServerError),
 			Message: "Maaf, ada kesalahan pada server",
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessGet{
+	return c.JSON(http.StatusOK, domain.SuccessGet{
 		Code: http.StatusOK,
 		Status: http.StatusText(http.StatusOK),
 		Data: listUsers,
@@ -171,7 +172,7 @@ func (u userController) ListUsers(c echo.Context) error {
 }
 
 func (u userController) UpdateUser(c echo.Context) error {
-	var users model.User
+	var users entity.User
 
 	username := c.Param("username")
 
@@ -184,7 +185,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 		os.Remove("." + getUser.Avatar)
 
 		if err := c.Bind(&users); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+			return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 				Code: http.StatusBadRequest,
 				Status: http.StatusText(http.StatusBadRequest),
 				Message: "Request yang dikirim tidak sesuai!",
@@ -193,26 +194,26 @@ func (u userController) UpdateUser(c echo.Context) error {
 
 		err = u.userService.UpdateUser(users, username)
 		if err != nil && err.Error() == "request tidak sesuai" {
-			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+			return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 				Code: http.StatusBadRequest,
 				Status: http.StatusText(http.StatusBadRequest),
 				Message: "Request yang dikirim tidak sesuai!",
 			})
 		} else if err != nil && err.Error() == "user tidak ditemukan" {
-			return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
+			return echo.NewHTTPError(http.StatusNotFound, domain.ErrServer{
 				Code: http.StatusNotFound,
 				Status: http.StatusText(http.StatusNotFound),
 				Message: "User tidak ditemukan!",
 			})
 		} else if err != nil && err.Error() == "user sudah pernah dibuat" {
-			return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
+			return echo.NewHTTPError(http.StatusConflict, domain.ErrServer{
 				Code: http.StatusConflict,
 				Status: http.StatusText(http.StatusConflict),
 				Message: "User sudah pernah dibuat!",
 			})
 		}
 
-		return c.JSON(http.StatusOK, utils.SuccessCUD{
+		return c.JSON(http.StatusOK, domain.SuccessCUD{
 			Code: http.StatusOK,
 			Status: http.StatusText(http.StatusOK),
 			Message: "User berhasil diupdate!",
@@ -248,7 +249,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 	users.Avatar = fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)
 
 	if err := c.Bind(&users); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 			Code: http.StatusBadRequest,
 			Status: http.StatusText(http.StatusBadRequest),
 			Message: "Request yang dikirim tidak sesuai!",
@@ -257,47 +258,72 @@ func (u userController) UpdateUser(c echo.Context) error {
 	
 	err = u.userService.UpdateUser(users, username)
 	if err != nil && err.Error() == "user tidak ditemukan" {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusNotFound, domain.ErrServer{
 			Code: http.StatusNotFound,
 			Status: http.StatusText(http.StatusNotFound),
 			Message: "User tidak ditemukan!",
 		})
 	} else if err != nil && err.Error() == "user sudah pernah dibuat" {
-		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusConflict, domain.ErrServer{
 			Code: http.StatusConflict,
 			Status: http.StatusText(http.StatusConflict),
 			Message: "User sudah pernah dibuat!",
 		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
 			Code: http.StatusBadRequest,
 			Status: http.StatusText(http.StatusBadRequest),
 			Message: err.Error(),
 		})
 	} 
 
-	return c.JSON(http.StatusOK, utils.SuccessCUD{
+	return c.JSON(http.StatusOK, domain.SuccessCUD{
 		Code: http.StatusOK,
 		Status: http.StatusText(http.StatusOK),
 		Message: "User berhasil diupdate!",
 	})
 }
 
+func (u userController) VerifyEmail(c echo.Context) error {
+	var verifyEmail entity.VerifyEmail
+
+	if err := c.Bind(&verifyEmail); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
+			Code: http.StatusBadRequest,
+			Status: http.StatusText(http.StatusBadRequest),
+			Message: "Request tidak valid",
+		})
+	}
+
+	token, err := u.userService.VerifyEmail(verifyEmail)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusForbidden, domain.ErrServer{
+			Code: http.StatusForbidden,
+			Status: http.StatusText(http.StatusForbidden),
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"token": token,
+	})
+}
+
 func (u userController) GetUser(c echo.Context) error {
-	var users model.User
+	var users entity.User
 
 	username := c.Param("username")
 
 	findUser, err := u.userService.GetUser(users, username)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusNotFound, domain.ErrServer{
 			Code: http.StatusNotFound,
 			Status: http.StatusText(http.StatusNotFound),
 			Message: "User tidak ditemukan!",
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessGet{
+	return c.JSON(http.StatusOK, domain.SuccessGet{
 		Code: http.StatusOK,
 		Status: http.StatusText(http.StatusOK),
 		Data: findUser,
@@ -305,7 +331,7 @@ func (u userController) GetUser(c echo.Context) error {
 }
 
 func (u userController) DeleteUser(c echo.Context) error {
-	var users model.User
+	var users entity.User
 
 	username := c.Param("username")
 
@@ -317,20 +343,20 @@ func (u userController) DeleteUser(c echo.Context) error {
 
 	err := u.userService.DeleteUser(users, username)
 	if err != nil && err.Error() == "gagal hapus user" {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusNotFound, domain.ErrServer{
 			Code: http.StatusNotFound,
 			Status: http.StatusText(http.StatusNotFound),
 			Message: "User tidak ditemukan!",
 		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.ErrServer{
 			Code: http.StatusInternalServerError,
 			Status: http.StatusText(http.StatusInternalServerError),
 			Message: "Maaf, ada kesalahan pada server",
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessCUD{
+	return c.JSON(http.StatusOK, domain.SuccessCUD{
 		Code: http.StatusOK,
 		Status: http.StatusText(http.StatusOK),
 		Message: "User berhasil dihapus!",

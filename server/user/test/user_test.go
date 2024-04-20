@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strings"
 	"testing"
-	"github.com/NetSinx/yconnect-shop/server/user/utils"
+	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 )
 
 func TestListUser(t *testing.T) {
 	response, _ := http.Get("http://localhost:8082/user")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.ErrServer
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -33,7 +33,7 @@ func TestRegisterUser(t *testing.T) {
 	response, _ := http.Post("http://localhost:8082/user/sign-up", "application/json", strings.NewReader(body))
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.ErrServer
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -59,7 +59,7 @@ func TestUpdateUser(t *testing.T) {
 	response, _ := httpClient.Do(req)
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.ErrServer
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -75,7 +75,7 @@ func TestDeleteUser(t *testing.T) {
 	response, _ := httpClient.Do(req)
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.ErrServer
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -92,7 +92,7 @@ func TestLoginUser(t *testing.T) {
 	response, _ := http.Post("http://localhost:8082/user/sign-in", "application/json", strings.NewReader(body))
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.ErrServer
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -104,7 +104,7 @@ func TestGetUser(t *testing.T) {
 	response, _ := http.Get("http://localhost:8082/user/1")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.ErrServer
 
 		json.NewDecoder(response.Body).Decode(&respData)
 

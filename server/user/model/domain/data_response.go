@@ -1,4 +1,4 @@
-package utils
+package domain
 
 import (
 	"github.com/NetSinx/yconnect-shop/server/seller/model/entity"
