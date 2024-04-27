@@ -35,6 +35,7 @@ func ApiRoutes() *echo.Echo {
 	})
 	router.POST("/user/sign-up", userController.RegisterUser)
 	router.POST("/user/sign-in", userController.LoginUser)
+	router.POST("/user/email_verify", userController.VerifyEmail)
 	router.GET("/user", userController.ListUsers)
 	router.GET("/user/:username", userController.GetUser)
 	router.PUT("/user/:username", userController.UpdateUser)

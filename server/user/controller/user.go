@@ -295,7 +295,7 @@ func (u userController) VerifyEmail(c echo.Context) error {
 		})
 	}
 
-	token, err := u.userService.VerifyEmail(verifyEmail)
+	successMsg, err := u.userService.VerifyEmail(verifyEmail)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusForbidden, domain.ErrServer{
 			Code: http.StatusForbidden,
@@ -304,8 +304,10 @@ func (u userController) VerifyEmail(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{
-		"token": token,
+	return c.JSON(http.StatusOK, domain.SuccessCUD{
+		Code: http.StatusOK,
+		Status: http.StatusText(http.StatusOK),
+		Message: successMsg,
 	})
 }
 

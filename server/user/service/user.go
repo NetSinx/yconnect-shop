@@ -6,11 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
-	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -142,11 +140,26 @@ func (u userService) UpdateUser(users entity.User, username string) error {
 }
 
 func (u userService) VerifyEmail(verifyEmail entity.VerifyEmail) (string, error) {
+	if err := validator.New().Struct(&verifyEmail); err != nil {
+		return "", err
+	}
+
 	if err := u.userRepository.VerifyEmail(verifyEmail); err != nil {
 		return "", fmt.Errorf("email yang ingin diverifikasi tidak sesuai")
 	}
 
-	return utils.GenerateOTP(), nil
+	resp, err := http.Post("http://localhost:8085", "application/json", bytes.NewBuffer([]byte(
+		fmt.Sprintf(`{"email": %s}`, verifyEmail.Email),
+	)))
+	if err != nil {
+		return "", err
+	}
+
+	var response domain.ErrServer
+
+	json.NewDecoder(resp.Body).Decode(&response)
+
+	return response.Message, nil
 }
 
 func (u userService) GetUser(users entity.User, username string) (entity.User, error) {
