@@ -3,12 +3,12 @@ package service
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
+	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -26,7 +26,7 @@ func UserService(userRepo repository.UserRepo) userService {
 
 func (u userService) RegisterUser(users entity.User) error {
 	if err := validator.New().Struct(users); err != nil {
-		return errors.New("request tidak sesuai")
+		return fmt.Errorf("request tidak sesuai")
 	}
 
 	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 15)
@@ -35,24 +35,24 @@ func (u userService) RegisterUser(users entity.User) error {
 
 	_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
 	if err != nil {
-		return errors.New("consumer gagal dibuat")
+		return fmt.Errorf("consumer gagal dibuat")
 	}
 
 	if users.Username == "netsinx_15" {
 		reqJwt := []byte(`{"key": "jwtnetsinxadmin", "secret": "netsinxadmin", "algorithm": "HS512"}`)
 		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
 		if err != nil {
-			return errors.New("token gagal dibuat")
+			return fmt.Errorf("token gagal dibuat")
 		}
 	} else {
 		reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
 		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
 		if err != nil {
-			return errors.New("token gagal dibuat")
+			return fmt.Errorf("token gagal dibuat")
 		}
 	}
 
-	err = u.userRepository.RegisterUser(users)
+	err := u.userRepository.RegisterUser(users)
 	if err != nil {
 		return err
 	}
@@ -72,13 +72,13 @@ func (u userService) LoginUser(userLogin entity.UserLogin) (string, error) {
 		}
 	
 		if !containsAt {
-			return "", errors.New("email tidak mengandung karakter '@'")
+			return "", fmt.Errorf("email tidak mengandung karakter '@'")
 		}
 	}
 
 	users, err := u.userRepository.LoginUser(userLogin)
 	if err != nil {
-		return "", errors.New("email atau password salah")
+		return "", fmt.Errorf("email atau password salah")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(userLogin.Password))
@@ -131,35 +131,66 @@ func (u userService) UpdateUser(users entity.User, username string) error {
 
 	err := u.userRepository.UpdateUser(users, username)
 	if err != nil && err == gorm.ErrRecordNotFound {
-		return errors.New("user tidak ditemukan")
+		return fmt.Errorf("user tidak ditemukan")
 	} else if err != nil && err != gorm.ErrRecordNotFound {
-		return errors.New("user sudah pernah dibuat")
+		return fmt.Errorf("user sudah pernah dibuat")
 	}
 
 	return nil
 }
 
-func (u userService) VerifyEmail(verifyEmail entity.VerifyEmail) (string, error) {
+func (u userService) SendOTP(verifyEmail domain.VerifyEmail) (string, error) {
+	otpCode := utils.GenerateOTP()
+	verifyEmail.OTP = otpCode
+	
 	if err := validator.New().Struct(&verifyEmail); err != nil {
 		return "", err
 	}
-
-	if err := u.userRepository.VerifyEmail(verifyEmail); err != nil {
-		return "", fmt.Errorf("email yang ingin diverifikasi tidak sesuai")
+	
+	if err := u.userRepository.SendOTP(verifyEmail); err != nil {
+		return "", fmt.Errorf("email tidak sesuai")
 	}
-
-	resp, err := http.Post("http://localhost:8085", "application/json", bytes.NewBuffer([]byte(
-		fmt.Sprintf(`{"email": %s}`, verifyEmail.Email),
-	)))
+	
+	reqBody, err := json.Marshal(&verifyEmail)
 	if err != nil {
 		return "", err
 	}
 
+	resp, err := http.Post("http://mail-service:8085/sendOTP", "application/json", bytes.NewReader(reqBody))
+	if err != nil {
+		return "", err
+	}
+	
+	if err := utils.CacheOTP(otpCode); err != nil {
+		return "", err
+	}
+	
 	var response domain.ErrServer
 
 	json.NewDecoder(resp.Body).Decode(&response)
 
+	if response.Code != 200 {
+		return "", fmt.Errorf(response.Message)
+	}
+
 	return response.Message, nil
+}
+
+func (u userService) VerifyEmail(verifyEmail domain.VerifyEmail) error {
+	if err := validator.New().Struct(&verifyEmail); err != nil {
+		return err
+	}
+
+	if err := utils.GetOTPFromCache(verifyEmail.OTP); err != nil {
+		return err
+	}
+
+	err := u.userRepository.VerifyEmail(verifyEmail)
+	if (err != nil && err == gorm.ErrRecordNotFound) {
+		return fmt.Errorf("email yang ingin diverifikasi tidak ditemukan")
+	}
+
+	return nil
 }
 
 func (u userService) GetUser(users entity.User, username string) (entity.User, error) {
@@ -186,12 +217,12 @@ func (u userService) DeleteUser(users entity.User, username string) error {
 	var httpClient http.Client
 	
 	if err := u.userRepository.DeleteUser(users, username); err != nil {
-		return errors.New("gagal hapus user")
+		return fmt.Errorf("gagal hapus user")
 	}
 	
 	getUser, err := u.userRepository.GetUser(users, username)
 	if err != nil {
-		return errors.New("gagal hapus user")
+		return fmt.Errorf("gagal hapus user")
 	}
 
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("http://kong-gateway:8001/consumers/%s", getUser.Username), nil)

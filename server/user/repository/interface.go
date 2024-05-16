@@ -1,6 +1,9 @@
 package repository
 
-import "github.com/NetSinx/yconnect-shop/server/user/model/entity"
+import (
+	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
+	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
+)
 
 type UserRepo interface {
 	RegisterUser(users entity.User) error
@@ -8,6 +11,7 @@ type UserRepo interface {
 	ListUsers(users []entity.User) ([]entity.User, error)
 	GetUser(users entity.User, username string) (entity.User, error)
 	UpdateUser(users entity.User, username string) error
-	VerifyEmail(verifyEmail entity.VerifyEmail) error
+	SendOTP(verifyEmail domain.VerifyEmail) error
+	VerifyEmail(verifyEmail domain.VerifyEmail) error
 	DeleteUser(users entity.User, username string) error
 }

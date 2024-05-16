@@ -284,8 +284,8 @@ func (u userController) UpdateUser(c echo.Context) error {
 	})
 }
 
-func (u userController) VerifyEmail(c echo.Context) error {
-	var verifyEmail entity.VerifyEmail
+func (u userController) SendOTP(c echo.Context) error {
+	var verifyEmail domain.VerifyEmail
 
 	if err := c.Bind(&verifyEmail); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
@@ -295,11 +295,17 @@ func (u userController) VerifyEmail(c echo.Context) error {
 		})
 	}
 
-	successMsg, err := u.userService.VerifyEmail(verifyEmail)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusForbidden, domain.ErrServer{
-			Code: http.StatusForbidden,
-			Status: http.StatusText(http.StatusForbidden),
+	successMsg, err := u.userService.SendOTP(verifyEmail)
+	if err != nil && err.Error() == "email tidak sesuai" {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
+			Code: http.StatusBadRequest,
+			Status: http.StatusText(http.StatusBadRequest),
+			Message: err.Error(),
+		})
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.ErrServer{
+			Code: http.StatusInternalServerError,
+			Status: http.StatusText(http.StatusInternalServerError),
 			Message: err.Error(),
 		})
 	}
@@ -329,6 +335,45 @@ func (u userController) GetUser(c echo.Context) error {
 		Code: http.StatusOK,
 		Status: http.StatusText(http.StatusOK),
 		Data: findUser,
+	})
+}
+
+func (u userController) VerifyEmail(c echo.Context) error {
+	var verifyEmail domain.VerifyEmail
+
+	if err := c.Bind(&verifyEmail); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
+			Code: http.StatusBadRequest,
+			Status: http.StatusText(http.StatusBadRequest),
+			Message: "Request tidak sesuai",
+		})
+	}
+
+	err := u.userService.VerifyEmail(verifyEmail)
+	if (err != nil && err.Error() == "email yang diverifikasi tidak ditemukan") {
+		return echo.NewHTTPError(http.StatusNotFound, domain.ErrServer{
+			Code: http.StatusNotFound,
+			Status: http.StatusText(http.StatusNotFound),
+			Message: err.Error(),
+		})
+	} else if (err != nil && err.Error() == "kode OTP tidak valid") {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.ErrServer{
+			Code: http.StatusInternalServerError,
+			Status: http.StatusText(http.StatusInternalServerError),
+			Message: err.Error(),
+		})
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrServer{
+			Code: http.StatusBadRequest,
+			Status: http.StatusText(http.StatusBadRequest),
+			Message: err.Error(),
+		})
+	}
+
+	return echo.NewHTTPError(http.StatusOK, domain.ErrServer{
+		Code: http.StatusOK,
+		Status: http.StatusText(http.StatusOK),
+		Message: "Email berhasil diverifikasi!",
 	})
 }
 

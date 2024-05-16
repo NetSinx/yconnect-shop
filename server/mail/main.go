@@ -53,7 +53,7 @@ func getTokenFromFile(nameFile string, token *oauth2.Token) (*oauth2.Token, erro
 	return token, nil
 }
 
-func sendMail(ctx context.Context, config *oauth2.Config, token *oauth2.Token, receive string) error {
+func sendMail(ctx context.Context, config *oauth2.Config, token *oauth2.Token, receive string, otpCode string) error {
 	client := config.Client(ctx, token)
 	gmailService, err := gmail.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
@@ -61,12 +61,12 @@ func sendMail(ctx context.Context, config *oauth2.Config, token *oauth2.Token, r
 	}
 
 	messageStr := []byte(
-		"From: youremail@gmail.com\r\n"+
+		"From: yasin03ckm@gmail.com\r\n"+
 		"To: "+ receive +"\r\n"+
 		"Subject: Tester Mail\r\n"+
 		"Content-Type: text/html; charset=utf-8\r\n\r\n"+
 		"<h1>Welcome to Y-Connect Shop</h1>"+
-		"<p>Thank you for your attention!</p>")
+		"<p>Your OTP Code: " + otpCode + "</p>")
 
 	_, err = gmailService.Users.Messages.Send("me", &gmail.Message{Raw: base64.URLEncoding.EncodeToString(messageStr)}).Do()
 	if err != nil {
@@ -83,7 +83,15 @@ func SendOTP() http.HandlerFunc {
 
 			w.Header().Set("Content-Type", "application/json")
 
-			json.NewDecoder(r.Body).Decode(&reqUser)
+			if err := json.NewDecoder(r.Body).Decode(&reqUser); err != nil {
+				json.NewEncoder(w).Encode(domain.ResponseMessage{
+					Code: http.StatusInternalServerError,
+					Status: http.StatusText(http.StatusInternalServerError),
+					Message: err.Error(),
+				})
+				
+				return
+			}
 
 			ctx := context.Background()
 
@@ -127,13 +135,15 @@ func SendOTP() http.HandlerFunc {
 					return
 				}
 
-				if err := sendMail(ctx, conf, token, reqUser.Email); err != nil {
+				if err := sendMail(ctx, conf, token, reqUser.Email, reqUser.OTP); err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					json.NewEncoder(w).Encode(domain.ResponseMessage{
 						Code: http.StatusInternalServerError,
 						Status: http.StatusText(http.StatusInternalServerError),
 						Message: err.Error(),
 					})
+
+					return
 				} else {
 					w.WriteHeader(http.StatusOK)
 					json.NewEncoder(w).Encode(domain.ResponseMessage{
@@ -146,13 +156,15 @@ func SendOTP() http.HandlerFunc {
 				return
 			}
 
-			if err := sendMail(ctx, conf, getToken, reqUser.Email); err != nil {
+			if err := sendMail(ctx, conf, getToken, reqUser.Email, reqUser.OTP); err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				json.NewEncoder(w).Encode(domain.ResponseMessage{
 					Code: http.StatusInternalServerError,
 					Status: http.StatusText(http.StatusInternalServerError),
 					Message: err.Error(),
 				})
+
+				return
 			} else {
 				w.WriteHeader(http.StatusOK)
 				json.NewEncoder(w).Encode(domain.ResponseMessage{
@@ -161,11 +173,15 @@ func SendOTP() http.HandlerFunc {
 					Message: "Kode OTP berhasil dikirim!",
 				})
 			}
+
+			return
 		} else {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			json.NewEncoder(w).Encode(map[string]string{
 				"message": http.StatusText(http.StatusMethodNotAllowed),
 			})
+
+			return
 		}
 	}
 }

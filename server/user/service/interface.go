@@ -1,6 +1,9 @@
 package service
 
-import "github.com/NetSinx/yconnect-shop/server/user/model/entity"
+import (
+	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
+	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
+)
 
 type UserServ interface {
 	RegisterUser(users entity.User) error
@@ -9,5 +12,6 @@ type UserServ interface {
 	GetUser(users entity.User, username string) (entity.User, error)
 	UpdateUser(users entity.User, username string) error
 	DeleteUser(users entity.User, username string) error
-	VerifyEmail(verifyEmail entity.VerifyEmail) (string, error)
+	SendOTP(verifyEmail domain.VerifyEmail) (string, error)
+	VerifyEmail(verifyEmail domain.VerifyEmail) error
 }

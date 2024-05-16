@@ -9,4 +9,6 @@ type UserContr interface {
 	UpdateUser(c echo.Context) error
 	GetUser(c echo.Context) error
 	DeleteUser(c echo.Context) error
+	SendOTP(c echo.Context) error
+	VerifyEmail(c echo.Context) error
 }

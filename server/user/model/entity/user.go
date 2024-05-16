@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"database/sql"
 	"time"
 	cartModel "github.com/NetSinx/yconnect-shop/server/cart/model"
 	"github.com/NetSinx/yconnect-shop/server/seller/model/entity"
@@ -19,7 +20,7 @@ type User struct {
 	Seller    				entity.Seller    `json:"seller"`
 	Cart							[]cartModel.Cart `json:"cart" gorm:"-"`
 	EmailVerified			bool						 `json:"email_verified"`
-	EmailVerifiedAt		time.Time
+	EmailVerifiedAt		sql.NullTime
 	CreatedAt 				time.Time
 	UpdatedAt 				time.Time
 }
@@ -28,8 +29,4 @@ type UserLogin struct {
 	Username string  `json:"username"`
 	Email    string  `json:"email"`
 	Password string  `json:"password" validate:"required,min=5"`	
-}
-
-type VerifyEmail struct {
-	Email string `json:"email" validate:"required,email"`
 }

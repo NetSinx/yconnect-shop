@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"database/sql"
+	"time"
+	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"gorm.io/gorm"
@@ -58,10 +61,24 @@ func (u userRepository) UpdateUser(users entity.User, username string) error {
 	return nil
 }
 
-func (u userRepository) VerifyEmail(verifyEmail entity.VerifyEmail) error {
+func (u userRepository) SendOTP(verifyEmail domain.VerifyEmail) error {
 	var user entity.User
 
 	if err := u.DB.First(&user, "email = ?", verifyEmail.Email).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u userRepository) VerifyEmail(verifyEmail domain.VerifyEmail) error {
+	var user entity.User
+	var emailVerified domain.EmailVerified
+
+	emailVerified.EmailVerified = true
+	emailVerified.EmailVerifiedAt = sql.NullTime{Time: time.Now().UTC(), Valid: true}
+
+	if err := u.DB.Model(&user).Where("email = ?", verifyEmail.Email).UpdateColumns(&emailVerified).Error; err != nil {
 		return err
 	}
 
