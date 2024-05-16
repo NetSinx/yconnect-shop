@@ -52,7 +52,7 @@ func (u userService) RegisterUser(users entity.User) error {
 		}
 	}
 
-	err := u.userRepository.RegisterUser(users)
+	err = u.userRepository.RegisterUser(users)
 	if err != nil {
 		return err
 	}
