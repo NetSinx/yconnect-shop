@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
-	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/labstack/echo/v4"
 )
 
@@ -144,6 +146,15 @@ func (u userController) LoginUser(c echo.Context) error {
 			Message: "Email atau password Anda salah!",
 		})
 	}
+
+	var cookie http.Cookie
+	cookie.Name = "jwt_token"
+	cookie.Value = jwtToken
+	cookie.Expires = time.Now().Add(1 * time.Hour)
+	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteStrictMode
+	cookie.Secure = true
+	c.SetCookie(&cookie)
 
 	return c.JSON(http.StatusOK, map[string]interface{} {
 		"code": http.StatusOK,
