@@ -24,7 +24,7 @@ func ApiRoutes() *echo.Echo {
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure: true,
-		CookieMaxAge: 120,
+		CookieMaxAge: 3600,
 	}))
 
 	router.GET("/cart/gencsrf", func(c echo.Context) error {
