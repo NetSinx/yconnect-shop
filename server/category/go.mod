@@ -3,7 +3,7 @@ module github.com/NetSinx/yconnect-shop/server/category
 go 1.19
 
 require (
-	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240308001431-0382d8b4e31e
+	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240619004129-76d3c85416f7
 	github.com/go-playground/validator/v10 v10.15.3
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.1

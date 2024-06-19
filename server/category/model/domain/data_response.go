@@ -11,5 +11,5 @@ type RespData struct {
 }
 
 type PreloadProducts struct {
-	Data entity.Product `json:"data"`
+	Data []entity.Product `json:"data"`
 }

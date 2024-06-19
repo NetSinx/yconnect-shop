@@ -1,5 +1,7 @@
 github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240308001431-0382d8b4e31e h1:AbXm4DmAjDp7l15zT7hOaAE+fhLfv2PlbMtK3ZIyXCI=
 github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240308001431-0382d8b4e31e/go.mod h1:iXNXMWaru+lHOXHnYRwkLtpWTarUSHKrrgW/qnmcX14=
+github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240619004129-76d3c85416f7 h1:UPh6xIEXmSZ88ihpX0oRQu/o5bHxlyoPey8BbDba4js=
+github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240619004129-76d3c85416f7/go.mod h1:iXNXMWaru+lHOXHnYRwkLtpWTarUSHKrrgW/qnmcX14=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
