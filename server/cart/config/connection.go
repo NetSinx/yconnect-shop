@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"github.com/NetSinx/yconnect-shop/server/cart/model"
+	"github.com/NetSinx/yconnect-shop/server/cart/model/entity"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -13,7 +13,7 @@ import (
 var DB *gorm.DB
 
 func DBConfig() {
-	var cart model.Cart
+	var cart entity.Cart
 
 	if err := godotenv.Load(); err != nil {
 		initDb := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", 

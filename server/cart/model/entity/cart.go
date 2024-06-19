@@ -1,14 +1,14 @@
-package model
+package entity
 
 import (
 	"time"
-	"github.com/NetSinx/yconnect-shop/server/product/app/model"
+	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 )
 
 type Cart struct {
 	Id         uint           `json:"id" gorm:"primaryKey"`
 	ProductID  int            `json:"product_id" validate:"required"`
-	Product    model.Product  `json:"product" gorm:"-"`
+	Product    entity.Product  `json:"product" gorm:"-"`
 	Item       int            `json:"item" validate:"required"`
 	UserID     int            `json:"user_id" `
 	CreatedAt  time.Time

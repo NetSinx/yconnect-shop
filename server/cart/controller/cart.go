@@ -1,12 +1,14 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
-	"github.com/NetSinx/yconnect-shop/server/cart/model"
+	"github.com/NetSinx/yconnect-shop/server/cart/model/domain"
+	"github.com/NetSinx/yconnect-shop/server/cart/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/cart/service"
-	"github.com/NetSinx/yconnect-shop/server/cart/utils"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 type cartController struct {
@@ -20,158 +22,137 @@ func CartController(cs service.CartServ) cartController {
 }
 
 func (cart cartController) ListCart(c echo.Context) error {
-	var carts []model.Cart
+	var carts []entity.Cart
 
 	listCart, err := cart.cartService.ListCart(carts)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
-			Message: "Maaf, ada kesalahan pada server",
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessGet{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: listCart,
 	})
 }
 
 func (cart cartController) AddToCart(c echo.Context) error {
-	var cartModel model.Cart
+	var cartModel entity.Cart
 
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	if err := c.Bind(&cartModel); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirim tidak sesuai!",
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
 	addCart, err := cart.cartService.AddToCart(cartModel, id)
-	if err != nil && err.Error() == "request tidak sesuai" {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirim tidak sesuai!",
+	if err != nil && err == gorm.ErrDuplicatedKey {
+		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+			Message: "Produk sudah ada di keranjang.",
 		})
-	} else if err != nil && err.Error() == "produk sudah ada" {
-		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
-			Code: http.StatusConflict,
-			Status: http.StatusText(http.StatusConflict),
-			Message: "Produk sudah ada di keranjang!",
+	} else if err != nil && err.Error() == fmt.Sprintf("Error get product: %v", err) {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: err.Error(),
 		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
-			Message: "Maaf, ada kesalahan pada server",
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessGet{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: addCart,
 	})
 }
 
 func (cart cartController) UpdateCart(c echo.Context) error {
-	var cartModel model.Cart
+	var cartModel entity.Cart
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 
 	if err := c.Bind(&cartModel); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
 	updCart, err := cart.cartService.UpdateCart(cartModel, uint(id))
-	if err != nil && err.Error() == "request tidak sesuai" {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirim tidak sesuai!",
+	if err != nil && err == gorm.ErrRecordNotFound{
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Produk tidak ditemukan.",
+		})
+	} else if err != nil && err == gorm.ErrDuplicatedKey {
+		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+			Message: "Produk sudah ada.",
+		})
+	} else if err != nil && err.Error() == fmt.Sprintf("Error get product: %v", err) {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
 		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
-			Message: "Produk tidak ditemukan!",
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessGet{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: updCart,
 	})
 }
 
 func (cart cartController) DeleteProductInCart(c echo.Context) error {
-	var cartModel model.Cart
+	var cartModel entity.Cart
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 
-	if err := cart.cartService.DeleteProductInCart(cartModel, uint(id)); err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
-			Message: "Produk tidak ditemukan di dalam keranjang",
+	err := cart.cartService.DeleteProductInCart(cartModel, uint(id))
+	if err != nil && err == gorm.ErrRecordNotFound {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Produk tidak ditemukan di dalam keranjang.",
 		}) 
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessDelete{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
-		Message: "Produk berhasil dihapus dari keranjang",
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "Produk berhasil dihapus dari keranjang.",
 	})
 }
 
 func (cart cartController) GetCart(c echo.Context) error {
-	var cartModel model.Cart
+	var cartModel entity.Cart
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 
 	getCart, err := cart.cartService.GetCart(cartModel, uint(id))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
-			Message: "Produk tidak ditemukan di dalam keranjang",
+	if err != nil && err == gorm.ErrRecordNotFound {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Produk tidak ditemukan di dalam keranjang.",
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessGet{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: getCart,
 	})
 }
 
 func (cart cartController) GetCartByUser(c echo.Context) error {
-	var cartModel []model.Cart
+	var cartModel []entity.Cart
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 
 	getCart, err := cart.cartService.GetCartByUser(cartModel, uint(id))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
+	if err != nil && err == gorm.ErrRecordNotFound {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Produk tidak ada di dalam keranjang.",
+		})
+	} else if err != nil && err.Error() == fmt.Sprintf("Error get product: %v", err){
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessGet{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: getCart,
 	})
 }

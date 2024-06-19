@@ -2,12 +2,11 @@ package service
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/cart/model"
+	"github.com/NetSinx/yconnect-shop/server/cart/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/cart/repository"
-	"github.com/NetSinx/yconnect-shop/server/cart/utils"
+	"github.com/NetSinx/yconnect-shop/server/cart/model/domain"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -21,14 +20,14 @@ func CartService(cr repository.CartRepo) cartService {
 	}
 }
 
-func (cr cartService) ListCart(carts []model.Cart) ([]model.Cart, error) {
+func (cr cartService) ListCart(carts []entity.Cart) ([]entity.Cart, error) {
 	listCart, err := cr.cartRepo.ListCart(carts)
 	if err != nil {
 		return nil, err
 	}
 
 	for i := range listCart {
-		var preloadProduct utils.PreloadProduct
+		var preloadProduct domain.PreloadProduct
 
 		resp, err := http.Get(fmt.Sprintf("http://product-service:8081/product/%d", listCart[i].ProductID))
 		if err != nil {
@@ -43,14 +42,14 @@ func (cr cartService) ListCart(carts []model.Cart) ([]model.Cart, error) {
 	return listCart, nil
 }
 
-func (cs cartService) AddToCart(cart model.Cart, id int) (model.Cart, error) {
-	var preloadProduct utils.PreloadProduct
+func (cs cartService) AddToCart(cart entity.Cart, id int) (entity.Cart, error) {
+	var preloadProduct domain.PreloadProduct
 
 	cart.ProductID = id
 
 	resp, err := http.Get(fmt.Sprintf("http://product-service:8081/product/%d", cart.ProductID))
 	if err != nil {
-		return cart, err
+		return cart, fmt.Errorf("Error get product: %v", err)
 	}
 
 	json.NewDecoder(resp.Body).Decode(&preloadProduct)
@@ -58,25 +57,25 @@ func (cs cartService) AddToCart(cart model.Cart, id int) (model.Cart, error) {
 	cart.Product = preloadProduct.Data
 
 	if err := validator.New().Struct(cart); err != nil {
-		return cart, errors.New("request tidak sesuai")
+		return cart, err
 	}
 
 	addCart, err := cs.cartRepo.AddToCart(cart)
 	if err != nil {
-		return cart, errors.New("produk sudah ada")
+		return cart, err
 	}
 
 	return addCart, nil
 }
 
-func (cs cartService) UpdateCart(cart model.Cart, id uint) (model.Cart, error) {
-	var preloadProduct utils.PreloadProduct
+func (cs cartService) UpdateCart(cart entity.Cart, id uint) (entity.Cart, error) {
+	var preloadProduct domain.PreloadProduct
 	
 	getCart, _ := cs.cartRepo.GetCart(cart, id)
 
 	resp, err := http.Get(fmt.Sprintf("http://product-service:8081/product/%d", getCart.ProductID))
 	if err != nil {
-		return cart, err
+		return cart, fmt.Errorf("Error get product: %v", err)
 	}
 
 	json.NewDecoder(resp.Body).Decode(&preloadProduct)
@@ -85,7 +84,7 @@ func (cs cartService) UpdateCart(cart model.Cart, id uint) (model.Cart, error) {
 	getCart.Item += cart.Item
 
 	if err := validator.New().Struct(getCart); err != nil {
-		return cart, errors.New("request tidak sesuai")
+		return cart, err
 	}
 	
 	updCart, err := cs.cartRepo.UpdateCart(getCart, id)
@@ -96,7 +95,7 @@ func (cs cartService) UpdateCart(cart model.Cart, id uint) (model.Cart, error) {
 	return updCart, nil
 }
 
-func (cs cartService) DeleteProductInCart(cart model.Cart, id uint) error {
+func (cs cartService) DeleteProductInCart(cart entity.Cart, id uint) error {
 	if err := cs.cartRepo.DeleteProductInCart(cart, id); err != nil {
 		return err
 	}
@@ -104,13 +103,13 @@ func (cs cartService) DeleteProductInCart(cart model.Cart, id uint) error {
 	return nil
 }
 
-func (cs cartService) GetCart(cart model.Cart, id uint) (model.Cart, error) {
+func (cs cartService) GetCart(cart entity.Cart, id uint) (entity.Cart, error) {
 	getCart, err := cs.cartRepo.GetCart(cart, id)
 	if err != nil {
 		return cart, err
 	}
 
-	var preloadProduct utils.PreloadProduct
+	var preloadProduct domain.PreloadProduct
 
 	resp, err := http.Get(fmt.Sprintf("http://product-service:8081/product/%d", getCart.ProductID))
 	if err != nil {
@@ -124,18 +123,18 @@ func (cs cartService) GetCart(cart model.Cart, id uint) (model.Cart, error) {
 	return getCart, nil
 }
 
-func (cs cartService) GetCartByUser(cart []model.Cart, id uint) ([]model.Cart, error) {
+func (cs cartService) GetCartByUser(cart []entity.Cart, id uint) ([]entity.Cart, error) {
 	getCart, err := cs.cartRepo.GetCartByUser(cart, id)
 	if err != nil {
 		return nil, err
 	}
 
 	for i := range getCart {
-		var preloadProduct utils.PreloadProduct
+		var preloadProduct domain.PreloadProduct
 	
 		resp, err := http.Get(fmt.Sprintf("http://product-service:8081/product/%d", getCart[i].ProductID))
 		if err != nil {
-			return cart, err
+			return cart, fmt.Errorf("Error get product: %v", err)
 		}
 	
 		json.NewDecoder(resp.Body).Decode(&preloadProduct)

@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"testing"
 	"strings"
-	"github.com/NetSinx/yconnect-shop/server/cart/utils"
+	"github.com/NetSinx/yconnect-shop/server/cart/model/domain"
 )
 
 func TestListCart(t *testing.T) {
 	response, _ := http.Get("http://localhost:8083/cart")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -33,7 +33,7 @@ func TestAddToCart(t *testing.T) {
 	response, _ := http.Post("http://localhost:8083/cart/3", "application/json", strings.NewReader(body))
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -49,7 +49,7 @@ func TestDeleteProductInCart(t *testing.T) {
 	response, _ := httpClient.Do(req)
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -61,7 +61,7 @@ func TestGetCart(t *testing.T) {
 	response, _ := http.Get("http://localhost:8083/cart/1")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
