@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-
 	"github.com/NetSinx/yconnect-shop/server/seller/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/seller/service"
 	"github.com/labstack/echo/v4"
@@ -46,7 +45,7 @@ func (sc sellerController) RegisterSeller(c echo.Context) error {
 	regSeller, err := sc.SellerService.RegisterSeller(username, seller)
 	if err != nil && err == gorm.ErrDuplicatedKey {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "Seller sudah terdaftar",
+			Message: "Seller sudah terdaftar.",
 		})
 	} else if err != nil && err.Error() == "seller gagal registrasi. user tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
@@ -101,7 +100,7 @@ func (sc sellerController) DeleteSeller(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "Seller berhasil dihapus",
+		Message: "Seller berhasil dihapus.",
 	})
 }
 

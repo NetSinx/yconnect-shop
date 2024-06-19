@@ -42,7 +42,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 		err := u.userService.RegisterUser(users)
 		if err != nil && err == gorm.ErrDuplicatedKey {
 			return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-				Message: "User sudah terdaftar",
+				Message: "User sudah terdaftar.",
 			})
 		} else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
 			return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
@@ -55,7 +55,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 		}
 	
 		return c.JSON(http.StatusOK, domain.MessageResp{
-			Message: "Registrasi user berhasil!",
+			Message: "Registrasi user berhasil.",
 		})
 	}
 
@@ -82,7 +82,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 		})
 	} else if err != nil && err == gorm.ErrDuplicatedKey {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "User sudah pernah dibuat!",
+			Message: "User sudah pernah dibuat.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -91,7 +91,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "Registrasi user berhasil!",
+		Message: "Registrasi user berhasil.",
 	})
 }
 
@@ -107,7 +107,7 @@ func (u userController) LoginUser(c echo.Context) error {
 	jwtToken, err := u.userService.LoginUser(userLogin)
 	if err != nil && err.Error() == "email atau password salah" {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: "Email atau password Anda salah!",
+			Message: "Email atau password Anda salah.",
 		})
 	} else if err != nil && err.Error() == "email tidak mengandung karakter '@' dan hostname" {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -170,11 +170,11 @@ func (u userController) UpdateUser(c echo.Context) error {
 		err = u.userService.UpdateUser(users, username)
 		if err != nil && err == gorm.ErrRecordNotFound {
 			return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-				Message: "User tidak ditemukan!",
+				Message: "User tidak ditemukan.",
 			})
 		} else if err != nil && err == gorm.ErrDuplicatedKey {
 			return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-				Message: "User sudah pernah dibuat!",
+				Message: "User sudah pernah dibuat.",
 			})
 		} else if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -183,7 +183,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 		}
 
 		return c.JSON(http.StatusOK, domain.MessageResp{
-			Message: "User berhasil diupdate!",
+			Message: "User berhasil diupdate.",
 		})
 	}
 
@@ -224,11 +224,11 @@ func (u userController) UpdateUser(c echo.Context) error {
 	err = u.userService.UpdateUser(users, username)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "User tidak ditemukan!",
+			Message: "User tidak ditemukan.",
 		})
 	} else if err != nil && err == gorm.ErrDuplicatedKey {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "User sudah pernah dibuat!",
+			Message: "User sudah pernah dibuat.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -237,7 +237,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 	} 
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "User berhasil diupdate!",
+		Message: "User berhasil diupdate.",
 	})
 }
 
@@ -278,7 +278,7 @@ func (u userController) GetUser(c echo.Context) error {
 	findUser, err := u.userService.GetUser(users, username)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "User tidak ditemukan!",
+			Message: "User tidak ditemukan.",
 		})
 	}
 
@@ -312,7 +312,7 @@ func (u userController) VerifyEmail(c echo.Context) error {
 	}
 
 	return echo.NewHTTPError(http.StatusOK, domain.MessageResp{
-		Message: "Email berhasil diverifikasi!",
+		Message: "Email berhasil diverifikasi.",
 	})
 }
 
@@ -330,7 +330,7 @@ func (u userController) DeleteUser(c echo.Context) error {
 	err := u.userService.DeleteUser(users, username)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "User tidak ditemukan!",
+			Message: "User tidak ditemukan.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
@@ -339,7 +339,7 @@ func (u userController) DeleteUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "User berhasil dihapus!",
+		Message: "User berhasil dihapus.",
 	})
 }
 

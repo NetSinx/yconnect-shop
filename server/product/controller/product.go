@@ -91,7 +91,7 @@ func (p productController) CreateProduct(c echo.Context) error {
 	product, err := p.productService.CreateProduct(products, img)
 	if err != nil && err == gorm.ErrDuplicatedKey {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "Produk sudah tersedia!",
+			Message: "Produk sudah tersedia.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -176,11 +176,11 @@ func (p productController) UpdateProduct(c echo.Context) error {
 	product, err := p.productService.UpdateProduct(products, products.Image, slug, fmt.Sprintf("%d", getProduct.Id))
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "Produk tidak ditemukan!",
+			Message: "Produk tidak ditemukan.",
 		})
 	} else if err != nil && err == gorm.ErrDuplicatedKey {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "Produk sudah tersedia!",
+			Message: "Produk sudah tersedia.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -201,11 +201,11 @@ func (p productController) DeleteProduct(c echo.Context) error {
 	getProduct, err := p.productService.GetProduct(products, slug)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "Produk tidak ditemukan!",
+			Message: "Produk tidak ditemukan.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: "Maaf, ada kesalahan pada server",
+			Message: err.Error(),
 		})
 	}
 
@@ -215,12 +215,12 @@ func (p productController) DeleteProduct(c echo.Context) error {
 
 	if err := p.productService.DeleteProduct(products, getProduct.Image, slug, fmt.Sprintf("%d", getProduct.Id)); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "Produk tidak ditemukan!",
+			Message: "Produk tidak ditemukan.",
 		})
 	}
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "Produk berhasil dihapus!",
+		Message: "Produk berhasil dihapus.",
 	})
 }
 
@@ -232,7 +232,7 @@ func (p productController) GetProduct(c echo.Context) error {
 	getProduct, err := p.productService.GetProduct(product, slug)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "Produk tidak ditemukan!",
+			Message: "Produk tidak ditemukan.",
 		})
 	}
 	
