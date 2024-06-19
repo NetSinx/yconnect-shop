@@ -137,7 +137,7 @@ func SendOTP() http.HandlerFunc {
 				} else {
 					w.WriteHeader(http.StatusOK)
 					json.NewEncoder(w).Encode(domain.ResponseMessage{
-						Message: "Kode OTP berhasil dikirim!",
+						Message: "Kode OTP berhasil dikirim.",
 					})
 				}
 
@@ -154,7 +154,7 @@ func SendOTP() http.HandlerFunc {
 			} else {
 				w.WriteHeader(http.StatusOK)
 				json.NewEncoder(w).Encode(domain.ResponseMessage{
-					Message: "Kode OTP berhasil dikirim!",
+					Message: "Kode OTP berhasil dikirim.",
 				})
 			}
 
