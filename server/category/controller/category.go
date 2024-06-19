@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 	"strconv"
-	"github.com/NetSinx/yconnect-shop/server/category/app/model"
+	"github.com/NetSinx/yconnect-shop/server/category/model/entity"
+	"github.com/NetSinx/yconnect-shop/server/category/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/category/service"
-	"github.com/NetSinx/yconnect-shop/server/category/utils"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -21,88 +21,68 @@ func CategoryController(categoryservice service.CategoryServ) categoryController
 }
 
 func (cc categoryController) ListCategory(c echo.Context) error {
-	var categories []model.Category
+	var categories []entity.Category
 
 	listCategories, err := cc.categoryService.ListCategory(categories)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
-			Message: "Maaf, ada kesalahan pada server",
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: listCategories,
 	})
 }
 
 func (cc categoryController) CreateCategory(c echo.Context) error {
-	var categories model.Category
+	var categories entity.Category
 
 	if err := c.Bind(&categories); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirimkan tidak sesuai!",
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
 	category, err := cc.categoryService.CreateCategory(categories)
-	if err != nil && err.Error() == "request tidak sesuai" {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirimkan tidak sesuai!",
+	if err != nil && err == gorm.ErrDuplicatedKey {
+		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+			Message: "Kategori sudah tersedia.",
 		})
-	} else if err != nil && err.Error() == "kategori sudah tersedia" {
-		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
-			Code: http.StatusConflict,
-			Status: http.StatusText(http.StatusConflict),
-			Message: "Kategori sudah tersedia!",
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: category,
 	})
 }
 
 func (cc categoryController) UpdateCategory(c echo.Context) error {
-	var categories model.Category
+	var categories entity.Category
 
 	id := c.Param("id")
 
 	if err := c.Bind(&categories); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirimkan tidak sesuai!",
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 	
 	category, err := cc.categoryService.UpdateCategory(categories, id)
 	if err != nil && err == gorm.ErrRecordNotFound {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
-			Message: "Kategori tidak bisa ditemukan!",
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Kategori tidak bisa ditemukan.",
 		})
-	} else if err != nil && err.Error() == "request tidak sesuai" {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirimkan tidak sesuai!",
+	} else if err != nil && err == gorm.ErrDuplicatedKey {
+		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+			Message: "Kategori sudah tersedia.",
 		})
-	} else if err != nil && err.Error() == "kategori sudah tersedia" {
-		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
-			Code: http.StatusConflict,
-			Status: http.StatusText(http.StatusConflict),
-			Message: "Kategori sudah tersedia!",
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
@@ -110,50 +90,41 @@ func (cc categoryController) UpdateCategory(c echo.Context) error {
 
 	category.Id = uint(getId)
 	
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: category,
 	})
 }
 
 func (cc categoryController) DeleteCategory(c echo.Context) error {
-	var category model.Category
+	var category entity.Category
 
 	id := c.Param("id")
 
 	err := cc.categoryService.DeleteCategory(category, id)
 	if err != nil && err == gorm.ErrRecordNotFound {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
-			Message: "Kategori tidak bisa ditemukan!",
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Kategori tidak bisa ditemukan.",
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessDelete{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
-		Message: "Kategori berhasil dihapus!",
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "Kategori berhasil dihapus.",
 	})
 }
 
 func (cc categoryController) GetCategory(c echo.Context) error {
-	var categories model.Category
+	var categories entity.Category
 
 	id := c.Param("id")
 
-	getCategory, err := cc.categoryService.GetCategory(categories, id); if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
-			Message: "Kategori tidak bisa ditemukan!",
+	getCategory, err := cc.categoryService.GetCategory(categories, id)
+	if err != nil && err == gorm.ErrRecordNotFound {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Kategori tidak bisa ditemukan.",
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: getCategory,
 	})
 }

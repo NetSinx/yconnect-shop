@@ -11,7 +11,6 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type userService struct {
@@ -26,7 +25,7 @@ func UserService(userRepo repository.UserRepo) userService {
 
 func (u userService) RegisterUser(users entity.User) error {
 	if err := validator.New().Struct(users); err != nil {
-		return fmt.Errorf("request tidak sesuai")
+		return err
 	}
 
 	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 15)
@@ -63,16 +62,23 @@ func (u userService) RegisterUser(users entity.User) error {
 func (u userService) LoginUser(userLogin entity.UserLogin) (string, error) {
 	if userLogin.Email != "" {
 		containsAt := false
+		var contains []rune
 
 		for _, word := range userLogin.Email {
-			if word == '@' {
+			if word == '@' || word == '.' {
+				contains = append(contains, word)
+			}
+		}
+
+		for i, word := range contains {
+			if word == '@' && contains[i+1] == '.' {
 				containsAt = true
 				break
 			}
 		}
 	
 		if !containsAt {
-			return "", fmt.Errorf("email tidak mengandung karakter '@'")
+			return "", fmt.Errorf("email tidak mengandung karakter '@' dan hostname")
 		}
 	}
 
@@ -130,10 +136,8 @@ func (u userService) UpdateUser(users entity.User, username string) error {
 	users.Password = string(passwdHash)
 
 	err := u.userRepository.UpdateUser(users, username)
-	if err != nil && err == gorm.ErrRecordNotFound {
-		return fmt.Errorf("user tidak ditemukan")
-	} else if err != nil && err != gorm.ErrRecordNotFound {
-		return fmt.Errorf("user sudah pernah dibuat")
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -148,7 +152,7 @@ func (u userService) SendOTP(verifyEmail domain.VerifyEmail) (string, error) {
 	}
 	
 	if err := u.userRepository.SendOTP(verifyEmail); err != nil {
-		return "", fmt.Errorf("email tidak sesuai")
+		return "", err
 	}
 	
 	reqBody, err := json.Marshal(&verifyEmail)
@@ -158,22 +162,22 @@ func (u userService) SendOTP(verifyEmail domain.VerifyEmail) (string, error) {
 
 	resp, err := http.Post("http://mail-service:8085/sendOTP", "application/json", bytes.NewReader(reqBody))
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("OTP tidak bisa dikirim")
 	}
 	
 	if err := utils.CacheOTP(otpCode); err != nil {
 		return "", err
 	}
 	
-	var response domain.ErrServer
+	var response domain.RespData
 
 	json.NewDecoder(resp.Body).Decode(&response)
 
-	if response.Code != 200 {
-		return "", fmt.Errorf(response.Message)
+	if resp.StatusCode != 200 {
+		return "", err
 	}
 
-	return response.Message, nil
+	return "Kode OTP berhasil dikirim.", nil
 }
 
 func (u userService) VerifyEmail(verifyEmail domain.VerifyEmail) error {
@@ -185,9 +189,8 @@ func (u userService) VerifyEmail(verifyEmail domain.VerifyEmail) error {
 		return err
 	}
 
-	err := u.userRepository.VerifyEmail(verifyEmail)
-	if (err != nil && err == gorm.ErrRecordNotFound) {
-		return fmt.Errorf("email yang ingin diverifikasi tidak ditemukan")
+	if err := u.userRepository.VerifyEmail(verifyEmail); err != nil {
+		return err
 	}
 
 	return nil
@@ -200,15 +203,15 @@ func (u userService) GetUser(users entity.User, username string) (entity.User, e
 	}
 
 	respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", findUser.Id))
-		if err != nil {
-			return findUser, nil
-		} else if respCart.StatusCode != 200 {
-			var preloadCart domain.PreloadCarts
+	if err != nil {
+		return findUser, nil
+	} else if respCart.StatusCode == 200 {
+		var preloadCart domain.PreloadCarts
 
-			json.NewDecoder(respCart.Body).Decode(&preloadCart)
-			
-			findUser.Cart = preloadCart.Data
-		}
+		json.NewDecoder(respCart.Body).Decode(&preloadCart)
+		
+		findUser.Cart = preloadCart.Data
+	}
 
 	return findUser, nil
 }
@@ -217,12 +220,12 @@ func (u userService) DeleteUser(users entity.User, username string) error {
 	var httpClient http.Client
 	
 	if err := u.userRepository.DeleteUser(users, username); err != nil {
-		return fmt.Errorf("gagal hapus user")
+		return err
 	}
 	
 	getUser, err := u.userRepository.GetUser(users, username)
 	if err != nil {
-		return fmt.Errorf("gagal hapus user")
+		return err
 	}
 
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("http://kong-gateway:8001/consumers/%s", getUser.Username), nil)

@@ -2,9 +2,11 @@ package controller
 
 import (
 	"net/http"
+
 	"github.com/NetSinx/yconnect-shop/server/seller/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/seller/service"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 type sellerController struct {
@@ -20,16 +22,12 @@ func SellerController(ss service.SellerServ) sellerController {
 func (sc sellerController) ListSeller(c echo.Context) error {
 	listSeller, err := sc.SellerService.ListSeller()
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.Response{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
-			Message: "Sorry, there is available failure",
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, domain.SuccessResponse{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: listSeller,
 	})
 }
@@ -40,37 +38,27 @@ func (sc sellerController) RegisterSeller(c echo.Context) error {
 	username := c.Param("username")
 
 	if err := c.Bind(&seller); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.Response{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "request user tidak sesuai",
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
 	regSeller, err := sc.SellerService.RegisterSeller(username, seller)
-	if err != nil && err.Error() == "seller sudah terdaftar" {
-		return echo.NewHTTPError(http.StatusConflict, domain.Response{
-			Code: http.StatusConflict,
-			Status: http.StatusText(http.StatusConflict),
-			Message: err.Error(),
+	if err != nil && err == gorm.ErrDuplicatedKey {
+		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+			Message: "Seller sudah terdaftar",
 		})
 	} else if err != nil && err.Error() == "seller gagal registrasi. user tidak ditemukan" {
-		return echo.NewHTTPError(http.StatusNotFound, domain.Response{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: err.Error(),
 		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.Response{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, domain.SuccessResponse{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: regSeller,
 	})
 }
@@ -79,29 +67,21 @@ func (sc sellerController) UpdateSeller(c echo.Context) error {
 	username := c.Param("username")
 
 	updSeller, err := sc.SellerService.UpdateSeller(username)
-	if err != nil && err.Error() == "seller sudah terdaftar" {
-		return echo.NewHTTPError(http.StatusConflict, domain.Response{
-			Code: http.StatusConflict,
-			Status: http.StatusText(http.StatusConflict),
-			Message: err.Error(),
+	if err != nil && err == gorm.ErrDuplicatedKey {
+		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+			Message: "Seller sudah terdaftar",
 		})
 	} else if err != nil && err.Error() == "seller tidak ditemukan" {
-		return echo.NewHTTPError(http.StatusNotFound, domain.Response{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: err.Error(),
 		})
 	} else if err != nil && err.Error() == "service user sedang bermasalah" {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.Response{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, domain.SuccessResponse{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: updSeller,
 	})
 }
@@ -110,24 +90,18 @@ func (sc sellerController) DeleteSeller(c echo.Context) error {
 	username := c.Param("username")
 
 	err := sc.SellerService.DeleteSeller(username)
-	if err != nil && err.Error() == "seller tidak ditemukan" {
-		return echo.NewHTTPError(http.StatusNotFound, domain.Response{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
+	if err != nil && err == gorm.ErrRecordNotFound {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: err.Error(),
 		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.Response{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, domain.Response{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
-		Message: "Seller was deleted successfully",
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "Seller berhasil dihapus",
 	})
 }
 
@@ -136,16 +110,12 @@ func (sc sellerController) GetSeller(c echo.Context) error {
 
 	getSeller, err := sc.SellerService.GetSeller(username)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, domain.Response{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, domain.SuccessResponse{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: getSeller,
 	})
 }

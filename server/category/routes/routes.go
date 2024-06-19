@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/category/app/config"
+	"github.com/NetSinx/yconnect-shop/server/category/config"
 	"github.com/NetSinx/yconnect-shop/server/category/controller"
 	"github.com/NetSinx/yconnect-shop/server/category/repository"
 	"github.com/NetSinx/yconnect-shop/server/category/service"

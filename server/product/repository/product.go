@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/product/model"
+	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +15,7 @@ func ProductRepository(db *gorm.DB) productRepository {
 	}
 }
 
-func (p productRepository) ListProduct(products []model.Product) ([]model.Product, error) {
+func (p productRepository) ListProduct(products []entity.Product) ([]entity.Product, error) {
 	if err := p.DB.Preload("Image").Find(&products).Error; err != nil {
 		return nil, err
 	}
@@ -23,21 +23,21 @@ func (p productRepository) ListProduct(products []model.Product) ([]model.Produc
 	return products, nil
 }
 
-func (p productRepository) CreateProduct(products model.Product, image []model.Image) (model.Product, error) {
-	if err := p.DB.Create(&model.Product{Name: products.Name, Slug: products.Slug, Description: products.Description, Image: image, SellerId: products.SellerId, CategoryId: products.CategoryId, Price: products.Price, Stock: products.Stock}).Error; err != nil {
+func (p productRepository) CreateProduct(products entity.Product, image []entity.Image) (entity.Product, error) {
+	if err := p.DB.Create(&entity.Product{Name: products.Name, Slug: products.Slug, Description: products.Description, Image: image, SellerId: products.SellerId, CategoryId: products.CategoryId, Price: products.Price, Stock: products.Stock}).Error; err != nil {
 		return products, err
 	}
 
 	return products, nil
 }
 
-func (p productRepository) UpdateProduct(products model.Product, image []model.Image, slug string, id string) (model.Product, error) {
-	err := p.DB.Model(&model.Image{}).Where("product_id = ?", id).Save(&image).Error
+func (p productRepository) UpdateProduct(products entity.Product, image []entity.Image, slug string, id string) (entity.Product, error) {
+	err := p.DB.Model(&entity.Image{}).Where("product_id = ?", id).Save(&image).Error
 	if err != nil {
 		return products, err
 	}
 
-	err = p.DB.Where("slug = ?", slug).Updates(&model.Product{Name: products.Name, Slug: products.Slug, Description: products.Description, SellerId: products.SellerId, CategoryId: products.CategoryId, Price: products.Price, Stock: products.Stock}).Error
+	err = p.DB.Where("slug = ?", slug).Updates(&entity.Product{Name: products.Name, Slug: products.Slug, Description: products.Description, SellerId: products.SellerId, CategoryId: products.CategoryId, Price: products.Price, Stock: products.Stock}).Error
 	if err != nil {
 		return products, err
 	}
@@ -49,7 +49,7 @@ func (p productRepository) UpdateProduct(products model.Product, image []model.I
 	return products, nil
 }
 
-func (p productRepository) DeleteProduct(products model.Product, image []model.Image, slug string, id string) error {
+func (p productRepository) DeleteProduct(products entity.Product, image []entity.Image, slug string, id string) error {
 	if err := p.DB.Preload("Image").First(&products, "slug = ?", slug).Error; err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (p productRepository) DeleteProduct(products model.Product, image []model.I
 	return nil
 }
 
-func (p productRepository) GetProduct(products model.Product, slug string) (model.Product, error) {
+func (p productRepository) GetProduct(products entity.Product, slug string) (entity.Product, error) {
 	if err := p.DB.Where("slug = ?", slug).Preload("Image").First(&products).Error; err != nil {
 		return products, err
 	}
@@ -71,7 +71,7 @@ func (p productRepository) GetProduct(products model.Product, slug string) (mode
 	return products, nil
 }
 
-func (p productRepository) GetProductByCategory(products []model.Product, id string) ([]model.Product, error) {
+func (p productRepository) GetProductByCategory(products []entity.Product, id string) ([]entity.Product, error) {
 	if err := p.DB.Preload("Image").Find(&products, "category_id = ?", id).Error; err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (p productRepository) GetProductByCategory(products []model.Product, id str
 	return products, nil
 }
 
-func (p productRepository) GetProductBySeller(products []model.Product, id string) ([]model.Product, error) {
+func (p productRepository) GetProductBySeller(products []entity.Product, id string) ([]entity.Product, error) {
 	if err := p.DB.Preload("Image").Find(&products, "seller_id = ?", id).Error; err != nil {
 		return nil, err
 	}

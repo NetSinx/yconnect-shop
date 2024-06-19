@@ -9,14 +9,14 @@ import (
 )
 
 func TestListUser(t *testing.T) {
-	response, _ := http.Get("http://localhost:8082/user")
+	response, err := http.Get("http://localhost:8082/user")
 
 	if response.StatusCode != 200 {
-		var respData domain.ErrServer
+		var respData domain.RespData
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, err.Error())
 	}
 }
 
@@ -30,14 +30,14 @@ func TestRegisterUser(t *testing.T) {
 		"password": "@Abyasinah22123"
 	}`
 
-	response, _ := http.Post("http://localhost:8082/user/sign-up", "application/json", strings.NewReader(body))
+	response, err := http.Post("http://localhost:8082/user/sign-up", "application/json", strings.NewReader(body))
 
 	if response.StatusCode != 200 {
-		var respData domain.ErrServer
+		var respData domain.RespData
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, err.Error())
 	}
 }
 
@@ -56,14 +56,14 @@ func TestUpdateUser(t *testing.T) {
 	req, _ := http.NewRequest("PUT", "http://localhost:8082/user/5", strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
-	response, _ := httpClient.Do(req)
+	response, err := httpClient.Do(req)
 
 	if response.StatusCode != 200 {
-		var respData domain.ErrServer
+		var respData domain.RespData
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, err.Error())
 	}
 }
 
@@ -72,14 +72,14 @@ func TestDeleteUser(t *testing.T) {
 
 	req, _ := http.NewRequest("DELETE", "http://localhost:8082/user/3", nil)
 
-	response, _ := httpClient.Do(req)
+	response, err := httpClient.Do(req)
 
 	if response.StatusCode != 200 {
-		var respData domain.ErrServer
+		var respData domain.RespData
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, err.Error())
 	}
 }
 
@@ -89,25 +89,25 @@ func TestLoginUser(t *testing.T) {
 		"password": "@Abyasinah22123"
 	}`
 
-	response, _ := http.Post("http://localhost:8082/user/sign-in", "application/json", strings.NewReader(body))
+	response, err := http.Post("http://localhost:8082/user/sign-in", "application/json", strings.NewReader(body))
 
 	if response.StatusCode != 200 {
-		var respData domain.ErrServer
+		var respData domain.RespData
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, err.Error())
 	}
 }
 
 func TestGetUser(t *testing.T) {
-	response, _ := http.Get("http://localhost:8082/user/1")
+	response, err := http.Get("http://localhost:8082/user/1")
 
 	if response.StatusCode != 200 {
-		var respData domain.ErrServer
+		var respData domain.RespData
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, err.Error())
 	}
 }

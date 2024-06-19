@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/category/app/config"
-	"github.com/NetSinx/yconnect-shop/server/category/app/routes"
+	"github.com/NetSinx/yconnect-shop/server/category/config"
+	"github.com/NetSinx/yconnect-shop/server/category/routes"
 )
 
 func main() {

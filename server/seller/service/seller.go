@@ -8,7 +8,6 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/seller/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/seller/repository"
 	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
 )
 
 type sellerService struct {
@@ -26,7 +25,7 @@ func (ss sellerService) ListSeller() ([]entity.Seller, error) {
 
 	listSeller, err := ss.SellerRepository.ListSeller()
 	if err != nil {
-		return []entity.Seller{}, fmt.Errorf("seller tidak ditemukan")
+		return []entity.Seller{}, err
 	}
 
 	for i := range listSeller {
@@ -70,7 +69,7 @@ func (ss sellerService) RegisterSeller(username string, sellerValidity domain.Se
 
 	regSeller, err := ss.SellerRepository.RegisterSeller(seller)
 	if err != nil {
-		return entity.Seller{}, fmt.Errorf("seller sudah terdaftar")
+		return entity.Seller{}, err
 	}
 
 	return regSeller, nil
@@ -100,10 +99,8 @@ func (ss sellerService) UpdateSeller(username string) (entity.Seller, error) {
 	}
 
 	updSeller, err := ss.SellerRepository.UpdateSeller(username, seller)
-	if err == gorm.ErrDuplicatedKey {
-		return entity.Seller{}, fmt.Errorf("seller sudah terdaftar")
-	} else if err == gorm.ErrRecordNotFound {
-		return entity.Seller{}, fmt.Errorf("seller tidak ditemukan")
+	if err != nil {
+		return entity.Seller{}, err
 	}
 
 	return updSeller, nil
@@ -111,9 +108,7 @@ func (ss sellerService) UpdateSeller(username string) (entity.Seller, error) {
 
 func (ss sellerService) DeleteSeller(username string) error {
 	err := ss.SellerRepository.DeleteSeller(username)
-	if err != nil && err == gorm.ErrRecordNotFound {
-		return fmt.Errorf("seller tidak ditemukan")
-	} else if err != nil {
+	if err != nil {
 		return err
 	}
 

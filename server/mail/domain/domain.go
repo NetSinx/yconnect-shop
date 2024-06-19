@@ -6,7 +6,5 @@ type ReqUser struct {
 }
 
 type ResponseMessage struct {
-	Code    int    `json:"code"`
-	Status  string `json:"status"`
 	Message string `json:"message"`
 }

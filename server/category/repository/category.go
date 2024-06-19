@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/category/app/model"
+	"github.com/NetSinx/yconnect-shop/server/category/model/entity"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +15,7 @@ func CategoryRepository(db *gorm.DB) categoryRepository {
 	}
 }
 
-func (c categoryRepository) ListCategory(categories []model.Category) ([]model.Category, error) {
+func (c categoryRepository) ListCategory(categories []entity.Category) ([]entity.Category, error) {
 	if err := c.DB.Select("id", "name", "slug").Find(&categories).Error; err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (c categoryRepository) ListCategory(categories []model.Category) ([]model.C
 	return categories, nil
 }
 
-func (c categoryRepository) CreateCategory(categories model.Category) (model.Category, error) {
+func (c categoryRepository) CreateCategory(categories entity.Category) (entity.Category, error) {
 	if err := c.DB.Create(&categories).Error; err != nil {
 		return categories, err
 	}
@@ -31,7 +31,7 @@ func (c categoryRepository) CreateCategory(categories model.Category) (model.Cat
 	return categories, nil
 }
 
-func (c categoryRepository) UpdateCategory(categories model.Category, id string) (model.Category, error) {
+func (c categoryRepository) UpdateCategory(categories entity.Category, id string) (entity.Category, error) {
 	if err := c.DB.Where("id = ?", id).Updates(&categories).Error; err != nil {
 		return categories, err
 	}
@@ -43,7 +43,7 @@ func (c categoryRepository) UpdateCategory(categories model.Category, id string)
 	return categories, nil
 }
 
-func(c categoryRepository) DeleteCategory(category model.Category, id string) error {
+func(c categoryRepository) DeleteCategory(category entity.Category, id string) error {
 	if err := c.DB.First(&category, "id = ?", id).Error; err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func(c categoryRepository) DeleteCategory(category model.Category, id string) er
 	return nil
 }
 
-func(c categoryRepository) GetCategory(categories model.Category, id string) (model.Category, error) {
+func(c categoryRepository) GetCategory(categories entity.Category, id string) (entity.Category, error) {
 	if err := c.DB.First(&categories, "id = ?", id).Error; err != nil {
 		return categories, err
 	}

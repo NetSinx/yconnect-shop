@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"github.com/NetSinx/yconnect-shop/server/category/app/model"
+	"github.com/NetSinx/yconnect-shop/server/category/model/entity"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -13,7 +13,7 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	var category model.Category
+	var category entity.Category
 
 	godotenv.Load()
 

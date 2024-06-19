@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strings"
 	"testing"
-	"github.com/NetSinx/yconnect-shop/server/product/utils"
+	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
 )
 
 func TestListProduct(t *testing.T) {
 	response, _ := http.Get("http://localhost:8081/product")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -21,8 +21,8 @@ func TestListProduct(t *testing.T) {
 }
 
 func TestCreateProduct(t *testing.T) {
-	var genCSRF utils.ResponseCSRF
-	var respData utils.ErrServer
+	var genCSRF domain.ResponseCSRF
+	var respData domain.MessageResp
 	var httpClient http.Client
 	var httpCookie http.Cookie
 
@@ -84,7 +84,7 @@ func TestUpdateProduct(t *testing.T) {
 	response, _ := httpClient.Do(req)
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -100,7 +100,7 @@ func TestDeleteProduct(t *testing.T) {
 	response, _ := httpClient.Do(req)
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -112,7 +112,7 @@ func TestGetProduct(t *testing.T) {
 	response, _ := http.Get("http://localhost:8081/product/11")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -124,7 +124,7 @@ func TestGetCategoryProduct(t *testing.T) {
 	response, _ := http.Get("http://localhost:8081/product/category/2")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -136,7 +136,7 @@ func TestGetUserProduct(t *testing.T) {
 	response, _ := http.Get("http://localhost:8081/product/user/1")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 

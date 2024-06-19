@@ -2,14 +2,12 @@ package service
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/product/model"
+	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
-	"github.com/NetSinx/yconnect-shop/server/product/utils"
+	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
 	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
 )
 
 type productService struct {
@@ -22,15 +20,15 @@ func ProductService(prodRepo repository.ProductRepo) productService {
 	}
 }
 
-func (p productService) ListProduct(products []model.Product) ([]model.Product, error) {
+func (p productService) ListProduct(products []entity.Product) ([]entity.Product, error) {
 	product, err := p.productRepository.ListProduct(products)
 	if err != nil {
 		return nil, err
 	}
 
 	for i, prod := range product {
-		var preloadCategory utils.PreloadCategory
-		var preloadUser utils.PreloadUser
+		var preloadCategory domain.PreloadCategory
+		var preloadUser domain.PreloadUser
 
 		resCategory, err := http.Get(fmt.Sprintf("http://category-service:8080/category/%d", prod.CategoryId))
 		if err != nil {
@@ -54,52 +52,48 @@ func (p productService) ListProduct(products []model.Product) ([]model.Product, 
 	return product, nil
 }
 
-func (p productService) CreateProduct(products model.Product, image []model.Image) (model.Product, error) {
+func (p productService) CreateProduct(products entity.Product, image []entity.Image) (entity.Product, error) {
 	if err := validator.New().Struct(products); err != nil {
-		return products, errors.New("request tidak sesuai")
+		return products, err
 	}
 
 	product, err := p.productRepository.CreateProduct(products, image)
 	if err != nil {
-		return products, errors.New("produk sudah tersedia")
-	}
-
-	return product, nil
-}
-
-func (p productService) UpdateProduct(products model.Product, image []model.Image, slug string, id string) (model.Product, error) {
-	if err := validator.New().Struct(products); err != nil {
-		return products, errors.New("request tidak sesuai")
-	}
-
-	product, err := p.productRepository.UpdateProduct(products, image, slug, id)
-	if err != nil && err == gorm.ErrRecordNotFound {
-		return products, errors.New("produk tidak bisa ditemukan")
-	} else if err != nil {
 		return products, err
 	}
 
 	return product, nil
 }
 
-func (p productService) DeleteProduct(products model.Product, image []model.Image, slug string, id string) error {
+func (p productService) UpdateProduct(products entity.Product, image []entity.Image, slug string, id string) (entity.Product, error) {
+	if err := validator.New().Struct(products); err != nil {
+		return products, err
+	}
+
+	product, err := p.productRepository.UpdateProduct(products, image, slug, id)
+	if err != nil {
+		return products, err
+	}
+
+	return product, nil
+}
+
+func (p productService) DeleteProduct(products entity.Product, image []entity.Image, slug string, id string) error {
 	err := p.productRepository.DeleteProduct(products, image, slug, id)
-	if err != nil && err == gorm.ErrRecordNotFound {
-		return errors.New("produk tidak ditemukan")
-	} else if err != nil {
+	if err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (p productService) GetProduct(products model.Product, slug string) (model.Product, error) {
-	var preloadCategory utils.PreloadCategory
-	var preloadUser utils.PreloadUser
+func (p productService) GetProduct(products entity.Product, slug string) (entity.Product, error) {
+	var preloadCategory domain.PreloadCategory
+	var preloadUser domain.PreloadUser
 
 	getProducts, err := p.productRepository.GetProduct(products, slug)
-	if err != nil && err == gorm.ErrRecordNotFound {
-		return products, errors.New("produk tidak ditemukan")
+	if err != nil {
+		return products, err
 	}
 	
 	resCategory, err := http.Get(fmt.Sprintf("http://category-service:8080/category/%d", getProducts.CategoryId))
@@ -123,19 +117,19 @@ func (p productService) GetProduct(products model.Product, slug string) (model.P
 	return getProducts, nil
 }
 
-func (p productService) GetProductByCategory(products []model.Product, id string) ([]model.Product, error) {
+func (p productService) GetProductByCategory(products []entity.Product, id string) ([]entity.Product, error) {
 	getProdByCate, err := p.productRepository.GetProductByCategory(products, id)
 	if err != nil {
-		return nil, fmt.Errorf("product tidak ditemukan")
+		return nil, err
 	}
 
 	return getProdByCate, nil
 }
 
-func (p productService) GetProductBySeller(products []model.Product, id string) ([]model.Product, error) {
+func (p productService) GetProductBySeller(products []entity.Product, id string) ([]entity.Product, error) {
 	getProdBySeller, err := p.productRepository.GetProductBySeller(products, id)
 	if err != nil {
-		return nil, fmt.Errorf("product tidak ditemukan")
+		return nil, err
 	}
 
 	return getProdBySeller, nil

@@ -85,8 +85,6 @@ func SendOTP() http.HandlerFunc {
 
 			if err := json.NewDecoder(r.Body).Decode(&reqUser); err != nil {
 				json.NewEncoder(w).Encode(domain.ResponseMessage{
-					Code: http.StatusInternalServerError,
-					Status: http.StatusText(http.StatusInternalServerError),
 					Message: err.Error(),
 				})
 				
@@ -99,8 +97,6 @@ func SendOTP() http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				json.NewEncoder(w).Encode(domain.ResponseMessage{
-					Code: http.StatusInternalServerError,
-					Status: http.StatusText(http.StatusInternalServerError),
 					Message: err.Error(),
 				})
 
@@ -111,8 +107,6 @@ func SendOTP() http.HandlerFunc {
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				json.NewEncoder(w).Encode(domain.ResponseMessage{
-					Code: http.StatusInternalServerError,
-					Status: http.StatusText(http.StatusInternalServerError),
 					Message: err.Error(),
 				})
 
@@ -127,8 +121,6 @@ func SendOTP() http.HandlerFunc {
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					json.NewEncoder(w).Encode(domain.ResponseMessage{
-						Code: http.StatusInternalServerError,
-						Status: http.StatusText(http.StatusInternalServerError),
 						Message: err.Error(),
 					})
 
@@ -138,8 +130,6 @@ func SendOTP() http.HandlerFunc {
 				if err := sendMail(ctx, conf, token, reqUser.Email, reqUser.OTP); err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					json.NewEncoder(w).Encode(domain.ResponseMessage{
-						Code: http.StatusInternalServerError,
-						Status: http.StatusText(http.StatusInternalServerError),
 						Message: err.Error(),
 					})
 
@@ -147,8 +137,6 @@ func SendOTP() http.HandlerFunc {
 				} else {
 					w.WriteHeader(http.StatusOK)
 					json.NewEncoder(w).Encode(domain.ResponseMessage{
-						Code: http.StatusOK,
-						Status: http.StatusText(http.StatusOK),
 						Message: "Kode OTP berhasil dikirim!",
 					})
 				}
@@ -159,8 +147,6 @@ func SendOTP() http.HandlerFunc {
 			if err := sendMail(ctx, conf, getToken, reqUser.Email, reqUser.OTP); err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				json.NewEncoder(w).Encode(domain.ResponseMessage{
-					Code: http.StatusInternalServerError,
-					Status: http.StatusText(http.StatusInternalServerError),
 					Message: err.Error(),
 				})
 
@@ -168,8 +154,6 @@ func SendOTP() http.HandlerFunc {
 			} else {
 				w.WriteHeader(http.StatusOK)
 				json.NewEncoder(w).Encode(domain.ResponseMessage{
-					Code: http.StatusOK,
-					Status: http.StatusText(http.StatusOK),
 					Message: "Kode OTP berhasil dikirim!",
 				})
 			}

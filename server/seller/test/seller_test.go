@@ -9,7 +9,7 @@ import (
 )
 
 func TestFindAllSeller(t *testing.T) {
-	var response domain.SuccessResponse
+	var response domain.RespData
 
 	respFind, err := http.Get("http://localhost:8084/seller")
 	if err != nil {
@@ -22,8 +22,8 @@ func TestFindAllSeller(t *testing.T) {
 }
 
 func TestRegisterSeller(t *testing.T) {
-	var responseSuccess domain.SuccessResponse
-	var responseError domain.Response
+	var responseSuccess domain.RespData
+	var responseError domain.MessageResp
 
 	reqRegistSeller := `{
 		"name": "Yasin Ayatulloh Hakim",

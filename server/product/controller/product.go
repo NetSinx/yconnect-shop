@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"github.com/NetSinx/yconnect-shop/server/product/model"
+	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
+	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
-	"github.com/NetSinx/yconnect-shop/server/product/utils"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 type productController struct {
@@ -24,27 +25,23 @@ func ProductController(prodService service.ProductServ) productController {
 }
 
 func (p productController) ListProduct(c echo.Context) error {
-	var products []model.Product
+	var products []entity.Product
 
 	listProducts, err := p.productService.ListProduct(products)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
-			Message: "Maaf, ada kesalahan pada server!",
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: listProducts,
 	})
 }
 
 func (p productController) CreateProduct(c echo.Context) error {
-	var products model.Product
-	var img []model.Image
+	var products entity.Product
+	var img []entity.Image
 
 	imageProduct, err := c.MultipartForm()
 	if err != nil {
@@ -70,9 +67,7 @@ func (p productController) CreateProduct(c echo.Context) error {
 	
 		dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-				Code: http.StatusBadRequest,
-				Status: http.StatusText(http.StatusBadRequest),
+			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 				Message: err.Error(),
 			})
 		}
@@ -82,49 +77,35 @@ func (p productController) CreateProduct(c echo.Context) error {
 			return err
 		}
 	
-		img = append(img, model.Image{Name: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)})
+		img = append(img, entity.Image{Name: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)})
 	}
 
 	products.Image = img
 
 	if err := c.Bind(&products); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 	
 	product, err := p.productService.CreateProduct(products, img)
-	if err != nil && err.Error() == "produk sudah tersedia" {
-		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
-			Code: http.StatusConflict,
-			Status: http.StatusText(http.StatusConflict),
+	if err != nil && err == gorm.ErrDuplicatedKey {
+		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
 			Message: "Produk sudah tersedia!",
 		})
-	} else if err != nil && err.Error() == "request tidak sesuai" {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirimkan tidak sesuai!",
-		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
-	}
+	} 
 
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: product,
 	})
 }
 
 func (p productController) UpdateProduct(c echo.Context) error {
-	var products model.Product
+	var products entity.Product
 
 	slug := c.Param("slug")
 
@@ -137,10 +118,8 @@ func (p productController) UpdateProduct(c echo.Context) error {
 
 	getProduct, err := p.productService.GetProduct(products, slug)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
-			Message: "Maaf, ada kesalahan pada server",
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
@@ -166,7 +145,7 @@ func (p productController) UpdateProduct(c echo.Context) error {
 				return err
 			}
 
-			getProduct.Image = append(getProduct.Image, model.Image{Name: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt), ProductID: uint(getProduct.Id)})
+			getProduct.Image = append(getProduct.Image, entity.Image{Name: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt), ProductID: uint(getProduct.Id)})
 
 		} else {
 			dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
@@ -189,63 +168,43 @@ func (p productController) UpdateProduct(c echo.Context) error {
 	products.Image = getProduct.Image
 	
 	if err := c.Bind(&products); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirim tidak sesuai!",
-		})
-	}
-
-	product, err := p.productService.UpdateProduct(products, products.Image, slug, fmt.Sprintf("%d", getProduct.Id))
-	if err != nil && err.Error() == "request tidak sesuai" {
-		return echo.NewHTTPError(http.StatusBadRequest, utils.ErrServer{
-			Code: http.StatusBadRequest,
-			Status: http.StatusText(http.StatusBadRequest),
-			Message: "Request yang dikirim tidak sesuai!",
-		})
-	} else if err != nil && err.Error() == "produk tidak bisa ditemukan" {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
-			Message: "Produk tidak ditemukan!",
-		})
-	} else if err != nil && err.Error() == "produk sudah tersedia" {
-		return echo.NewHTTPError(http.StatusConflict, utils.ErrServer{
-			Code: http.StatusConflict,
-			Status: http.StatusText(http.StatusConflict),
-			Message: "Produk sudah tersedia!",
-		})
-	} else if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	product, err := p.productService.UpdateProduct(products, products.Image, slug, fmt.Sprintf("%d", getProduct.Id))
+	if err != nil && err == gorm.ErrRecordNotFound {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Produk tidak ditemukan!",
+		})
+	} else if err != nil && err == gorm.ErrDuplicatedKey {
+		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+			Message: "Produk sudah tersedia!",
+		})
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
+		})
+	} 
+
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: product,
 	})
 }
 
 func (p productController) DeleteProduct(c echo.Context) error {
-	var products model.Product
+	var products entity.Product
 
 	slug := c.Param("slug")
 
 	getProduct, err := p.productService.GetProduct(products, slug)
-	if err != nil && err.Error() == "produk tidak ditemukan" {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
+	if err != nil && err == gorm.ErrRecordNotFound {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Produk tidak ditemukan!",
 		})
 	} else if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, utils.ErrServer{
-			Code: http.StatusInternalServerError,
-			Status: http.StatusText(http.StatusInternalServerError),
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: "Maaf, ada kesalahan pada server",
 		})
 	}
@@ -255,79 +214,63 @@ func (p productController) DeleteProduct(c echo.Context) error {
 	}
 
 	if err := p.productService.DeleteProduct(products, getProduct.Image, slug, fmt.Sprintf("%d", getProduct.Id)); err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Produk tidak ditemukan!",
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.ErrServer{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "Produk berhasil dihapus!",
 	})
 }
 
 func (p productController) GetProduct(c echo.Context) error {
-	var product model.Product
+	var product entity.Product
 
 	slug := c.Param("slug")
 
 	getProduct, err := p.productService.GetProduct(product, slug)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Produk tidak ditemukan!",
 		})
 	}
 	
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: getProduct,
 	})
 }
 
 func (p productController) GetProductByCategory(c echo.Context) error {
-	var products []model.Product
+	var products []entity.Product
 
 	id := c.Param("id")
 
 	getProdByCate, err := p.productService.GetProductByCategory(products, id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
+	if err != nil && err == gorm.ErrRecordNotFound{
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: getProdByCate,
 	})
 }
 
 func (p productController) GetProductBySeller(c echo.Context) error {
-	var products []model.Product
+	var products []entity.Product
 
 	id := c.Param("id")
 
 	getProdBySeller, err := p.productService.GetProductBySeller(products, id)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, utils.ErrServer{
-			Code: http.StatusNotFound,
-			Status: http.StatusText(http.StatusNotFound),
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessData{
-		Code: http.StatusOK,
-		Status: http.StatusText(http.StatusOK),
+	return c.JSON(http.StatusOK, domain.RespData{
 		Data: getProdBySeller,
 	})
 }

@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strings"
 	"testing"
-	"github.com/NetSinx/yconnect-shop/server/category/utils"
+	"github.com/NetSinx/yconnect-shop/server/category/model/domain"
 )
 
 func TestListCategory(t *testing.T) {
 	response, _ := http.Get("http://localhost:8080/category")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 		
@@ -28,7 +28,7 @@ func TestCreateCategory(t *testing.T) {
 
 	response, _ := http.Post("http://localhost:8080/category", "application/json", strings.NewReader(body))
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -50,7 +50,7 @@ func TestUpdateCategory(t *testing.T) {
 	response, _ := httpClient.Do(req)
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 		
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -66,7 +66,7 @@ func TestDeleteCategory(t *testing.T) {
 	response, _ := httpClient.Do(req)
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 		
 		json.NewDecoder(response.Body).Decode(&respData)
 
@@ -78,7 +78,7 @@ func TestGetCategory(t *testing.T) {
 	response, _ := http.Get("http://localhost:8080/category/1")
 
 	if response.StatusCode != 200 {
-		var respData utils.ErrServer
+		var respData domain.MessageResp
 		
 		json.NewDecoder(response.Body).Decode(&respData)
 

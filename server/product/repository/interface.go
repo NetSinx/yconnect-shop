@@ -1,13 +1,13 @@
 package repository
 
-import "github.com/NetSinx/yconnect-shop/server/product/model"
+import "github.com/NetSinx/yconnect-shop/server/product/model/entity"
 
 type ProductRepo interface {
-	ListProduct(products []model.Product) ([]model.Product, error)
-	CreateProduct(products model.Product, image []model.Image) (model.Product, error)
-	UpdateProduct(products model.Product, image []model.Image, slug string, id string) (model.Product, error)
-	DeleteProduct(products model.Product, image []model.Image, slug string, id string) error
-	GetProduct(products model.Product, slug string) (model.Product, error)
-	GetProductByCategory(products []model.Product, id string) ([]model.Product, error)
-	GetProductBySeller(products []model.Product, id string) ([]model.Product, error)
+	ListProduct(products []entity.Product) ([]entity.Product, error)
+	CreateProduct(products entity.Product, image []entity.Image) (entity.Product, error)
+	UpdateProduct(products entity.Product, image []entity.Image, slug string, id string) (entity.Product, error)
+	DeleteProduct(products entity.Product, image []entity.Image, slug string, id string) error
+	GetProduct(products entity.Product, slug string) (entity.Product, error)
+	GetProductByCategory(products []entity.Product, id string) ([]entity.Product, error)
+	GetProductBySeller(products []entity.Product, id string) ([]entity.Product, error)
 }

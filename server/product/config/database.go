@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
-	"github.com/NetSinx/yconnect-shop/server/product/model"
+	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/utils"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -13,8 +13,8 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	var products model.Product
-	var images model.Image
+	var products entity.Product
+	var images entity.Image
 
 	godotenv.Load()
 

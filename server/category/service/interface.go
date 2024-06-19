@@ -1,13 +1,13 @@
 package service
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/category/app/model"	
+	"github.com/NetSinx/yconnect-shop/server/category/model/entity"
 )
 	
 type CategoryServ interface {
-	ListCategory(categories []model.Category) ([]model.Category, error)
-	CreateCategory(categories model.Category) (model.Category, error)
-	UpdateCategory(categories model.Category, id string) (model.Category, error)
-	DeleteCategory(category model.Category, id string) error
-	GetCategory(categories model.Category, id string) (model.Category, error)
+	ListCategory(categories []entity.Category) ([]entity.Category, error)
+	CreateCategory(categories entity.Category) (entity.Category, error)
+	UpdateCategory(categories entity.Category, id string) (entity.Category, error)
+	DeleteCategory(category entity.Category, id string) error
+	GetCategory(categories entity.Category, id string) (entity.Category, error)
 }
