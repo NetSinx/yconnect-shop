@@ -20,7 +20,7 @@ func ApiRoutes() *echo.Echo {
 		TokenLookup: "header:xsrf",
 		CookieName: "xsrf",
 		CookiePath: "/",
-		CookieMaxAge: 3600,
+		CookieMaxAge: 60,
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure: true,

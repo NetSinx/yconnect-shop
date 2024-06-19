@@ -22,7 +22,7 @@ func ApiRoutes() *echo.Echo {
 		CookiePath: "/",
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteStrictMode,
-		CookieMaxAge: 3600,
+		CookieMaxAge: 60,
 		CookieSecure: true,
 	}))
 
