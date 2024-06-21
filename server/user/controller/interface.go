@@ -11,5 +11,5 @@ type UserContr interface {
 	DeleteUser(c echo.Context) error
 	SendOTP(c echo.Context) error
 	VerifyEmail(c echo.Context) error
-	IsLogin(c echo.Context) error
+	Verify(c echo.Context) error
 }

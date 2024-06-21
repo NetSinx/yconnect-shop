@@ -343,27 +343,36 @@ func (u userController) DeleteUser(c echo.Context) error {
 	})
 }
 
-func (u userController) IsLogin(c echo.Context) error {
+func (u userController) Verify(c echo.Context) error {
 	cookie, err := c.Cookie("jwt_token")
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.RespData{
-			Data: false,
+			Data: map[string]interface{
+				"isValid": false,
+			},
 		})
 	} else if cookie.Value == "" {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.RespData{
-			Data: false,
+			Data: map[string]interface{
+				"isValid": false,
+			},,
 		})
 	} else {
 		token, _ := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
 			return t, nil
 		})
+
 		if token.Valid {
 			return c.JSON(http.StatusOK, domain.RespData{
-				Data: true,
+				Data: map[string]interface{
+				"isValid": true,
+			},,
 			})
 		} else {
 			return echo.NewHTTPError(http.StatusUnauthorized, domain.RespData{
-				Data: false,
+				Data: map[string]interface{
+					"isValid": false,
+				},,
 			})
 		}
 	}
