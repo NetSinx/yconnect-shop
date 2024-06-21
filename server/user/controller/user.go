@@ -346,26 +346,45 @@ func (u userController) DeleteUser(c echo.Context) error {
 func (u userController) Verify(c echo.Context) error {
 	cookie, err := c.Cookie("jwt_token")
 	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.RespData{
-			Data: false,
+		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+			Message: err.Error(),
 		})
 	} else if cookie.Value == "" {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.RespData{
-			Data: false,
+		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+			Message: "your token is empty.",
 		})
 	} else {
-		token, _ := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
-			return t, nil
-		})
+		jwtKey1 := "netsinxadmin"
+		jwtKey2 := "yasinganteng15"
 
-		if token.Valid {
-			return c.JSON(http.StatusOK, domain.RespData{
-				Data: true,
+		token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
+			return jwtKey1, nil
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+				Message: err.Error(),
+			})
+		} else if token.Valid {
+			return c.JSON(http.StatusOK, domain.MessageResp{
+				Message: "token is valid.",
 			})
 		} else {
-			return echo.NewHTTPError(http.StatusUnauthorized, domain.RespData{
-				Data: false,
+			token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
+				return jwtKey2, nil
 			})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+					Message: err.Error(),
+				})
+			} else if !token.Valid {
+				return c.JSON(http.StatusOK, domain.MessageResp{
+					Message: "invalid token.",
+				})
+			} else {
+				return c.JSON(http.StatusOK, domain.MessageResp{
+					Message: "token is valid.",
+				})
+			}
 		}
 	}
 }
