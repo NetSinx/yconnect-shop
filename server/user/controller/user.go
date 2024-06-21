@@ -122,7 +122,7 @@ func (u userController) LoginUser(c echo.Context) error {
 	var cookie http.Cookie
 	cookie.Name = "jwt_token"
 	cookie.Value = jwtToken
-	cookie.Expires = time.Now().Add(30 * time.Minute)
+	cookie.Expires = time.Now().Add(1800 * time.Second)
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteStrictMode
 	cookie.Secure = true
