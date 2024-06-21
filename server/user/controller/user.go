@@ -347,15 +347,11 @@ func (u userController) Verify(c echo.Context) error {
 	cookie, err := c.Cookie("jwt_token")
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.RespData{
-			Data: map[string]interface{
-				"isValid": false,
-			},
+			Data: false,
 		})
 	} else if cookie.Value == "" {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.RespData{
-			Data: map[string]interface{
-				"isValid": false,
-			},,
+			Data: false,
 		})
 	} else {
 		token, _ := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
@@ -364,15 +360,11 @@ func (u userController) Verify(c echo.Context) error {
 
 		if token.Valid {
 			return c.JSON(http.StatusOK, domain.RespData{
-				Data: map[string]interface{
-				"isValid": true,
-			},,
+				Data: true,
 			})
 		} else {
 			return echo.NewHTTPError(http.StatusUnauthorized, domain.RespData{
-				Data: map[string]interface{
-					"isValid": false,
-				},,
+				Data: false,
 			})
 		}
 	}
