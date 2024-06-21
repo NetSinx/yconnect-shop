@@ -13,8 +13,6 @@ import (
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/gmail/v1"
 	"google.golang.org/api/option"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func getTokenFromWeb(config *oauth2.Config) (*oauth2.Token, error) {
@@ -78,98 +76,101 @@ func sendMail(ctx context.Context, config *oauth2.Config, token *oauth2.Token, r
 	return nil
 }
 
-func SendOTP(c echo.Context) error {
-	var reqUser domain.ReqUser
+func SendOTP() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if (r.Method == "POST" && r.URL.Path == "/sendOTP") {
+			var reqUser domain.ReqUser
 
-	w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Content-Type", "application/json")
 
-	if err := json.NewDecoder(r.Body).Decode(&reqUser); err != nil {
-		json.NewEncoder(w).Encode(domain.ResponseMessage{
-			Message: err.Error(),
-		})
-	}
+			if err := json.NewDecoder(r.Body).Decode(&reqUser); err != nil {
+				json.NewEncoder(w).Encode(domain.ResponseMessage{
+					Message: err.Error(),
+				})
+				
+				return
+			}
 
-	ctx := context.Background()
+			ctx := context.Background()
 
-	secret, err := os.ReadFile("credentials.json")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(domain.ResponseMessage{
-			Message: err.Error(),
-		})
+			secret, err := os.ReadFile("credentials.json")
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(domain.ResponseMessage{
+					Message: err.Error(),
+				})
 
-		return
-	}
+				return
+			}
 
-	conf, err := google.ConfigFromJSON(secret, gmail.GmailSendScope)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(domain.ResponseMessage{
-			Message: err.Error(),
-		})
+			conf, err := google.ConfigFromJSON(secret, gmail.GmailSendScope)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(domain.ResponseMessage{
+					Message: err.Error(),
+				})
 
-		return
-	}
+				return
+			}
 
-	token := &oauth2.Token{}
+			token := &oauth2.Token{}
 
-	getToken, err := getTokenFromFile("token.json", token)
-	if err != nil {
-		token, err = getTokenFromWeb(conf)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(domain.ResponseMessage{
-				Message: err.Error(),
-			})
+			getToken, err := getTokenFromFile("token.json", token)
+			if err != nil {
+				token, err = getTokenFromWeb(conf)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					json.NewEncoder(w).Encode(domain.ResponseMessage{
+						Message: err.Error(),
+					})
 
-			return
-		}
+					return
+				}
 
-		if err := sendMail(ctx, conf, token, reqUser.Email, reqUser.OTP); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(domain.ResponseMessage{
-				Message: err.Error(),
-			})
+				if err := sendMail(ctx, conf, token, reqUser.Email, reqUser.OTP); err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					json.NewEncoder(w).Encode(domain.ResponseMessage{
+						Message: err.Error(),
+					})
+
+					return
+				} else {
+					w.WriteHeader(http.StatusOK)
+					json.NewEncoder(w).Encode(domain.ResponseMessage{
+						Message: "Kode OTP berhasil dikirim.",
+					})
+				}
+
+				return
+			}
+
+			if err := sendMail(ctx, conf, getToken, reqUser.Email, reqUser.OTP); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(domain.ResponseMessage{
+					Message: err.Error(),
+				})
+
+				return
+			} else {
+				w.WriteHeader(http.StatusOK)
+				json.NewEncoder(w).Encode(domain.ResponseMessage{
+					Message: "Kode OTP berhasil dikirim.",
+				})
+			}
 
 			return
 		} else {
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(domain.ResponseMessage{
-				Message: "Kode OTP berhasil dikirim.",
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			json.NewEncoder(w).Encode(map[string]string{
+				"message": http.StatusText(http.StatusMethodNotAllowed),
 			})
+
+			return
 		}
-
-		return
 	}
-
-	if err := sendMail(ctx, conf, getToken, reqUser.Email, reqUser.OTP); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(domain.ResponseMessage{
-			Message: err.Error(),
-		})
-
-		return
-	} else {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(domain.ResponseMessage{
-			Message: "Kode OTP berhasil dikirim.",
-		})
-	}
-
-	return
 }
 
 func main() {
-	router := echo.New()
-	router.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "header:xsrf",
-		CookieName: "xsrf",
-		CookiePath: "/",
-		CookieHTTPOnly: true,
-		CookieSameSite: http.SameSiteStrictMode,
-		CookieMaxAge: 60,
-		CookieSecure: true,
-	}))
 	fmt.Println("Server running on localhost:8085...")
 	log.Fatal(http.ListenAndServe(":8085", SendOTP()))
 }

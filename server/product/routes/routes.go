@@ -25,14 +25,6 @@ func ApiRoutes() *echo.Echo {
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure: true,
 	}))
-
-	router.GET("/product/gencsrf", func(c echo.Context) error {
-		csrf := c.Get("csrf")
-
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"csrf_token": csrf,
-		})
-	})
 	router.GET("/product", productController.ListProduct)
 	router.GET("/product/:slug", productController.GetProduct)
 	router.POST("/product", productController.CreateProduct)
