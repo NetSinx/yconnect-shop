@@ -354,8 +354,8 @@ func (u userController) Verify(c echo.Context) error {
 			Message: "your token is empty.",
 		})
 	} else {
-		jwtKey1 := "netsinxadmin"
-		jwtKey2 := "yasinganteng15"
+		jwtKey1 := []byte("netsinxadmin")
+		jwtKey2 := []byte("yasinganteng15")
 
 		token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
 			return jwtKey1, nil
