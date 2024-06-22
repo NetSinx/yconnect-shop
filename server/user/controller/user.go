@@ -8,11 +8,9 @@ import (
 	"os"
 	"strings"
 	"time"
-
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -122,7 +120,7 @@ func (u userController) LoginUser(c echo.Context) error {
 	var cookie http.Cookie
 	cookie.Name = "jwt_token"
 	cookie.Value = jwtToken
-	cookie.Expires = time.Now().Add(1800 * time.Second)
+	cookie.Expires = time.Now().Add(30 * time.Minute)
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteStrictMode
 	cookie.Secure = true
@@ -341,50 +339,4 @@ func (u userController) DeleteUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil dihapus.",
 	})
-}
-
-func (u userController) Verify(c echo.Context) error {
-	cookie, err := c.Cookie("jwt_token")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: err.Error(),
-		})
-	} else if cookie.Value == "" {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: "your token is empty.",
-		})
-	} else {
-		jwtKey1 := []byte("netsinxadmin")
-		jwtKey2 := []byte("yasinganteng15")
-
-		token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
-			return jwtKey1, nil
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-				Message: err.Error(),
-			})
-		} else if token.Valid {
-			return c.JSON(http.StatusOK, domain.MessageResp{
-				Message: "token is valid.",
-			})
-		} else {
-			token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
-				return jwtKey2, nil
-			})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-					Message: err.Error(),
-				})
-			} else if !token.Valid {
-				return c.JSON(http.StatusOK, domain.MessageResp{
-					Message: "invalid token.",
-				})
-			} else {
-				return c.JSON(http.StatusOK, domain.MessageResp{
-					Message: "token is valid.",
-				})
-			}
-		}
-	}
 }
