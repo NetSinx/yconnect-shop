@@ -37,7 +37,7 @@ func (u userService) RegisterUser(users entity.User) error {
 		return fmt.Errorf("consumer gagal dibuat")
 	}
 
-	if users.Username == "netsinx_15" {
+	if users.Username == "netsinx_15" && users.Email == "yasin03ckm@gmail.com" {
 		reqJwt := []byte(`{"key": "jwtnetsinxadmin", "secret": "netsinxadmin", "algorithm": "HS512"}`)
 		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
 		if err != nil {
