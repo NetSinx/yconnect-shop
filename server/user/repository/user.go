@@ -34,7 +34,7 @@ func (u userRepository) LoginUser(userLogin entity.UserLogin) (entity.User, erro
 
 	u.DB.Where("username = ? OR email = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Updates(&entity.User{Token: jwtToken})
 	
-	if err := u.DB.Select("password").First(&users, "email = ? OR username = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Error; err != nil {
+	if err := u.DB.Select("password, token").First(&users, "email = ? OR username = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Error; err != nil {
 		return users, err
 	}
 
