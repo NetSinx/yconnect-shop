@@ -60,31 +60,9 @@ func (u userService) RegisterUser(users entity.User) error {
 }
 
 func (u userService) LoginUser(userLogin entity.UserLogin) (string, error) {
-	if userLogin.Email != "" {
-		containsAt := false
-		var contains []rune
-
-		for _, word := range userLogin.Email {
-			if word == '@' || word == '.' {
-				contains = append(contains, word)
-			}
-		}
-
-		for i, word := range contains {
-			if word == '@' && contains[i+1] == '.' {
-				containsAt = true
-				break
-			}
-		}
-	
-		if !containsAt {
-			return "", fmt.Errorf("email tidak mengandung karakter '@' dan hostname")
-		}
-	}
-
 	users, err := u.userRepository.LoginUser(userLogin)
 	if err != nil {
-		return "", fmt.Errorf("email atau password salah")
+		return "", fmt.Errorf("username / email atau password salah")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(userLogin.Password))

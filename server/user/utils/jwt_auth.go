@@ -12,8 +12,8 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-func JWTAuth(username, email string) string {
-	if username == "netsinx_15" || email == "yasin@gmail.com" {
+func JWTAuth(usernameOrEmail string) string {
+	if usernameOrEmail == "netsinx_15" || usernameOrEmail == "yasin@gmail.com" {
 		signingKey := []byte("netsinxadmin")
 
 		claims := CustomClaims{
@@ -36,7 +36,7 @@ func JWTAuth(username, email string) string {
 	signingKey := []byte("yasinganteng15")
 
 	claims := CustomClaims{
-		username,
+		usernameOrEmail,
 		false,
 		"jwtyasinganteng",
 		jwt.RegisteredClaims{

@@ -30,11 +30,11 @@ func (u userRepository) RegisterUser(users entity.User) error {
 func (u userRepository) LoginUser(userLogin entity.UserLogin) (entity.User, error) {
 	var users entity.User
 
-	jwtToken := utils.JWTAuth(userLogin.Username, userLogin.Email)
+	jwtToken := utils.JWTAuth(userLogin.UsernameorEmail)
 
-	u.DB.Where("username = ? OR email = ?", userLogin.Username, userLogin.Email).Updates(&entity.User{Token: jwtToken})
+	u.DB.Where("username = ? OR email = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Updates(&entity.User{Token: jwtToken})
 	
-	if err := u.DB.Select("username", "password", "token").First(&users, "email = ? OR username = ?", userLogin.Email, userLogin.Username).Error; err != nil {
+	if err := u.DB.Select("password").First(&users, "email = ? OR username = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Error; err != nil {
 		return users, err
 	}
 

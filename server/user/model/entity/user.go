@@ -26,7 +26,6 @@ type User struct {
 }
 
 type UserLogin struct {
-	Username string  `json:"username"`
-	Email    string  `json:"email"`
-	Password string  `json:"password" validate:"required,min=5"`	
+	UsernameorEmail    string  `json:"UsernameorEmail"`
+	Password           string  `json:"password" validate:"required,min=5"`	
 }
