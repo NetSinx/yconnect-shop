@@ -360,14 +360,6 @@ func (u userController) Verify(c echo.Context) error {
 			return jwtKey1, nil
 		})
 		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-				Message: err.Error(),
-			})
-		} else if token.Valid {
-			return c.JSON(http.StatusOK, domain.MessageResp{
-				Message: "Your token is valid.",
-			})
-		} else {
 			token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
 				return jwtKey2, nil
 			})
@@ -384,6 +376,14 @@ func (u userController) Verify(c echo.Context) error {
 					Message: "Your token is valid.",
 				})
 			}
+		} else if token.Valid {
+			return c.JSON(http.StatusOK, domain.MessageResp{
+				Message: "Your token is valid.",
+			})
+		} else {
+			return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+				Message: "Your token is invalid.",
+			})
 		}
 	}
 }
