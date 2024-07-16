@@ -119,7 +119,7 @@ func (u userController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	zone, _ := time.Now().Zone()
+	zone := time.Now().Location().String()
 	utils.SetCookies(c, "tz", zone)
 
 	key1 := []byte("netsinxadmin")
