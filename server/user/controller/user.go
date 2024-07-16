@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 	"os"
 	"strings"
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
@@ -118,7 +119,8 @@ func (u userController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	utils.SetCookies("jwt_token", jwtToken)
+	zone, _ := time.Now().Zone()
+	utils.SetCookies("tz", zone)
 
 	key1 := []byte("netsinxadmin")
 	key2 := []byte("yasinganteng15")
@@ -131,7 +133,7 @@ func (u userController) LoginUser(c echo.Context) error {
 			return key2, nil
 		})
 		if err != nil {
-			fmt.Println("token tidak vaid")
+			fmt.Println("token tidak valid")
 		} else if token.Valid {
 			for claim, value := range token.Claims.(jwt.MapClaims) {
 				if claim == "username" {
@@ -140,7 +142,7 @@ func (u userController) LoginUser(c echo.Context) error {
 				}
 			}
 		} else {
-			fmt.Println("token tidak vaid")
+			fmt.Println("token tidak valid")
 		}
 	} else if token.Valid {
 		for _, value := range token.Claims.(jwt.MapClaims) {
