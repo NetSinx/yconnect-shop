@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
-import { HomeService } from './services/home/home.service';
+import { Component, OnInit } from '@angular/core';
+import { ProductService } from './services/product/product.service';
+import { Observable } from 'rxjs';
+import { LoadingService } from './services/loading/loading.service';
+import { CategoryService } from './services/category/category.service';
 
 @Component({
   selector: 'app-root',
@@ -7,36 +10,35 @@ import { HomeService } from './services/home/home.service';
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   errors: any
+  isLoading: Observable<boolean>
 
-  constructor(private homeService: HomeService) {}
+  constructor(
+    private productService: ProductService,
+    private categoryService: CategoryService,
+    private loadingService: LoadingService
+  ) {
+    this.isLoading = this.loadingService.loading
+  }
 
   ngOnInit(): void {
     this.getErrorCategories()
     this.getErrorProducts()
   }
 
-  public getErrorCategories() {
-    this.homeService.getCategories().subscribe(
-      data => {
-        if (data.code === 500) {
-          this.errors = [data.code, data.status]
-        }
-      },
+  public getErrorProducts(): void {
+    this.productService.getProducts().subscribe(
+      data => data,
       error => {
         this.errors = error
       }
     )
   }
 
-  public getErrorProducts() {
-    this.homeService.getProducts().subscribe(
-      data => {
-        if (data.code === 500) {
-          this.errors = [data.code, data.status]
-        }
-      },
+  public getErrorCategories(): void {
+    this.categoryService.getCategories().subscribe(
+      data => data,
       error => {
         this.errors = error
       }

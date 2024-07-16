@@ -13,21 +13,19 @@
 </div>
 
 <div class="container">
-  <div class="text-center mb-4 d-flex justify-content-center">
+  <form action="" class="input-group search w-50 m-auto">
+    <input type="text" class="form-control" placeholder="Cari makanan atau minuman...">
+    <button class="btn btn-primary">Cari</button>
+  </form>
+  
+  <div class="text-center my-4 d-flex justify-content-center">
     <h2 class="title-menu font-sans fw-bold">Menu Makanan</h2>
   </div>
-
-  <div class="row justify-content-center mb-5">
-    <form action="" class="input-group w-75">
-      <input type="text" class="form-control" placeholder="Cari makanan atau minuman...">
-      <button class="btn btn-primary">Cari</button>
-    </form>
-  </div>
-
-  <div class="row pt-3 justify-content-center" *ngIf="products.length != 0 else not_available">
+  
+  <div class="row pt-3 justify-content-center" *ngIf="products.length !== 0 else not_available">
     <div class="col-lg-4 mb-4" *ngFor="let product of products">
       <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/products/{{ product.id }}" class="card-product position-relative text-decoration-none" *ngFor="let img of product.images">
+        <a routerLink="/product/{{ product.slug }}" class="card-product position-relative text-decoration-none" *ngFor="let img of product.images">
           <div class="image overflow-hidden">
             <div class="cover"></div>
             <img src="http://localhost:8000{{ img.name }}">

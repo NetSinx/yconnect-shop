@@ -10,8 +10,9 @@
 .title-menu::after {
   content: '';
   display: block;
-  margin-left: 60px;
-  margin-top: 5px;
+  position: relative;
+  left: 70px;
+  top: 10px;
   background-color: rgb(7, 157, 243);
   width: 60px;
   height: 4px;

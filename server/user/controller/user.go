@@ -6,11 +6,11 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"time"
 	"strings"
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
+	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -118,16 +118,7 @@ func (u userController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	var cookieToken http.Cookie
-	cookieToken.Name = "jwt_token"
-	cookieToken.Value = jwtToken
-	cookieToken.Expires = time.Now().Add(30 * time.Minute)
-	cookieToken.HttpOnly = true
-	cookieToken.SameSite = http.SameSiteStrictMode
-	cookieToken.Secure = true
-	c.SetCookie(&cookieToken)
-
-	var cookieUserId http.Cookie
+	utils.SetCookies("jwt_token", jwtToken)
 
 	key1 := []byte("netsinxadmin")
 	key2 := []byte("yasinganteng15")
@@ -144,7 +135,7 @@ func (u userController) LoginUser(c echo.Context) error {
 		} else if token.Valid {
 			for claim, value := range token.Claims.(jwt.MapClaims) {
 				if claim == "username" {
-					cookieUserId.Value = value.(string)
+					utils.SetCookies("user_id", value.(string))
 					break
 				}
 			}
@@ -154,20 +145,13 @@ func (u userController) LoginUser(c echo.Context) error {
 	} else if token.Valid {
 		for _, value := range token.Claims.(jwt.MapClaims) {
 			if value == "netsinx_15" {
-				cookieUserId.Value = value.(string)
+				utils.SetCookies("user_id", value.(string))
 				break
 			}
 		}
 	} else {
 		fmt.Println("token tidak valid")
 	}
-
-	cookieUserId.Name = "user_id"
-	cookieUserId.Expires = time.Now().Add(30 * time.Minute)
-	cookieUserId.HttpOnly = true
-	cookieUserId.SameSite = http.SameSiteStrictMode
-	cookieUserId.Secure = true
-	c.SetCookie(&cookieUserId)
 
 	return c.JSON(http.StatusOK, map[string]interface{} {
 		"token": jwtToken,
@@ -407,38 +391,24 @@ func (u userController) Verify(c echo.Context) error {
 					Message: "Your token is invalid.",
 				})
 			} else {
-				cookieUserId := http.Cookie{}
-				cookieUserId.Name = "user_id"
 				for _, value := range token.Claims.(jwt.MapClaims) {
 					if value == "netsinx_15" {
-						cookieUserId.Value = value.(string)
+						utils.SetCookies("user_id", value.(string))
 						break
 					}
 				}
-				cookieUserId.Expires = time.Now().Add(30 * time.Minute)
-				cookieUserId.HttpOnly = true
-				cookieUserId.SameSite = http.SameSiteStrictMode
-				cookieUserId.Secure = true
-				c.SetCookie(&cookieUserId)
 
 				return c.JSON(http.StatusOK, domain.MessageResp{
 					Message: "Your token is valid.",
 				})
 			}
 		} else if token.Valid {
-			cookieUserId := http.Cookie{}
-				cookieUserId.Name = "user_id"
-				for claim, value := range token.Claims.(jwt.MapClaims) {
-					if claim == "username" {
-						cookieUserId.Value = value.(string)
-						break
-					}
+			for claim, value := range token.Claims.(jwt.MapClaims) {
+				if claim == "username" {
+					utils.SetCookies("user_id", value.(string))
+					break
 				}
-				cookieUserId.Expires = time.Now().Add(30 * time.Minute)
-				cookieUserId.HttpOnly = true
-				cookieUserId.SameSite = http.SameSiteStrictMode
-				cookieUserId.Secure = true
-				c.SetCookie(&cookieUserId)
+			}
 
 			return c.JSON(http.StatusOK, domain.MessageResp{
 				Message: "Your token is valid.",
@@ -449,4 +419,23 @@ func (u userController) Verify(c echo.Context) error {
 			})
 		}
 	}
+}
+
+func (u userController) GetUserInfo(c echo.Context) error {
+	username_cookie, err := c.Cookie("user_id")
+	if err != nil {
+		return err
+	}
+	
+	tz_cookie, err := c.Cookie("tz")
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, domain.RespData{
+		Data: map[string]string{
+			username_cookie.Name: username_cookie.Value,
+			tz_cookie.Name: tz_cookie.Value,
+		},
+	})
 }

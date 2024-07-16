@@ -1,15 +1,21 @@
+<div class="overlay" *ngIf="isLoading | async">
+  <div class="loading">
+    <span class="loader"></span>
+    <p class="fs-3">Mohon Tunggu...</p>
+  </div>
+</div>
 <div *ngIf="errors else no_error">
   <div class="container-fluid">
     <div class="row justify-content-center align-items-center" style="height: 100vh;">
       <div class="col-lg text-center">
-        <h1>{{ errors.status }}</h1>
-        <p class="fs-3">{{ errors.statusText }}</p>
+        <h1>500</h1>
+        <p class="fs-2">Internal Server Error</p>
       </div>
     </div>
   </div>
 </div>
 
 <ng-template #no_error>
-  <app-navbar></app-navbar>
+  <app-category></app-category>
   <router-outlet></router-outlet>
 </ng-template>

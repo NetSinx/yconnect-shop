@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg bg-light shadow sticky-top">
+  <div class="container">
+    <a class="navbar-brand me-5" routerLink="">
+      <img src="../../assets/y-logo.png" width="40">
+      <p class="d-inline fw-bold ms-2">Pondok Ayam Bakar Pak Yasin</p>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse fs-5" id="navbarNavDropdown">
+      <ul class="navbar-nav ms-auto" *ngIf="categories">
+        <div *ngFor="let category of categories">
+          <li class="nav-item">
+            <a class="nav-link my-link" routerLink="">{{ category.name }}</a>
+          </li>
+        </div>
+        <li class="nav-item" *ngIf="currentRoute !== '/dashboard/{{ user?.username }}' && isLoggedIn === false">
+          <a class="nav-link" routerLink="/login" routerLinkActive="active-link">Login <i class="bi bi-box-arrow-in-right"></i></a>
+        </li>
+        <li class="nav-item d-flex" *ngIf="isLoggedIn === true">
+          <img src="../../../favicon.ico" class="rounded-circle ms-4" width="30">
+          <!-- <a class="nav-link" routerLink="/dashboard/{{ username }}">{{ username }}</a> -->
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

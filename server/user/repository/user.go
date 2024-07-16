@@ -5,7 +5,6 @@ import (
 	"time"
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
-	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"gorm.io/gorm"
 )
 
@@ -27,12 +26,10 @@ func (u userRepository) RegisterUser(users entity.User) error {
 	return nil
 }
 
-func (u userRepository) LoginUser(userLogin entity.UserLogin) (entity.User, error) {
+func (u userRepository) LoginUser(userLogin entity.UserLogin, token string) (entity.User, error) {
 	var users entity.User
 
-	jwtToken := utils.JWTAuth(userLogin.UsernameorEmail)
-
-	u.DB.Where("username = ? OR email = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Updates(&entity.User{Token: jwtToken})
+	u.DB.Where("username = ? OR email = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Updates(&entity.User{Token: token})
 	
 	if err := u.DB.Select("password, token").First(&users, "email = ? OR username = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Error; err != nil {
 		return users, err

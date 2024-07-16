@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
@@ -62,7 +61,9 @@ func (u userService) RegisterUser(users entity.User) error {
 }
 
 func (u userService) LoginUser(userLogin entity.UserLogin) (string, error) {
-	users, err := u.userRepository.LoginUser(userLogin)
+	jwtToken := utils.JWTAuth(userLogin.UsernameorEmail)
+
+	users, err := u.userRepository.LoginUser(userLogin, jwtToken)
 	if err != nil {
 		return "", fmt.Errorf("username / email atau password salah")
 	}
