@@ -120,7 +120,7 @@ func (u userController) LoginUser(c echo.Context) error {
 	}
 
 	zone, _ := time.Now().Zone()
-	utils.SetCookies("tz", zone)
+	utils.SetCookies(c, "tz", zone)
 
 	key1 := []byte("netsinxadmin")
 	key2 := []byte("yasinganteng15")
@@ -137,7 +137,7 @@ func (u userController) LoginUser(c echo.Context) error {
 		} else if token.Valid {
 			for claim, value := range token.Claims.(jwt.MapClaims) {
 				if claim == "username" {
-					utils.SetCookies("user_id", value.(string))
+					utils.SetCookies(c, "user_id", value.(string))
 					break
 				}
 			}
@@ -147,7 +147,7 @@ func (u userController) LoginUser(c echo.Context) error {
 	} else if token.Valid {
 		for _, value := range token.Claims.(jwt.MapClaims) {
 			if value == "netsinx_15" {
-				utils.SetCookies("user_id", value.(string))
+				utils.SetCookies(c, "user_id", value.(string))
 				break
 			}
 		}
@@ -395,7 +395,7 @@ func (u userController) Verify(c echo.Context) error {
 			} else {
 				for _, value := range token.Claims.(jwt.MapClaims) {
 					if value == "netsinx_15" {
-						utils.SetCookies("user_id", value.(string))
+						utils.SetCookies(c, "user_id", value.(string))
 						break
 					}
 				}
@@ -407,7 +407,7 @@ func (u userController) Verify(c echo.Context) error {
 		} else if token.Valid {
 			for claim, value := range token.Claims.(jwt.MapClaims) {
 				if claim == "username" {
-					utils.SetCookies("user_id", value.(string))
+					utils.SetCookies(c, "user_id", value.(string))
 					break
 				}
 			}

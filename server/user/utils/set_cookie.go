@@ -6,8 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func SetCookies(name string, value string) {
-	var c echo.Context
+func SetCookies(c echo.Context, name string, value string) {
 	cookie := http.Cookie{
 		Name: name,
 		Value: value,
