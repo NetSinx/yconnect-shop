@@ -6,8 +6,8 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
 	"time"
+	"strings"
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
@@ -118,14 +118,56 @@ func (u userController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	var cookie http.Cookie
-	cookie.Name = "jwt_token"
-	cookie.Value = jwtToken
-	cookie.Expires = time.Now().Add(30 * time.Minute)
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteStrictMode
-	cookie.Secure = true
-	c.SetCookie(&cookie)
+	var cookieToken http.Cookie
+	cookieToken.Name = "jwt_token"
+	cookieToken.Value = jwtToken
+	cookieToken.Expires = time.Now().Add(30 * time.Minute)
+	cookieToken.HttpOnly = true
+	cookieToken.SameSite = http.SameSiteStrictMode
+	cookieToken.Secure = true
+	c.SetCookie(&cookieToken)
+
+	var cookieUserId http.Cookie
+
+	key1 := []byte("netsinxadmin")
+	key2 := []byte("yasinganteng15")
+
+	token, err := jwt.Parse(jwtToken, func(t *jwt.Token) (interface{}, error) {
+		return key1, nil
+	})
+	if err != nil {
+		token, err := jwt.Parse(jwtToken, func(t *jwt.Token) (interface{}, error) {
+			return key2, nil
+		})
+		if err != nil {
+			fmt.Println("token tidak vaid")
+		} else if token.Valid {
+			for claim, value := range token.Claims.(jwt.MapClaims) {
+				if claim == "username" {
+					cookieUserId.Value = value.(string)
+					break
+				}
+			}
+		} else {
+			fmt.Println("token tidak vaid")
+		}
+	} else if token.Valid {
+		for _, value := range token.Claims.(jwt.MapClaims) {
+			if value == "netsinx_15" {
+				cookieUserId.Value = value.(string)
+				break
+			}
+		}
+	} else {
+		fmt.Println("token tidak valid")
+	}
+
+	cookieUserId.Name = "user_id"
+	cookieUserId.Expires = time.Now().Add(30 * time.Minute)
+	cookieUserId.HttpOnly = true
+	cookieUserId.SameSite = http.SameSiteStrictMode
+	cookieUserId.Secure = true
+	c.SetCookie(&cookieUserId)
 
 	return c.JSON(http.StatusOK, map[string]interface{} {
 		"token": jwtToken,
@@ -353,16 +395,9 @@ func (u userController) Verify(c echo.Context) error {
 			Message: "Your token is empty.",
 		})
 	} else {
-		jwtKey1 := []byte("netsinxadmin")
-		jwtKey2 := []byte("yasinganteng15")
-
-		token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
-			return jwtKey1, nil
-		})
+		token, err := u.userService.Verify(cookie.Value)
 		if err != nil {
-			token, err := jwt.Parse(cookie.Value, func(t *jwt.Token) (interface{}, error) {
-				return jwtKey2, nil
-			})
+			token, err := u.userService.Verify(cookie.Value)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
 					Message: err.Error(),
@@ -372,11 +407,39 @@ func (u userController) Verify(c echo.Context) error {
 					Message: "Your token is invalid.",
 				})
 			} else {
+				cookieUserId := http.Cookie{}
+				cookieUserId.Name = "user_id"
+				for _, value := range token.Claims.(jwt.MapClaims) {
+					if value == "netsinx_15" {
+						cookieUserId.Value = value.(string)
+						break
+					}
+				}
+				cookieUserId.Expires = time.Now().Add(30 * time.Minute)
+				cookieUserId.HttpOnly = true
+				cookieUserId.SameSite = http.SameSiteStrictMode
+				cookieUserId.Secure = true
+				c.SetCookie(&cookieUserId)
+
 				return c.JSON(http.StatusOK, domain.MessageResp{
 					Message: "Your token is valid.",
 				})
 			}
 		} else if token.Valid {
+			cookieUserId := http.Cookie{}
+				cookieUserId.Name = "user_id"
+				for claim, value := range token.Claims.(jwt.MapClaims) {
+					if claim == "username" {
+						cookieUserId.Value = value.(string)
+						break
+					}
+				}
+				cookieUserId.Expires = time.Now().Add(30 * time.Minute)
+				cookieUserId.HttpOnly = true
+				cookieUserId.SameSite = http.SameSiteStrictMode
+				cookieUserId.Secure = true
+				c.SetCookie(&cookieUserId)
+
 			return c.JSON(http.StatusOK, domain.MessageResp{
 				Message: "Your token is valid.",
 			})

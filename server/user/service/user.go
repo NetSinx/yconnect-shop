@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -214,4 +216,29 @@ func (u userService) DeleteUser(users entity.User, username string) error {
 	httpClient.Do(req)
 
 	return nil
+}
+
+func (u userService) Verify(token string) (*jwt.Token, error) {
+	jwtKey1 := []byte("netsinxadmin")
+	jwtKey2 := []byte("yasinganteng15")
+
+	resultToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		return jwtKey1, nil
+	})
+	if err != nil {
+		resultToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+			return jwtKey2, nil
+		})
+		if err != nil {
+			return nil, err
+		} else if resultToken.Valid {
+			return resultToken, nil
+		} else {
+			return nil, err
+		}
+	} else if resultToken.Valid {
+		return resultToken, nil
+	} else {
+		return nil, err
+	}
 }

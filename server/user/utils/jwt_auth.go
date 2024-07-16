@@ -13,7 +13,7 @@ type CustomClaims struct {
 }
 
 func JWTAuth(usernameOrEmail string) string {
-	if usernameOrEmail == "netsinx_15" || usernameOrEmail == "yasin@gmail.com" {
+	if usernameOrEmail == "netsinx_15" || usernameOrEmail == "yasin03ckm@gmail.com" {
 		signingKey := []byte("netsinxadmin")
 
 		claims := CustomClaims{
