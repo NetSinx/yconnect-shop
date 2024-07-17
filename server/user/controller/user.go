@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 	"os"
 	"strings"
+	"time"
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -119,8 +120,7 @@ func (u userController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	zone := time.Now().Location().String()
-	utils.SetCookies(c, "tz", zone)
+	utils.SetCookies(c, "user_session", jwtToken)
 
 	key1 := []byte("netsinxadmin")
 	key2 := []byte("yasinganteng15")
@@ -439,5 +439,33 @@ func (u userController) GetUserInfo(c echo.Context) error {
 			username_cookie.Name: username_cookie.Value,
 			tz_cookie.Name: tz_cookie.Value,
 		},
+	})
+}
+
+func (u userController) SetTimezone(c echo.Context) error {
+	var reqTz domain.RequestTimezone
+
+	if err := c.Bind(&reqTz); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
+		})
+	}
+
+	if err := validator.New().Struct(&reqTz); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
+		})
+	}
+
+	if _, err := time.LoadLocation(reqTz.Timezone); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: "Timezone tidak valid.",
+		})
+	}
+
+	utils.SetCookies(c, "tz", reqTz.Timezone)
+
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "Cookie timezone telah ditetapkan.",
 	})
 }

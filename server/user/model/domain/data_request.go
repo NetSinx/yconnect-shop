@@ -11,3 +11,7 @@ type EmailVerified struct {
 	EmailVerified 	bool
 	EmailVerifiedAt sql.NullTime
 }
+
+type RequestTimezone struct {
+	Timezone string `json:"timezone" validate:"required"`
+}

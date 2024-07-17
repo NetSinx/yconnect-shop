@@ -12,4 +12,5 @@ type UserContr interface {
 	SendOTP(c echo.Context) error
 	VerifyEmail(c echo.Context) error
 	Verify(c echo.Context) error
+	SetTimezone(c echo.Context) error
 }
