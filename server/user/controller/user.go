@@ -371,7 +371,7 @@ func (u userController) DeleteUser(c echo.Context) error {
 }
 
 func (u userController) Verify(c echo.Context) error {
-	cookie, err := c.Cookie("jwt_token")
+	cookie, err := c.Cookie("user_session")
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
 			Message: err.Error(),
