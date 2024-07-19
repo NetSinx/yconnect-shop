@@ -469,3 +469,36 @@ func (u userController) SetTimezone(c echo.Context) error {
 		Message: "Cookie timezone telah ditetapkan.",
 	})
 }
+
+func (u userController) UserLogout(c echo.Context) error {
+	session, err := c.Cookie("user_session")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
+		})
+	}
+	session.Expires = time.Unix(0, 0)
+	session.MaxAge = -1
+
+	user_id, err := c.Cookie("user_id")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
+		})
+	}
+	user_id.Expires = time.Unix(0, 0)
+	user_id.MaxAge = -1
+
+	tz, err := c.Cookie("tz")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
+		})
+	}
+	tz.Expires = time.Unix(0, 0)
+	tz.MaxAge = -1
+
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "User berhasil logout",
+	})
+}

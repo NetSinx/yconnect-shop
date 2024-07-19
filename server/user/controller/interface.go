@@ -13,4 +13,5 @@ type UserContr interface {
 	VerifyEmail(c echo.Context) error
 	Verify(c echo.Context) error
 	SetTimezone(c echo.Context) error
+	UserLogout(c echo.Context) error
 }

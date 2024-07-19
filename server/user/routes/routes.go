@@ -42,6 +42,7 @@ func ApiRoutes() *echo.Echo {
 	router.GET("/user/verify", userController.Verify)
 	router.GET("/user/userinfo", userController.GetUserInfo)
 	router.GET("/user/:username", userController.GetUser)
+	router.GET("/user/logout", userController.UserLogout)
 	router.PUT("/user/:username", userController.UpdateUser)
 	router.DELETE("/user/:username", userController.DeleteUser)
 
