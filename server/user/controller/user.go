@@ -498,6 +498,10 @@ func (u userController) UserLogout(c echo.Context) error {
 	tz.Expires = time.Unix(0, 0)
 	tz.MaxAge = -1
 
+	c.SetCookie(session)
+	c.SetCookie(user_id)
+	c.SetCookie(tz)
+
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil logout",
 	})
