@@ -200,10 +200,6 @@ func (u userService) GetUser(users entity.User, username string) (entity.User, e
 func (u userService) DeleteUser(users entity.User, username string) error {
 	var httpClient http.Client
 	
-	if err := u.userRepository.DeleteUser(users, username); err != nil {
-		return err
-	}
-	
 	getUser, err := u.userRepository.GetUser(users, username)
 	if err != nil {
 		return err
@@ -215,6 +211,10 @@ func (u userService) DeleteUser(users entity.User, username string) error {
 	}
 	
 	httpClient.Do(req)
+	
+	if err := u.userRepository.DeleteUser(users, username); err != nil {
+		return err
+	}
 
 	return nil
 }
