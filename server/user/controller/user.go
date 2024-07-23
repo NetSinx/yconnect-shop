@@ -105,7 +105,7 @@ func (u userController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	jwtToken, err := u.userService.LoginUser(userLogin)
+	jwtToken, user_id, err := u.userService.LoginUser(userLogin)
 	if err != nil && err.Error() == "email atau password salah" {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
 			Message: "Email atau password Anda salah.",
@@ -121,42 +121,10 @@ func (u userController) LoginUser(c echo.Context) error {
 	}
 
 	utils.SetCookies(c, "user_session", jwtToken)
+	utils.SetCookies(c, "user_id", user_id)
 
-	key1 := []byte("netsinxadmin")
-	key2 := []byte("yasinganteng15")
-
-	token, err := jwt.Parse(jwtToken, func(t *jwt.Token) (interface{}, error) {
-		return key1, nil
-	})
-	if err != nil {
-		token, err := jwt.Parse(jwtToken, func(t *jwt.Token) (interface{}, error) {
-			return key2, nil
-		})
-		if err != nil {
-			fmt.Println("token tidak valid")
-		} else if token.Valid {
-			for claim, value := range token.Claims.(jwt.MapClaims) {
-				if claim == "username" {
-					utils.SetCookies(c, "user_id", value.(string))
-					break
-				}
-			}
-		} else {
-			fmt.Println("token tidak valid")
-		}
-	} else if token.Valid {
-		for _, value := range token.Claims.(jwt.MapClaims) {
-			if value == "netsinx_15" {
-				utils.SetCookies(c, "user_id", value.(string))
-				break
-			}
-		}
-	} else {
-		fmt.Println("token tidak valid")
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{} {
-		"token": jwtToken,
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "User berhasil login",
 	})
 }
 

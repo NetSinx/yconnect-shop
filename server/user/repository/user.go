@@ -26,12 +26,10 @@ func (u userRepository) RegisterUser(users entity.User) error {
 	return nil
 }
 
-func (u userRepository) LoginUser(userLogin entity.UserLogin, token string) (entity.User, error) {
+func (u userRepository) LoginUser(userLogin entity.UserLogin) (entity.User, error) {
 	var users entity.User
-
-	u.DB.Where("username = ? OR email = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Updates(&entity.User{Token: token})
 	
-	if err := u.DB.Select("password, token").First(&users, "email = ? OR username = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Error; err != nil {
+	if err := u.DB.Select("password").First(&users, "email = ? OR username = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Error; err != nil {
 		return users, err
 	}
 
@@ -47,7 +45,7 @@ func (u userRepository) ListUsers(users []entity.User) ([]entity.User, error) {
 }
 
 func (u userRepository) UpdateUser(users entity.User, username string) error {
-	if err := u.DB.Where("username = ?", username).Updates(&entity.User{Name: users.Name, Username: users.Username, Avatar: users.Avatar, Email: users.Email, Alamat: users.Alamat, NoTelp: users.NoTelp, Password: users.Password, Token: users.Token, Cart: users.Cart}).Error; err != nil {
+	if err := u.DB.Where("username = ?", username).Updates(&entity.User{Name: users.Name, Username: users.Username, Avatar: users.Avatar, Email: users.Email, Alamat: users.Alamat, NoTelp: users.NoTelp, Password: users.Password, Cart: users.Cart}).Error; err != nil {
 		return err
 	}
 	

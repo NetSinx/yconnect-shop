@@ -8,7 +8,7 @@ import (
 
 type UserServ interface {
 	RegisterUser(users entity.User) error
-	LoginUser(userLogin entity.UserLogin) (string, error)
+	LoginUser(userLogin entity.UserLogin) (string, string, error)
 	ListUsers(users []entity.User) ([]entity.User, error)
 	GetUser(users entity.User, username string) (entity.User, error)
 	UpdateUser(users entity.User, username string) error
