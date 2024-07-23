@@ -61,12 +61,12 @@ func (u userService) RegisterUser(users entity.User) error {
 }
 
 func (u userService) LoginUser(userLogin entity.UserLogin) (string, string, error) {
-	jwtToken := utils.JWTAuth(userLogin.UsernameorEmail)
-
 	users, err := u.userRepository.LoginUser(userLogin)
 	if err != nil {
 		return "", "", fmt.Errorf("username / email atau password salah")
 	}
+	
+	jwtToken := utils.JWTAuth(users.Username)
 
 	err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(userLogin.Password))
 	if err != nil {
