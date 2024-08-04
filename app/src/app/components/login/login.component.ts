@@ -16,7 +16,6 @@ export class LoginComponent implements OnInit {
   formGroup: FormGroup = new FormGroup({})
   formBuilder: FormBuilder = new FormBuilder
   errorLogin: string | undefined
-  isLoading: Observable<boolean>
   dataLogin: {
     UsernameorEmail: string,
     password: string
@@ -27,17 +26,15 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private loginService: LoginService,
-    private csrfService: GenCsrfService,
     private router: Router,
     private loadingService: LoadingService,
-    private userService: UserService
+    private userService: UserService,
+    private csrfService: GenCsrfService
   ) {
     this.formGroup = this.formBuilder.group({
       UsernameorEmail: new FormControl('', [Validators.required]),
       password: new FormControl('', [Validators.required]),
     })
-    
-    this.isLoading = this.loadingService.loading
   }
 
   ngOnInit(): void {
@@ -49,15 +46,19 @@ export class LoginComponent implements OnInit {
   public userLogin(): void {
     this.dataLogin.UsernameorEmail = this.formGroup.value.UsernameorEmail
     this.dataLogin.password = this.formGroup.value.password
+    const timezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone
 
     this.loginService.userLogin(this.dataLogin).subscribe(() => {
-      this.userService.getUser(this.dataLogin.UsernameorEmail).subscribe(
-        resp => {
-          this.router.navigate([`/dashboard/${resp.data.username}`])
-          document.cookie = `user_id=${resp.data.username}`
+      this.userService.setTimeZone(timezone).subscribe(
+        () => {
+          this.userService.getUserInfo().subscribe(resp => {
+            this.loadingService.setLoading(false)
+            this.router.navigate([`/dashboard/${resp.data.user_id}`])
+          })
         }
       )
     }, () => {
+      this.loadingService.setLoading(false)
       this.errorLogin = "Email / password Anda salah!"
     })
   }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/interfaces/user';
+import { LoadingService } from 'src/app/services/loading/loading.service';
 import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
@@ -12,7 +13,11 @@ export class DashboardComponent implements OnInit {
   user_id: string | null
   user: User | undefined
 
-  constructor(private userService: UserService, private route: ActivatedRoute) {
+  constructor(
+    private userService: UserService,
+    private route: ActivatedRoute,
+    private loadingService: LoadingService
+  ) {
     this.user_id = this.route.snapshot.paramMap.get("userId")
   }
 
@@ -22,7 +27,10 @@ export class DashboardComponent implements OnInit {
 
   public getUser(user_id: string): void {
     this.userService.getUser(user_id).subscribe(
-      resp => this.user = resp.data
+      resp => {
+        this.loadingService.setLoading(false)
+        this.user = resp.data
+      }
     )
   }
 }

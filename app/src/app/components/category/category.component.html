@@ -1,28 +1,51 @@
-<nav class="navbar navbar-expand-lg bg-light shadow sticky-top">
-  <div class="container">
-    <a class="navbar-brand me-5" routerLink="">
-      <img src="../../assets/y-logo.png" width="40">
-      <p class="d-inline fw-bold ms-2">Pondok Ayam Bakar Pak Yasin</p>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-      aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse fs-5" id="navbarNavDropdown">
-      <ul class="navbar-nav ms-auto" *ngIf="categories">
-        <div *ngFor="let category of categories">
-          <li class="nav-item">
-            <a class="nav-link my-link" routerLink="">{{ category.name }}</a>
-          </li>
+<nav class="sticky-top bg-light h-100 w-100 pt-2" #nav>
+  <div class="container h-100 w-100">
+    <div class="row align-items-center justify-content-between h-100 w-100">
+      <div class="col-lg navbar-brand">
+        <a href="#" class="text-decoration-none text-dark d-flex logo">
+          <img ngSrc="assets/y-logo.png" width="40" height="40" priority>
+          <h3 class="m-auto ms-2">Y-Connect Shop</h3>
+        </a>
+        <button class="btn" #button (click)="hamburgerMenu(button, nav)">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div class="col-lg-5">
+        <div class="input-group search">
+          <input type="text" class="form-control" placeholder="Cari..." aria-label="Cari..." aria-describedby="button-addon2">
+          <button class="btn btn-dark" type="button" id="button-addon2">Cari</button>
         </div>
-        <li class="nav-item" *ngIf="currentRoute !== '/dashboard/{{ user?.username }}' && isLoggedIn === false">
-          <a class="nav-link" routerLink="/login" routerLinkActive="active-link">Login <i class="bi bi-box-arrow-in-right"></i></a>
-        </li>
-        <li class="nav-item d-flex" *ngIf="isLoggedIn === true">
-          <img src="../../../favicon.ico" class="rounded-circle ms-4" width="30">
-          <!-- <a class="nav-link" routerLink="/dashboard/{{ username }}">{{ username }}</a> -->
-        </li>
-      </ul>
+      </div>
+      <div class="category">
+        <ul class="d-flex justify-content-center">
+          <li><a href="#">Luxury</a></li>
+          <li><a href="#">Pria</a></li>
+          <li><a href="#">Wanita</a></li>
+          <li><a href="#">Stylist</a></li>
+          <li><a href="#">Fashion</a></li>
+        </ul>
+      </div>
+      <div class="col-lg preferensi">
+        <div *ngIf="isLoggedIn">
+          <button class="btn btn-dark me-2"><i class="bi bi-heart-fill"></i></button>
+          <button class="btn btn-dark me-2"><i class="bi bi-cart4"></i></button>
+        </div>
+        <a routerLink="/login" routerLinkActive="active" class="text-decoration-none text-dark fs-5 rounded login p-2" *ngIf="!isLoggedIn">Login <i class="bi bi-box-arrow-in-right"></i></a>
+        <div class="dropdown" *ngIf="isLoggedIn">
+          <a class="text-decoration-none text-dark dropdown-toggle fs-5 rounded" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img ngSrc="favicon.ico" width="30" height="30" priority>
+            netsinx_15
+          </a>
+        
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#"><i class="bi bi-graph-up"></i> Dashboard</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </nav>

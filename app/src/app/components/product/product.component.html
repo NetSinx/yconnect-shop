@@ -1,39 +1,439 @@
 <div class="mb-4 hero-bg">
-  <div class="d-flex justify-content-center align-items-center"
-    style="background-color: rgba(0, 0, 0, 0.6);height: 85vh;">
-    <div class="text-white text-center">
-      <h1 class="display-5 fw-bold mb-4">Pondok Ayam Bakar Pak Yasin</h1>
+  <div class="content">
+    <img ngSrc="assets/yconnect-shop.jpg" fill priority>
+    <div class="overlay d-flex align-items-center text-center text-light">
       <div class="container">
-        <p class="fs-4">Kami menjual berbagai makanan & minuman dengan yang disajikan dengan cita rasa yang lokal, nikmat,
-        dan sedap.</p>
+        <h1>Y-Connect Shop</h1>
+        <p class="fs-4">Kami menjual berbagai pakaian dengan desain yang trend dan kekinian</p>
+        <button class="btn btn-primary mt-4 fs-5" (click)="scrollToProduct($event)">Lihat Produk <i class="bi bi-arrow-down-circle-fill"></i></button>
       </div>
-      <button class="btn btn-primary fs-5 mt-5">Lihat Menu</button>
     </div>
   </div>
 </div>
 
-<div class="container">
-  <form action="" class="input-group search w-50 m-auto">
-    <input type="text" class="form-control" placeholder="Cari makanan atau minuman...">
-    <button class="btn btn-primary">Cari</button>
-  </form>
-  
-  <div class="text-center my-4 d-flex justify-content-center">
-    <h2 class="title-menu font-sans fw-bold">Menu Makanan</h2>
+<div class="container pb-5">
+  <div class="row justify-content-evenly mt-5 event">
+    <div class="card banner-info col-lg-4 bg-primary text-white mb-3">
+      <h3 class="card-header">Promo Seru!</h3>
+      <div class="card-body">
+        <h5 class="card-title">Special title treatment</h5>
+        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+        <a href="#" class="btn btn-warning">Go somewhere</a>
+      </div>
+    </div>
+    <div class="card banner-info col-lg-3 bg-danger text-white mb-3">
+      <h3 class="card-header">Flash Sale!</h3>
+      <div class="card-body">
+        <h5 class="card-title">Special title treatment</h5>
+        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+        <a href="#" class="btn btn-warning">Go somewhere</a>
+      </div>
+    </div>
+    <div class="card banner-info col-lg-3 bg-success text-white">
+      <h3 class="card-header">Diskon sampai 40%!</h3>
+      <div class="card-body">
+        <h5 class="card-title">Special title treatment</h5>
+        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+        <a href="#" class="btn btn-warning">Go somewhere</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center my-4">
+    <h2 class="title-menu font-sans fw-bold mt-4">Promo Seru!</h2>
   </div>
   
-  <div class="row pt-3 justify-content-center" *ngIf="products.length !== 0 else not_available">
-    <div class="col-lg-4 mb-4" *ngFor="let product of products">
+  <div class="row pt-3 justify-content-start">
+    <div class="col-lg-3 col-6 mb-4">
       <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/{{ product.slug }}" class="card-product position-relative text-decoration-none" *ngFor="let img of product.images">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
           <div class="image overflow-hidden">
             <div class="cover"></div>
-            <img src="http://localhost:8000{{ img.name }}">
+            <img ngSrc="assets/baju_muslim1.jpg" fill priority>
           </div>
           <div class="card-body">
-            <h2>{{ product.price | currency:'IDR':'Rp'}}</h2>
-            <h4>{{ product.name }}</h4>
-            <p><b>Stock: </b>{{ product.stock }}</p>
+            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim2.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim3.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Muslim Premium</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim4.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Koko Pria Murah Berkualitas</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center my-4">
+    <h2 class="title-menu font-sans fw-bold mt-4">Flash Sale!</h2>
+  </div>
+  
+  <div class="row pt-3 justify-content-start">
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim1.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim2.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim3.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Muslim Premium</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim4.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Koko Pria Murah Berkualitas</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim1.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim2.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim3.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Muslim Premium</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim4.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Koko Pria Murah Berkualitas</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center my-4">
+    <h2 class="title-menu font-sans fw-bold mt-4">Diskon sampai 40%!</h2>
+  </div>
+  
+  <div class="row pt-3 justify-content-start">
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim1.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim2.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim3.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Muslim Premium</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim4.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Koko Pria Murah Berkualitas</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim1.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim2.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim3.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Baju Muslim Premium</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
+                &#9733;
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-6 mb-4">
+      <div class="border rounded-3 overflow-hidden shadow">
+        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+          <div class="image overflow-hidden">
+            <div class="cover"></div>
+            <img ngSrc="assets/baju_muslim4.jpg" fill priority>
+          </div>
+          <div class="card-body">
+            <p class="fs-5">Koko Pria Murah Berkualitas</p>
+            <h4>Rp 17.000,00</h4>
+            <div class="rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
+                &#9733;
+              </span>
+            </div>
           </div>
         </a>
       </div>
@@ -44,3 +444,38 @@
     <p class="fs-4 text-center">Makanan & minuman sedang tidak tersedia.</p>
   </ng-template>
 </div>
+
+<footer class="bg-dark w-100">
+  <div class="container h-100 w-100">
+    <div class="row h-100 justify-content-evenly align-items-center m-auto">
+      <div class="col-3">
+        <ul>
+          <li><a href="#">Beranda</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Tentang Kami</a></li>
+          <li><a href="#">Kontak Kami</a></li>
+        </ul>
+      </div>
+      <div class="col-3">
+        <ul>
+          <li><a href="#">Berita</a></li>
+          <li><a href="#">Tanya Jawab</a></li>
+          <li><a href="#">Testimoni</a></li>
+          <li><a href="#">Syarat & Ketentuan</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-1 text-center fs-2">
+        <a href="#"><i class="bi bi-instagram"></i></a>
+      </div>
+      <div class="col-1 text-center fs-2">
+        <a href="#"><i class="bi bi-facebook"></i></a>
+      </div>
+      <div class="col-1 text-center fs-2">
+        <a href="#"><i class="bi bi-twitter"></i></a>
+      </div>
+      <p class="fs-6 text-center mt-3 text-white">Copyright©2024 by Yasin A.H.</p>
+    </div>
+  </div>
+</footer>

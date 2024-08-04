@@ -16,8 +16,6 @@ export class CustomInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     this.loadingService.setLoading(true)
 
-    return next.handle(req).pipe(
-      finalize(() => this.loadingService.setLoading(false))
-    )
+    return next.handle(req)
   }
 }

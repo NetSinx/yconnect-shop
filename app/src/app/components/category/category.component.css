@@ -1,62 +1,148 @@
-@media (min-width: 1025px) {  
-  .active-link {
-    display: none;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+DK+Loopet:wght@100..400&display=swap');
 
-  .navbar-brand p {
-    font-size: 22px;
-  }
-
-  .nav-link {
-    margin: 0 5px;
-    color: black;
-  }
-
-  .nav-link.my-link:after {
-    content: '';
-    display: block;
-    background-color: rgb(0, 0, 0);
-    width: 0;
-    height: 4px;
-    transition: all;
-    transition-duration: 300ms;
-  }
-
-  .nav-link.my-link:hover:after {
-    width: 100%;
-  }
-
-  .search {
-    width: 50%;
-  }
+nav {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  padding-bottom: 5px;
 }
 
-@media (max-width: 1024px) {
-  .active-link {
-    display: none;
+nav a.logo {
+  font-family: "Playwrite DK Loopet", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+nav .preferensi a {
+  transition: all .3s;
+  padding: 5px 10px 8px 10px;
+}
+
+nav .preferensi a:hover {
+  background-color: #cfcfcf;
+}
+
+nav .preferensi {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+nav .navbar-brand button {
+  display: none;
+}
+
+nav .category {
+  order: 3;
+  margin-top: 15px;
+}
+
+nav .category ul {
+  list-style-type: none;
+  margin-bottom: 5px;
+}
+
+nav .category a {
+  text-decoration: none;
+  color: black;
+  padding: 10px 30px 10px 30px;
+}
+
+nav .category a:hover {
+  background-color: #cfcfcf;
+}
+
+.active {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  nav {
+    position: fixed;
+    padding-top: 5px;
+    z-index: 999;
+    height: 55px !important;
+    overflow: hidden;
+    transition: all ease-in-out .3s;
   }
 
-  .nav-link:hover {
-    background-color: rgb(199, 199, 199);
-    color: black;
+  nav.active {
+    height: 400px !important;
   }
 
-  .nav-link.active {
-    background-color: rgb(199, 199, 199);
-    color: black;
+  nav .search {
+    margin-top: 10px;
   }
 
-  .nav-item {
-    padding: 5px 0;
+  nav .navbar-brand {
+    display: flex;
+    justify-content: space-between;
   }
 
-  .nav-link {
-    padding-left: 15px;
-    padding-right: 15px;
-    border-radius: 30px;
+  nav .navbar-brand button {
+    display: block;
   }
 
-  .search {
+  nav .navbar-brand button span {
+    width: 30px;
+    height: 3px;
+    background-color: black;
+    display: block;
+    transition: all .3s;
+    transform-origin: left;
+  }
+
+  nav .navbar-brand button span:first-child {
+    margin-bottom: 8px;
+  }
+
+  nav .navbar-brand button.active span:first-child {
+    transform: rotate(45deg);
+  }
+  
+  nav .navbar-brand button span:last-child {
+    margin-top: 8px;
+  }
+  
+  nav .navbar-brand button.active span:last-child {
+    transform: rotate(-45deg);
+  }
+
+  nav .navbar-brand button.active span:nth-child(2) {
+    transform: scale(0);
+  }
+
+  nav .preferensi {
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  nav .category {
+    order: unset;
     width: 100%;
+  }
+
+  nav .category ul {
+    flex-direction: column;
+    width: 100%;
+    padding-left: 0px;
+  }
+
+  nav .category li {
+    width: 100%;
+  }
+
+  nav .category a {
+    width: 100%;
+    display: block;
+    color: black;
+    text-decoration: none;
+    padding: 10px 0 10px 10px;
+    border-radius: 10px;
+  }
+
+  nav .category a:hover {
+    background-color: #cfcfcf;
   }
 }

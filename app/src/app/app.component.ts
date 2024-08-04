@@ -23,14 +23,16 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadingService.setLoading(true)
     this.getErrorCategories()
     this.getErrorProducts()
   }
 
   public getErrorProducts(): void {
     this.productService.getProducts().subscribe(
-      data => data,
+      () => this.loadingService.setLoading(false),
       error => {
+        this.loadingService.setLoading(false)
         this.errors = error
       }
     )
@@ -38,8 +40,9 @@ export class AppComponent implements OnInit {
 
   public getErrorCategories(): void {
     this.categoryService.getCategories().subscribe(
-      data => data,
+      () => this.loadingService.setLoading(false),
       error => {
+        this.loadingService.setLoading(false)
         this.errors = error
       }
     )

@@ -22,7 +22,7 @@ const routes: Routes = [
   {path: 'product', component: ProductDetailComponent, title: productDetailRoute},
   {path: 'register', component: RegisterComponent, title: "Register | Y-Connect Shop", canActivate: [loginGuard]},
   {path: 'login', component: LoginComponent, title: "Login | Y-Connect Shop", canActivate: [loginGuard]},
-  {path: 'dashboard/:userId', component: DashboardComponent, title: "Dashboard | Y-Connect Shop", canActivate: [authGuardGuard]},
+  {path: 'dashboard/:userId', component: DashboardComponent, title: "Dashboard | Y-Connect Shop", canActivate: [authGuardGuard], pathMatch: 'full'},
   {path: '**', component: PageNotFoundComponent, title: "404 Not Found"}
 ];
 

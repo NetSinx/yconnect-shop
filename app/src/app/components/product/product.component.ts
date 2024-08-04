@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../services/product/product.service';
 import { Product } from 'src/app/interfaces/product';
+import { LoadingService } from 'src/app/services/loading/loading.service';
 
 @Component({
   selector: 'app-product',
@@ -11,7 +12,7 @@ import { Product } from 'src/app/interfaces/product';
 export class ProductComponent implements OnInit {
   products: Product[] = []
 
-  constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService, private loadingService: LoadingService) {}
   
   ngOnInit(): void {
     this.getProducts()
@@ -20,8 +21,15 @@ export class ProductComponent implements OnInit {
   public getProducts(): void {
     this.productService.getProducts().subscribe(
       resp => {
+        this.loadingService.setLoading(false)
         this.products = resp.data
       }
     )
+  }
+
+  public scrollToProduct(event: Event): void {
+    event.target?.addEventListener('click', () => {
+      window.scrollTo({top: 208, behavior: 'smooth'})
+    })
   }
 }

@@ -1,21 +1,34 @@
-.hero-bg {
-  background-image: url('../../../assets/Ayam_Bakar_Pedas_Manis.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  width: 100%;
-  height: 85vh;
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+DK+Loopet:wght@100..400&display=swap');
+
+.hero-bg .content {
+  height: 86vh;
 }
 
-.title-menu::after {
-  content: '';
-  display: block;
+.hero-bg .overlay h1 {
+  font-family: "Playwrite DK Loopet", cursive;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 50px;
+}
+
+.hero-bg img {
+  margin-top: 1rem;
+}
+
+.hero-bg .overlay {
+  background-color: rgba(0, 0, 0, 0.5);
   position: relative;
-  left: 70px;
-  top: 10px;
-  background-color: rgb(7, 157, 243);
-  width: 60px;
-  height: 4px;
+  height: inherit;
+  z-index: 2;
+}
+
+.title-menu {
+  border-bottom: 2px solid #0099ff;
+  display: inline;
+}
+
+.banner-info {
+  height: 300px;
 }
 
 .card-product {
@@ -26,6 +39,7 @@
   box-sizing: border-box;
   transition: all ease-in-out;
   transition-duration: 300ms;
+  height: 450px;
 }
 
 .card-product:hover {
@@ -68,4 +82,53 @@
   padding-left: 20px;
   padding-top: 10px;
   padding-bottom: 20px;
+}
+
+.rating {
+  color: #dadada; /* Warna bintang */
+}
+
+.star {
+  font-size: 1.5em;
+}
+
+.star.filled {
+  color: #ffcc00; /* Warna bintang terisi */
+}
+
+footer {
+  padding-top: 2rem;
+  padding-bottom: 1rem;
+}
+
+footer ul li {
+  list-style: none;
+  margin-bottom: 10px;
+}
+
+footer a {
+  text-decoration: none;
+  color: #fff;
+}
+
+@media (max-width: 920px) {
+  .hero-bg .content {
+    height: 100vh;
+  }
+
+  .hero-bg img {
+    margin-top: 0px;
+  }
+
+  .hero-bg .overlay {
+    height: 100vh;
+  }
+
+  .event {
+    margin-top: 5rem !important;
+  }
+
+  .card-product {
+    height: 550px;
+  }
 }
