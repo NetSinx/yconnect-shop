@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
@@ -25,6 +26,14 @@ func UserService(userRepo repository.UserRepo) userService {
 }
 
 func (u userService) RegisterUser(users entity.User) error {
+	users.EmailVerified = false
+
+	if users.Username == "netsinx_15" || users.Email == "yasin03ckm@gmail.com" {
+		users.Role = "admin"
+	} else {
+		users.Role = "member"
+	}
+
 	if err := validator.New().Struct(users); err != nil {
 		return err
 	}
@@ -65,7 +74,7 @@ func (u userService) LoginUser(userLogin entity.UserLogin) (string, string, erro
 	if err != nil {
 		return "", "", fmt.Errorf("username / email atau password salah")
 	}
-	
+
 	jwtToken := utils.JWTAuth(users.Username)
 
 	err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(userLogin.Password))
@@ -112,24 +121,14 @@ func (u userService) ListUsers(users []entity.User) ([]entity.User, error) {
 	}
 
 	for i := range listUsers {
-		var preloadSeller domain.PreloadSeller
 		var preloadCart domain.PreloadCarts
-		
-		respProduct, err := http.Get(fmt.Sprintf("http://seller-service:8084/seller/%s", listUsers[i].Username))
-		if err != nil {
-			return listUsers, nil
-		} else if respProduct.StatusCode == 200 {
-			json.NewDecoder(respProduct.Body).Decode(&preloadSeller)
-			
-			listUsers[i].Seller = preloadSeller.Data
-		}
 
 		respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", listUsers[i].Id))
 		if err != nil {
 			return listUsers, nil
 		} else if respCart.StatusCode == 200 {
 			json.NewDecoder(respCart.Body).Decode(&preloadCart)
-			
+
 			listUsers[i].Cart = preloadCart.Data
 		}
 	}
@@ -156,15 +155,15 @@ func (u userService) UpdateUser(users entity.User, username string) error {
 func (u userService) SendOTP(verifyEmail domain.VerifyEmail) (string, error) {
 	otpCode := utils.GenerateOTP()
 	verifyEmail.OTP = otpCode
-	
+
 	if err := validator.New().Struct(&verifyEmail); err != nil {
 		return "", err
 	}
-	
+
 	if err := u.userRepository.SendOTP(verifyEmail); err != nil {
 		return "", err
 	}
-	
+
 	reqBody, err := json.Marshal(&verifyEmail)
 	if err != nil {
 		return "", err
@@ -174,11 +173,11 @@ func (u userService) SendOTP(verifyEmail domain.VerifyEmail) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("OTP tidak bisa dikirim")
 	}
-	
+
 	if err := utils.CacheOTP(otpCode); err != nil {
 		return "", err
 	}
-	
+
 	var response domain.RespData
 
 	json.NewDecoder(resp.Body).Decode(&response)
@@ -219,7 +218,7 @@ func (u userService) GetUser(users entity.User, username string) (entity.User, e
 		var preloadCart domain.PreloadCarts
 
 		json.NewDecoder(respCart.Body).Decode(&preloadCart)
-		
+
 		findUser.Cart = preloadCart.Data
 	}
 
@@ -228,7 +227,7 @@ func (u userService) GetUser(users entity.User, username string) (entity.User, e
 
 func (u userService) DeleteUser(users entity.User, username string) error {
 	var httpClient http.Client
-	
+
 	getUser, err := u.userRepository.GetUser(users, username)
 	if err != nil {
 		return err
@@ -238,9 +237,9 @@ func (u userService) DeleteUser(users entity.User, username string) error {
 	if err != nil {
 		return nil
 	}
-	
+
 	httpClient.Do(req)
-	
+
 	if err := u.userRepository.DeleteUser(users, username); err != nil {
 		return err
 	}

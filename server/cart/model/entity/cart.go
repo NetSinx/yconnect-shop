@@ -8,9 +8,9 @@ import (
 type Cart struct {
 	Id         uint           `json:"id" gorm:"primaryKey"`
 	ProductID  int            `json:"product_id" validate:"required"`
-	Product    entity.Product  `json:"product" gorm:"-"`
+	Product    entity.Product `json:"product" gorm:"-"`
 	Item       int            `json:"item" validate:"required"`
-	UserID     int            `json:"user_id" `
+	UserID     uint           `json:"user_id"`
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }

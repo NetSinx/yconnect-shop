@@ -30,7 +30,6 @@ func UserController(userServ service.UserServ) userController {
 
 func (u userController) RegisterUser(c echo.Context) error {
 	var users entity.User
-	users.EmailVerified = false
 
 	avatar, err := c.FormFile("avatar")
 	if err != nil {
@@ -39,7 +38,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 				Message: err.Error(),
 			})
 		}
-	
+
 		err := u.userService.RegisterUser(users)
 		if err != nil && err == gorm.ErrDuplicatedKey {
 			return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
@@ -54,7 +53,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 				Message: err.Error(),
 			})
 		}
-	
+
 		return c.JSON(http.StatusOK, domain.MessageResp{
 			Message: "Registrasi user berhasil.",
 		})
@@ -69,6 +68,8 @@ func (u userController) RegisterUser(c echo.Context) error {
 	src, _ := avatar.Open()
 	dst, _ := os.Create(fmt.Sprintf("assets/images/%v", avatar.Filename))
 	io.Copy(dst, src)
+
+	users.Avatar = fmt.Sprintf("assets/images/%v", avatar.Filename)
 
 	if err := c.Bind(&users); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -130,7 +131,7 @@ func (u userController) LoginUser(c echo.Context) error {
 
 func (u userController) ListUsers(c echo.Context) error {
 	var users []entity.User
-	
+
 	listUsers, err := u.userService.ListUsers(users)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
@@ -149,7 +150,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 	username := c.Param("username")
 
 	getUser, _ := u.userService.GetUser(users, username)
-	
+
 	avatar, err := c.FormFile("avatar")
 	if err != nil {
 		users.Avatar = ""
@@ -191,7 +192,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 	fileName := strings.Split(avatar.Filename, ".")[0]
 	fileExt := strings.Split(avatar.Filename, ".")[1]
 	hashedFileName := md5.New().Sum([]byte(fileName))
-	
+
 	os.MkdirAll("assets/images", os.ModePerm)
 
 	dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
@@ -215,7 +216,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	
+
 	err = u.userService.UpdateUser(users, username)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
@@ -229,7 +230,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
-	} 
+	}
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil diupdate.",
@@ -250,7 +251,7 @@ func (u userController) SendOTP(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Email tidak sesuai dengan yang diverifikasi.",
 		})
-	}	else if err != nil && err.Error() == "OTP tidak bisa dikirim" {
+	} else if err != nil && err.Error() == "OTP tidak bisa dikirim" {
 		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: err.Error(),
 		})
@@ -292,11 +293,11 @@ func (u userController) VerifyEmail(c echo.Context) error {
 	}
 
 	err := u.userService.VerifyEmail(verifyEmail)
-	if (err != nil && err == gorm.ErrRecordNotFound) {
+	if err != nil && err == gorm.ErrRecordNotFound {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: err.Error(),
 		})
-	} else if (err != nil && err.Error() == "kode OTP tidak valid") {
+	} else if err != nil && err.Error() == "kode OTP tidak valid" {
 		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: err.Error(),
 		})
@@ -396,7 +397,7 @@ func (u userController) GetUserInfo(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	
+
 	tz_cookie, err := c.Cookie("tz")
 	if err != nil {
 		return err
@@ -405,7 +406,7 @@ func (u userController) GetUserInfo(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.RespData{
 		Data: map[string]string{
 			username_cookie.Name: username_cookie.Value,
-			tz_cookie.Name: tz_cookie.Value,
+			tz_cookie.Name:       tz_cookie.Value,
 		},
 	})
 }

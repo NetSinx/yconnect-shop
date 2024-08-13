@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/NetSinx/yconnect-shop/server/cart v0.0.0-20240308104653-845c8e898f1a
-	github.com/NetSinx/yconnect-shop/server/seller v0.0.0-20240323011638-3c8304b7af0e
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/joho/godotenv v1.5.1
