@@ -1,14 +1,17 @@
 package entity
 
-import "time"
+import (
+	"time"
+	prodEntity "github.com/NetSinx/yconnect-shop/server/product/model/entity"
+	"gorm.io/gorm"
+)
 
 type Order struct {
-	Id        uint      `json:"id" gorm:"primaryKey"`
-	ProductID int       `json:"product_id"`
-	UserID    int       `json:"user_id"`
-	Kuantitas int       `json:"kuantitas" validate:"required"`
-	Status    string    `json:"status" validate:"required"`
-	Estimasi  time.Time `json:"estimasi" validate:"required"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	gorm.Model
+	ProductID int                `json:"product_id" validate:"required"`
+	Product   prodEntity.Product `json:"product"`
+	UserID    int                `json:"user_id" validate:"required"`
+	Kuantitas int                `json:"kuantitas" validate:"required"`
+	Status    string             `json:"status" validate:"required"`
+	Estimasi  time.Time          `json:"estimasi" validate:"required"`
 }

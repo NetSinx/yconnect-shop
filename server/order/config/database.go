@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"github.com/NetSinx/yconnect-shop/server/order/model/entity"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -25,6 +26,7 @@ func ConnectDB() *gorm.DB {
 	if err != nil {
 		log.Fatalf("Database not connected: %v", err)
 	}
+	db.AutoMigrate(&entity.Order{})
 
 	return db
 }
