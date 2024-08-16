@@ -1,7 +1,7 @@
 package domain
 
 import (
-	cartModel "github.com/NetSinx/yconnect-shop/server/cart/model"
+	cartModel "github.com/NetSinx/yconnect-shop/server/cart/model/entity"
 )
 
 type MessageResp struct {

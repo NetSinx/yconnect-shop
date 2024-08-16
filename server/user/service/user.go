@@ -26,7 +26,7 @@ func UserService(userRepo repository.UserRepo) userService {
 }
 
 func (u userService) RegisterUser(users entity.User) error {
-	users.EmailVerified = false
+	// users.EmailVerified = false
 
 	if users.Username == "netsinx_15" || users.Email == "yasin03ckm@gmail.com" {
 		users.Role = "admin"
@@ -34,34 +34,34 @@ func (u userService) RegisterUser(users entity.User) error {
 		users.Role = "member"
 	}
 
-	if err := validator.New().Struct(users); err != nil {
+	if err := validator.New().Struct(&users); err != nil {
 		return err
 	}
 
 	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 15)
 	users.Password = string(passwdHash)
-	reqUser := []byte(fmt.Sprintf(`{"username": "%s"}`, users.Username))
+	// reqUser := []byte(fmt.Sprintf(`{"username": "%s"}`, users.Username))
 
-	_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
-	if err != nil {
-		return fmt.Errorf("consumer gagal dibuat")
-	}
+	// _, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
+	// if err != nil {
+	// 	return fmt.Errorf("consumer gagal dibuat")
+	// }
 
-	if users.Username == "netsinx_15" && users.Email == "yasin03ckm@gmail.com" {
-		reqJwt := []byte(`{"key": "jwtnetsinxadmin", "secret": "netsinxadmin", "algorithm": "HS512"}`)
-		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
-		if err != nil {
-			return fmt.Errorf("token gagal dibuat")
-		}
-	} else {
-		reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
-		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
-		if err != nil {
-			return fmt.Errorf("token gagal dibuat")
-		}
-	}
+	// if users.Username == "netsinx_15" && users.Email == "yasin03ckm@gmail.com" {
+	// 	reqJwt := []byte(`{"key": "jwtnetsinxadmin", "secret": "netsinxadmin", "algorithm": "HS512"}`)
+	// 	_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
+	// 	if err != nil {
+	// 		return fmt.Errorf("token gagal dibuat")
+	// 	}
+	// } else {
+	// 	reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
+	// 	_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
+	// 	if err != nil {
+	// 		return fmt.Errorf("token gagal dibuat")
+	// 	}
+	// }
 
-	err = u.userRepository.RegisterUser(users)
+	err := u.userRepository.RegisterUser(users)
 	if err != nil {
 		return err
 	}

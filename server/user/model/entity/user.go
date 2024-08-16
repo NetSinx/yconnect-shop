@@ -2,25 +2,26 @@ package entity
 
 import (
 	"database/sql"
-	"time"
-	cartModel "github.com/NetSinx/yconnect-shop/server/cart/model"
+	cartEntity "github.com/NetSinx/yconnect-shop/server/cart/model/entity"
+	orderEntity "github.com/NetSinx/yconnect-shop/server/order/model/entity"
+	"gorm.io/gorm"
 )
 
 type User struct {
-	Id              uint             `json:"id" gorm:"primaryKey"`
-	Name            string           `json:"name"`
-	Username        string           `json:"username" gorm:"unique"`
-	Avatar          string           `json:"avatar"`
-	Email           string           `json:"email" gorm:"unique" validate:"required,email"`
-	Role            string           `json:"role" validate:"required"`
-	Alamat          Alamat           `json:"alamat" validate:"required"`
-	NoTelp          string           `json:"no_telp" gorm:"unique"`
-	Password        string           `json:"password" validate:"required,min=5,containsany=!@#&*,containsany=0123456789,containsany=ABCDEFGHIJKLMNOPQRSTUVWXYZ"`
-	EmailVerified   bool             `json:"email_verified" validate:"required"`
-	EmailVerifiedAt sql.NullTime
-	Cart            []cartModel.Cart `json:"cart"`
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	gorm.Model
+	Id              uint
+	Name            string              `json:"name"`
+	Username        string              `json:"username" gorm:"unique"`
+	Avatar          string              `json:"avatar"`
+	Email           string              `json:"email" gorm:"unique" validate:"required,email"`
+	Role            string              `json:"role" validate:"required"`
+	Alamat          Alamat              `json:"alamat" validate:"required"`
+	NoTelp          string              `json:"no_telp" gorm:"unique"`
+	Password        string              `json:"password" validate:"required,min=5,containsany=!@#&*,containsany=0123456789,containsany=ABCDEFGHIJKLMNOPQRSTUVWXYZ"`
+	EmailVerified   bool                `json:"email_verified" validate:"required"`
+	EmailVerifiedAt sql.NullTime        `json:"email_verified_at"`
+	Cart            []cartEntity.Cart   `json:"cart"`
+	Order           []orderEntity.Order `json:"order"`
 }
 
 type Alamat struct {
