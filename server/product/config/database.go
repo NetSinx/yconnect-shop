@@ -14,7 +14,7 @@ var DB *gorm.DB
 
 func ConnectDB() {
 	var products entity.Product
-	var images entity.Image
+	var gambar entity.Gambar
 
 	godotenv.Load()
 
@@ -31,7 +31,7 @@ func ConnectDB() {
 		utils.PanicError(err)
 	}
 
-	db.AutoMigrate(&products, &images)
+	db.AutoMigrate(&products, &gambar)
 
 	DB = db
 }

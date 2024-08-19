@@ -9,11 +9,7 @@ type RespData struct {
 }
 
 type PreloadCategory struct {
-	Data   entity.Category `json:"data"`
-}
-
-type PreloadUser struct {
-	Data   entity.Seller	`json:"data"`
+	Data   entity.Kategori `json:"data"`
 }
 
 type MessageResp struct {

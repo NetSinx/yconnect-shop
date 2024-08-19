@@ -145,25 +145,25 @@ func (u userController) ListUsers(c echo.Context) error {
 }
 
 func (u userController) UpdateUser(c echo.Context) error {
-	var users entity.User
+	var user entity.User
 
 	username := c.Param("username")
 
-	getUser, _ := u.userService.GetUser(users, username)
-
+	getDbUser, _ := u.userService.GetUser(user, username)
+	
 	avatar, err := c.FormFile("avatar")
 	if err != nil {
-		users.Avatar = ""
+		user.Avatar = ""
 
-		os.Remove("." + getUser.Avatar)
+		os.Remove("." + getDbUser.Avatar)
 
-		if err := c.Bind(&users); err != nil {
+		if err := c.Bind(&user); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 				Message: err.Error(),
 			})
 		}
 
-		err = u.userService.UpdateUser(users, username)
+		err = u.userService.UpdateUser(user, username)
 		if err != nil && err == gorm.ErrRecordNotFound {
 			return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 				Message: "User tidak ditemukan.",
@@ -205,32 +205,36 @@ func (u userController) UpdateUser(c echo.Context) error {
 		return err
 	}
 
-	if getUser.Avatar != "" {
-		os.Remove("." + getUser.Avatar)
+	if getDbUser.Avatar != "" {
+		os.Remove("." + getDbUser.Avatar)
 	}
 
-	users.Avatar = fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)
+	user.Avatar = fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)
 
-	if err := c.Bind(&users); err != nil {
+	if err := c.Bind(&user); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	err = u.userService.UpdateUser(users, username)
-	if err != nil && err == gorm.ErrRecordNotFound {
+	err = u.userService.UpdateUser(user, username)
+	if err != nil && err.Error() == "user tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "User tidak ditemukan.",
+			Message: err.Error(),
 		})
-	} else if err != nil && err == gorm.ErrDuplicatedKey {
+	} else if err != nil && err.Error() == "user sudah terdaftar" {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "User sudah pernah dibuat.",
+			Message: err.Error(),
 		})
-	} else if err != nil {
+	} else if err != nil && err == echo.ErrBadRequest {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
-	}
+		} else if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+				Message: err.Error(),
+			})
+		}
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil diupdate.",
@@ -272,9 +276,13 @@ func (u userController) GetUser(c echo.Context) error {
 	username := c.Param("username")
 
 	findUser, err := u.userService.GetUser(users, username)
-	if err != nil {
+	if err != nil && err.Error() == "user tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "User tidak ditemukan.",
+			Message: err.Error(),
+		})
+	} else if err != nil && err == echo.ErrInternalServerError {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
 		})
 	}
 
@@ -317,16 +325,10 @@ func (u userController) DeleteUser(c echo.Context) error {
 
 	username := c.Param("username")
 
-	user, _ := u.userService.GetUser(users, username)
-
-	if user.Avatar != "" {
-		os.Remove("." + user.Avatar)
-	}
-
 	err := u.userService.DeleteUser(users, username)
-	if err != nil && err == gorm.ErrRecordNotFound {
+	if err != nil && err.Error() == "user tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "User tidak ditemukan.",
+			Message: err.Error(),
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{

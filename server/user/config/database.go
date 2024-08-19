@@ -12,6 +12,7 @@ import (
 
 func ConnectDB() *gorm.DB {
 	var users entity.User
+	var alamat entity.Alamat
 
 	godotenv.Load()
 
@@ -28,7 +29,7 @@ func ConnectDB() *gorm.DB {
 		utils.LogPanic(err)
 	}
 
-	db.AutoMigrate(&users)
+	db.AutoMigrate(&users, &alamat)
 
 	return db
 }

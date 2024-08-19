@@ -37,19 +37,25 @@ func (u userRepository) LoginUser(userLogin entity.UserLogin) (entity.User, erro
 }
 
 func (u userRepository) ListUsers(users []entity.User) ([]entity.User, error) {
-	if err := u.DB.Find(&users).Error; err != nil {
+	if err := u.DB.Preload("Alamat").Find(&users).Error; err != nil {
 		return nil, err
 	}
 
 	return users, nil
 }
 
-func (u userRepository) UpdateUser(users entity.User, username string) error {
-	if err := u.DB.Where("username = ?", username).Updates(&entity.User{Name: users.Name, Username: users.Username, Avatar: users.Avatar, Email: users.Email, Alamat: users.Alamat, NoTelp: users.NoTelp, Password: users.Password, Cart: users.Cart}).Error; err != nil {
+func (u userRepository) UpdateUser(user entity.User, username string) error {
+	var userModel entity.User
+
+	if err := u.DB.First(&userModel, "username = ?", username).Error; err != nil {
 		return err
 	}
-	
-	if err := u.DB.First(&users, "username = ?", username).Error; err != nil {
+
+	if err := u.DB.Model(&userModel).Updates(&entity.User{Name: user.Name, Username: user.Username, Avatar: user.Avatar, Email: user.Email, NoTelp: user.NoTelp, Role: user.Role, Password: user.Password, EmailVerified: user.EmailVerified, EmailVerifiedAt: user.EmailVerifiedAt}).Error; err != nil {
+		return err
+	}
+
+	if err := u.DB.Model(&userModel).Association("Alamat").Replace(&user.Alamat); err != nil {
 		return err
 	}
 	
@@ -80,20 +86,24 @@ func (u userRepository) VerifyEmail(verifyEmail domain.VerifyEmail) error {
 	return nil
 }
 
-func (u userRepository) GetUser(users entity.User, username string) (entity.User, error) {
-	if err := u.DB.First(&users, "username = ?", username).Error; err != nil {
-		return users, err
+func (u userRepository) GetUser(user entity.User, username string) (entity.User, error) {
+	if err := u.DB.Preload("Alamat").First(&user, "username = ?", username).Error; err != nil {
+		return user, err
 	}
 
-	return users, nil
+	return user, nil
 }
 
-func (u userRepository) DeleteUser(users entity.User, username string) error {
-	if err := u.DB.First(&users, "username = ?", username).Error; err != nil {
+func (u userRepository) DeleteUser(user entity.User, username string) error {
+	if err := u.DB.First(&user, "username = ?", username).Error; err != nil {
 		return err
 	}
 	
-	if err := u.DB.Delete(&users, "username = ?", username).Error; err != nil {
+	if err := u.DB.Model(&user).Association("Alamat").Clear(); err != nil {
+		return err
+	}
+
+	if err := u.DB.Delete(&user).Error; err != nil {
 		return err
 	}
 

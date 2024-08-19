@@ -9,5 +9,4 @@ type ProductContr interface {
 	DeleteProduct(c echo.Context) error
 	GetProduct(c echo.Context) error
 	GetProductByCategory(c echo.Context) error
-	GetProductBySeller(c echo.Context) error
 }

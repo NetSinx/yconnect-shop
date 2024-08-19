@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
+	"os"
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
@@ -13,6 +13,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type userService struct {
@@ -26,7 +27,7 @@ func UserService(userRepo repository.UserRepo) userService {
 }
 
 func (u userService) RegisterUser(users entity.User) error {
-	// users.EmailVerified = false
+	users.EmailVerified = false
 
 	if users.Username == "netsinx_15" || users.Email == "yasin03ckm@gmail.com" {
 		users.Role = "admin"
@@ -34,35 +35,34 @@ func (u userService) RegisterUser(users entity.User) error {
 		users.Role = "member"
 	}
 
-	if err := validator.New().Struct(&users); err != nil {
+	if err := validator.New().Struct(users); err != nil {
 		return err
 	}
 
 	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 15)
 	users.Password = string(passwdHash)
-	// reqUser := []byte(fmt.Sprintf(`{"username": "%s"}`, users.Username))
+	reqUser := []byte(fmt.Sprintf(`{"username": "%s"}`, users.Username))
 
-	// _, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
-	// if err != nil {
-	// 	return fmt.Errorf("consumer gagal dibuat")
-	// }
-
-	// if users.Username == "netsinx_15" && users.Email == "yasin03ckm@gmail.com" {
-	// 	reqJwt := []byte(`{"key": "jwtnetsinxadmin", "secret": "netsinxadmin", "algorithm": "HS512"}`)
-	// 	_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
-	// 	if err != nil {
-	// 		return fmt.Errorf("token gagal dibuat")
-	// 	}
-	// } else {
-	// 	reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
-	// 	_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
-	// 	if err != nil {
-	// 		return fmt.Errorf("token gagal dibuat")
-	// 	}
-	// }
-
-	err := u.userRepository.RegisterUser(users)
+	_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
 	if err != nil {
+		return fmt.Errorf("consumer gagal dibuat")
+	}
+
+	if users.Username == "netsinx_15" && users.Email == "yasin03ckm@gmail.com" {
+		reqJwt := []byte(`{"key": "jwtnetsinxadmin", "secret": "netsinxadmin", "algorithm": "HS512"}`)
+		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
+		if err != nil {
+			return fmt.Errorf("token gagal dibuat")
+		}
+	} else {
+		reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
+		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
+		if err != nil {
+			return fmt.Errorf("token gagal dibuat")
+		}
+	}
+
+	if err := u.userRepository.RegisterUser(users); err != nil {
 		return err
 	}
 
@@ -121,31 +121,46 @@ func (u userService) ListUsers(users []entity.User) ([]entity.User, error) {
 	}
 
 	for i := range listUsers {
-		var preloadCart domain.PreloadCarts
-
 		respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", listUsers[i].Id))
 		if err != nil {
 			return listUsers, nil
 		} else if respCart.StatusCode == 200 {
+			var preloadCart domain.PreloadCarts
+
 			json.NewDecoder(respCart.Body).Decode(&preloadCart)
 
 			listUsers[i].Cart = preloadCart.Data
+		}
+
+		respOrder, err := http.Get(fmt.Sprintf("http://order-service:8084/order/%s", listUsers[i].Username))
+		if err != nil {
+			return listUsers, nil
+		} else if respCart.StatusCode == 200 {
+			var preloadOrder domain.PreloadOrders
+
+			json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
+
+			listUsers[i].Order = preloadOrder.Data
 		}
 	}
 
 	return listUsers, nil
 }
 
-func (u userService) UpdateUser(users entity.User, username string) error {
-	if err := validator.New().Struct(users); err != nil {
+func (u userService) UpdateUser(user entity.User, username string) error {
+	if err := validator.New().Struct(user); err != nil {
 		return err
 	}
 
-	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 15)
-	users.Password = string(passwdHash)
+	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 15)
+	user.Password = string(passwdHash)
 
-	err := u.userRepository.UpdateUser(users, username)
-	if err != nil {
+	err := u.userRepository.UpdateUser(user, username)
+	if err != nil && err == gorm.ErrRecordNotFound {
+		return fmt.Errorf("user tidak ditemukan")
+	} else if err != nil && err == gorm.ErrDuplicatedKey {
+		return fmt.Errorf("user sudah terdaftar")
+	} else if err != nil  {
 		return err
 	}
 
@@ -205,10 +220,10 @@ func (u userService) VerifyEmail(verifyEmail domain.VerifyEmail) error {
 	return nil
 }
 
-func (u userService) GetUser(users entity.User, username string) (entity.User, error) {
-	findUser, err := u.userRepository.GetUser(users, username)
+func (u userService) GetUser(user entity.User, username string) (entity.User, error) {
+	findUser, err := u.userRepository.GetUser(user, username)
 	if err != nil {
-		return users, err
+		return user, fmt.Errorf("user tidak ditemukan")
 	}
 
 	respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", findUser.Id))
@@ -222,15 +237,30 @@ func (u userService) GetUser(users entity.User, username string) (entity.User, e
 		findUser.Cart = preloadCart.Data
 	}
 
+	respOrder, err := http.Get(fmt.Sprintf("http://order-service:8084/order/%s", findUser.Username))
+	if err != nil {
+		return findUser, nil
+	} else if respCart.StatusCode == 200 {
+		var preloadOrder domain.PreloadOrders
+
+		json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
+
+		findUser.Order = preloadOrder.Data
+	}
+
 	return findUser, nil
 }
 
-func (u userService) DeleteUser(users entity.User, username string) error {
+func (u userService) DeleteUser(user entity.User, username string) error {
 	var httpClient http.Client
 
-	getUser, err := u.userRepository.GetUser(users, username)
+	getUser, err := u.userRepository.GetUser(user, username)
 	if err != nil {
-		return err
+		return fmt.Errorf("user tidak ditemukan")
+	}
+
+	if getUser.Avatar != "" {
+		os.Remove("." + getUser.Avatar)
 	}
 
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("http://kong-gateway:8001/consumers/%s", getUser.Username), nil)
@@ -240,7 +270,10 @@ func (u userService) DeleteUser(users entity.User, username string) error {
 
 	httpClient.Do(req)
 
-	if err := u.userRepository.DeleteUser(users, username); err != nil {
+	err = u.userRepository.DeleteUser(user, username)
+	if err != nil && err == gorm.ErrRecordNotFound {
+		return fmt.Errorf("user tidak ditemukan")
+	} else if err != nil {
 		return err
 	}
 

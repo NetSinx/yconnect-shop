@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/NetSinx/yconnect-shop/server/order/model/entity"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type orderRepository struct {
@@ -15,34 +16,28 @@ func OrderRepo(db *gorm.DB) *orderRepository {
 	}
 }
 
-func (or *orderRepository) ListOrder(order []entity.Order) []entity.Order {
-	or.db.Preload("Products").Find(&order)
+func (or *orderRepository) ListOrder(order []entity.Order, username string) ([]entity.Order, error) {
+	if err := or.db.Find(&order, "username = ?", username).Error; err != nil {
+		return order, err
+	}
 
-	return order
+	return order, nil
 }
 
 func (or *orderRepository) AddOrder(order entity.Order) error {
-	if err := or.db.Create(&order).Error; err != nil {
+	if err := or.db.Clauses(clause.OnConflict{DoNothing: false}).Create(&order).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (or *orderRepository) GetOrder(order entity.Order, id uint) (entity.Order, error) {
-	if err := or.db.First(&order, "id = ?", id).Error; err != nil {
-		return entity.Order{}, err
-	}
-
-	return order, nil
-}
-
-func (or *orderRepository) DeleteOrder(order entity.Order, id uint) error {
-	if err := or.db.First(&order, "id = ?", id).Error; err != nil {
+func (or *orderRepository) DeleteOrder(order entity.Order, username string) error {
+	if err := or.db.First(&order, "username = ?", username).Error; err != nil {
 		return err
 	}
 
-	if err := or.db.Delete(&order, "id = ?", id).Error; err != nil {
+	if err := or.db.Delete(&order).Error; err != nil {
 		return err
 	}
 

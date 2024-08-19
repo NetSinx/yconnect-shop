@@ -41,7 +41,7 @@ func (p productController) ListProduct(c echo.Context) error {
 
 func (p productController) CreateProduct(c echo.Context) error {
 	var products entity.Product
-	var img []entity.Image
+	var img []entity.Gambar
 
 	imageProduct, err := c.MultipartForm()
 	if err != nil {
@@ -50,7 +50,7 @@ func (p productController) CreateProduct(c echo.Context) error {
 
 	images := imageProduct.File["images"]
 
-	for _, image := range images {
+	for i, image := range images {
 		src, err := image.Open()
 		if err != nil {
 			return err
@@ -67,9 +67,7 @@ func (p productController) CreateProduct(c echo.Context) error {
 	
 		dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-				Message: err.Error(),
-			})
+			return err
 		}
 		defer dst.Close()
 	
@@ -77,10 +75,10 @@ func (p productController) CreateProduct(c echo.Context) error {
 			return err
 		}
 	
-		img = append(img, entity.Image{Name: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)})
+		img[i] = entity.Gambar{Nama: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)}
 	}
 
-	products.Image = img
+	products.Gambar = img
 
 	if err := c.Bind(&products); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -88,7 +86,7 @@ func (p productController) CreateProduct(c echo.Context) error {
 		})
 	}
 	
-	product, err := p.productService.CreateProduct(products, img)
+	product, err := p.productService.CreateProduct(products)
 	if err != nil && err == gorm.ErrDuplicatedKey {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
 			Message: "Produk sudah tersedia.",
@@ -134,7 +132,7 @@ func (p productController) UpdateProduct(c echo.Context) error {
 		fileExt := strings.Split(image.Filename, ".")[1]
 		hashedFileName := md5.New().Sum([]byte(fileName))
 	
-		if (len(getProduct.Image) <= i) {
+		if (len(getProduct.Gambar) <= i) {
 			dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
 			if err != nil {
 				return err
@@ -145,8 +143,7 @@ func (p productController) UpdateProduct(c echo.Context) error {
 				return err
 			}
 
-			getProduct.Image = append(getProduct.Image, entity.Image{Name: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt), ProductID: uint(getProduct.Id)})
-
+			getProduct.Gambar = append(getProduct.Gambar, entity.Gambar{Nama: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt), ProductID: uint(getProduct.Id)})
 		} else {
 			dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
 			if err != nil {
@@ -158,14 +155,14 @@ func (p productController) UpdateProduct(c echo.Context) error {
 				return err
 			}
 			
-			os.Remove("." + getProduct.Image[i].Name)
+			os.Remove("." + getProduct.Gambar[i].Nama)
 
-			getProduct.Image[i].Name = fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)
-			getProduct.Image[i].ProductID = uint(getProduct.Id)
+			getProduct.Gambar[i].Nama = fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)
+			getProduct.Gambar[i].ProductID = uint(getProduct.Id)
 		}
 	}
 
-	products.Image = getProduct.Image
+	products.Gambar = getProduct.Gambar
 	
 	if err := c.Bind(&products); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -173,7 +170,7 @@ func (p productController) UpdateProduct(c echo.Context) error {
 		})
 	}
 
-	product, err := p.productService.UpdateProduct(products, products.Image, slug, fmt.Sprintf("%d", getProduct.Id))
+	product, err := p.productService.UpdateProduct(products, slug, fmt.Sprintf("%d", getProduct.Id))
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Produk tidak ditemukan.",
@@ -209,11 +206,11 @@ func (p productController) DeleteProduct(c echo.Context) error {
 		})
 	}
 
-	for _, image := range getProduct.Image {
-		os.Remove("." + image.Name)
+	for _, image := range getProduct.Gambar {
+		os.Remove("." + image.Nama)
 	}
 
-	if err := p.productService.DeleteProduct(products, getProduct.Image, slug, fmt.Sprintf("%d", getProduct.Id)); err != nil {
+	if err := p.productService.DeleteProduct(products, slug, fmt.Sprintf("%d", getProduct.Id)); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Produk tidak ditemukan.",
 		})
@@ -255,22 +252,5 @@ func (p productController) GetProductByCategory(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, domain.RespData{
 		Data: getProdByCate,
-	})
-}
-
-func (p productController) GetProductBySeller(c echo.Context) error {
-	var products []entity.Product
-
-	id := c.Param("id")
-
-	getProdBySeller, err := p.productService.GetProductBySeller(products, id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-
-	return c.JSON(http.StatusOK, domain.RespData{
-		Data: getProdBySeller,
 	})
 }

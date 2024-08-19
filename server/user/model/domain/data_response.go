@@ -2,6 +2,7 @@ package domain
 
 import (
 	cartModel "github.com/NetSinx/yconnect-shop/server/cart/model/entity"
+	orderModel "github.com/NetSinx/yconnect-shop/server/order/model/entity"
 )
 
 type MessageResp struct {
@@ -14,4 +15,8 @@ type RespData struct {
 
 type PreloadCarts struct {
 	Data   []cartModel.Cart	`json:"data"`
+}
+
+type PreloadOrders struct {
+	Data   []orderModel.Order	`json:"data"`
 }

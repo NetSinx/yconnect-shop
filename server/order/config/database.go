@@ -10,6 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var DB *gorm.DB
+
 func ConnectDB() *gorm.DB {
 	godotenv.Load()
 
@@ -27,6 +29,8 @@ func ConnectDB() *gorm.DB {
 		log.Fatalf("Database not connected: %v", err)
 	}
 	db.AutoMigrate(&entity.Order{})
+
+	DB = db
 
 	return db
 }

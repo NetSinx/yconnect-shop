@@ -1,36 +1,31 @@
 package entity
 
-import "time"
-
-type Seller struct {
-	Id        uint        `json:"id"`
-	Name      string      `json:"name"`
-}
+import (
+	"gorm.io/gorm"
+)
 
 type Product struct {
+	gorm.Model
 	Id          uint         `json:"id" gorm:"primaryKey"`
-	Name        string       `json:"name" gorm:"unique" validate:"required,max=255"`
+	Nama        string       `json:"nama" gorm:"unique" validate:"required,max=255"`
 	Slug        string       `json:"slug" gorm:"unique" validate:"required"`
-	Image       []Image      `json:"images" validate:"required"`
-	Description string       `json:"description" gorm:"type:text" validate:"required"`
-	CategoryId  uint         `json:"category_id" validate:"required"`
-	SellerId    uint         `json:"seller_id" validate:"required"`
-	Price       int          `json:"price" validate:"required"`
-	Stock       int          `json:"stock" validate:"required"`
-	Category    Category     `json:"category" gorm:"-"`
-	Seller      Seller       `json:"seller" gorm:"-"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Gambar      []Gambar     `json:"gambar" validate:"required"`
+	Deskripsi   string       `json:"deskripsi" validate:"required"`
+	KategoriId  uint         `json:"kategori_id" validate:"required"`
+	Harga       int          `json:"harga" validate:"required"`
+	Stok        int          `json:"stok" validate:"required"`
+	Rating      float32      `json:"rating" validate:"required"`
+	Kategori    Kategori     `json:"kategori"`
 }
 
-type Category struct {
+type Kategori struct {
 	Id        uint        `json:"id"`
 	Name      string      `json:"name"`
 	Slug      string      `json:"slug"`
 }
 
-type Image struct {
+type Gambar struct {
 	Id         uint   `json:"id"`
-	Name       string `json:"name"`
+	Nama       string `json:"nama"`
 	ProductID  uint   `json:"product_id"`
 }
