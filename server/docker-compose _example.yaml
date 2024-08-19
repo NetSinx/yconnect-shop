@@ -166,8 +166,8 @@ services:
       - DB_PORT=3306
       - DB_DATABASE=test_db
 
-  seller-db:
-    container_name: db-seller
+  order-db:
+    container_name: db-order
     image: mysql
     restart: always
     pull_policy: if_not_present
@@ -179,20 +179,20 @@ services:
       MYSQL_PASSWORD: "test123"
       MYSQL_DATABASE: "test_db"
 
-  seller:
-    container_name: seller-service
-    image: seller-img
+  order:
+    container_name: order-service
+    image: order-img
     restart: always
     pull_policy: if_not_present
     depends_on:
-      - seller-db
+      - order-db
     networks:
       - yconnect-net
       - kong-network
     environment:
       - DB_USER=test
       - DB_PASSWORD=test123
-      - DB_HOST=db-seller
+      - DB_HOST=db-order
       - DB_PORT=3306
       - DB_DATABASE=test_db
 
