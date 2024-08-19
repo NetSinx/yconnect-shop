@@ -30,7 +30,6 @@ func ApiRoutes() *echo.Echo {
 	router.POST("/product", productController.CreateProduct)
 	router.PUT("/product/:slug", productController.UpdateProduct)
 	router.DELETE("/product/:slug", productController.DeleteProduct)
-	router.GET("/product/seller/:id", productController.GetProductBySeller)
 	router.GET("/product/category/:id", productController.GetProductByCategory)
 
 	return router
