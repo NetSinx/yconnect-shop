@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"sync"
+
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
@@ -43,24 +45,30 @@ func (u userService) RegisterUser(users entity.User) error {
 	users.Password = string(passwdHash)
 	reqUser := []byte(fmt.Sprintf(`{"username": "%s"}`, users.Username))
 
-	_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
-	if err != nil {
-		return fmt.Errorf("consumer gagal dibuat")
-	}
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-	if users.Username == "netsinx_15" && users.Email == "yasin03ckm@gmail.com" {
-		reqJwt := []byte(`{"key": "jwtnetsinxadmin", "secret": "netsinxadmin", "algorithm": "HS512"}`)
-		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
+	go func(reqUser []byte) error {
+		_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
 		if err != nil {
-			return fmt.Errorf("token gagal dibuat")
+			return fmt.Errorf("consumer gagal dibuat")
 		}
-	} else {
+		defer wg.Done()
+		
+		return nil
+	}(reqUser)
+
+	go func(username string) error {
 		reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
-		_, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt))
-		if err != nil {
+		if _, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", username), "application/json", bytes.NewBuffer(reqJwt)); err != nil {
 			return fmt.Errorf("token gagal dibuat")
 		}
-	}
+		defer wg.Done()
+
+		return nil
+	}(users.Username)
+
+	wg.Wait()
 
 	if err := u.userRepository.RegisterUser(users); err != nil {
 		return err

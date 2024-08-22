@@ -195,6 +195,26 @@ services:
       - DB_HOST=db-order
       - DB_PORT=3306
       - DB_DATABASE=test_db
+  
+  mail:
+    container_name: mail-service
+    image: mail-img
+    restart: on-failure
+    pull_policy: if_not_present
+    networks:
+      - kong-network
+      - yconnect-net
+
+  redis-service:
+    container_name: redis-cache
+    pull_policy: if_not_present
+    image: redis
+    networks:
+      - yconnect-net
+      - kong-network
+    volumes:
+      - .\mail\myredis\config:/usr/local/etc/redis/
+    command: redis-server /usr/local/etc/redis/redis.conf
 
 networks:
   yconnect-net:
