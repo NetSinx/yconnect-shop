@@ -1,17 +1,12 @@
 pipeline {
   agent any
+
   stages {
     stage('Build') {
       steps {
-        echo 'Hello World'
+        sh "git clone https://github.com/NetSinx/yconnect-shop"
+        sh "docker build -t user-img yconnect-shop/server/user/."
       }
     }
-
-    stage('Finish') {
-      steps {
-        echo 'Good job! Build stage have finished.'
-      }
-    }
-
   }
 }
