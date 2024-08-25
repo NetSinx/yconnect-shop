@@ -7,13 +7,13 @@ node {
   stage('Build Image') {
     withEnv(['DOCKER_IMAGE=yasinah22/order-img', 'IMAGE_TAG=latest']) {
       checkout scm
-      docker.withRegistry('', 'docker-reg') {
-        app = docker.build(DOCKER_IMAGE:IMAGE_TAG)
-      }
+      app = docker.build("$DOCKER_IMAGE:$IMAGE_TAG")
     }
   }
 
   stage('Deploy Image') {
-    app.push()
+    docker.withRegistry('', 'docker-reg') {
+      app.push()
+    }
   }
 }
