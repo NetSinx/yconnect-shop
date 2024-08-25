@@ -4,9 +4,9 @@ node {
   }
 
   stage('Build Image') {
-    withEnv(['DOCKER_IMAGE=order-img', 'IMAGE_TAG=latest', 'URL_REGISTRY=https://hub.docker.com/login']) {
+    withEnv(['DOCKER_IMAGE=order-img', 'IMAGE_TAG=latest']) {
       checkout scm
-      docker.withRegistry(URL_REGISTRY, '665b56ea-0578-4bbf-a417-10aa6e99abb2') {
+      docker.withRegistry('', 'docker-reg') {
         docker.build(DOCKER_IMAGE:IMAGE_TAG).push()
       }
     }
