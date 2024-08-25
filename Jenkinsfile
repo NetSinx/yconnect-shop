@@ -1,25 +1,13 @@
-pipeline {
-  agent any
+node {
+  stage('Cloning Project from Repository') {
+    git url: 'https://github.com/NetSinx/yconnect-shop/server/order', branch: 'master'
+  }
 
-  stages {
-    stage('Cloning Project from Repository') {
-      steps {
-        git url: 'https://github.com/NetSinx/yconnect-shop', branch: 'master'
-      }
-    }
-    stage('Build Image') {
-      steps {
-        sh 'docker build -t user-img server/user/.'
-        sh 'docker build -t product-img server/product/.'
-        sh 'docker build -t category-img server/category/.'
-        sh 'docker build -t cart-img server/cart/.'
-        sh 'docker build -t mail-img server/mail/.'
-        sh 'docker build -t order-img server/order/.'
-      }
-    }
-    stage('Running Application') {
-      steps {
-        sh 'docker compose up -d -f server/docker-compose_example.yaml'
+  stage('Build Image') {
+    withEnv(['DOCKER_IMAGE=order-img', 'IMAGE_TAG=latest', 'URL_REGISTRY=https://hub.docker.com/repositories/yasinah22/order-img']) {
+      checkout scm
+      docker.withRegistry('$URL_REGISTRY', '665b56ea-0578-4bbf-a417-10aa6e99abb2') {
+        docker.build('$DOCKER_IMAGE:$IMAGE_TAG').push()
       }
     }
   }
