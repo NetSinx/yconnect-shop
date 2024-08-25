@@ -7,7 +7,7 @@ node {
   stage('Build Image') {
     withEnv(['DOCKER_IMAGE=yasinah22/order-img', 'IMAGE_TAG=latest']) {
       checkout scm
-      app = docker.build("$DOCKER_IMAGE:$IMAGE_TAG", "-f server/order/.")
+      app = docker.build("$DOCKER_IMAGE:$IMAGE_TAG", "server/order/.")
     }
   }
 
