@@ -1,6 +1,6 @@
 node {
   stage('Cloning Project from Repository') {
-    git url: 'https://github.com/NetSinx/yconnect-shop/server', branch: 'master'
+    git url: 'https://github.com/NetSinx/yconnect-shop', branch: 'master'
   }
 
   stage('Build Image') {
