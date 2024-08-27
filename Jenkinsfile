@@ -14,16 +14,22 @@ node {
   }
 
   stage('Build') {
-    for (int i = 0; i < servicesName.size(); i++) {
-      "app"+i = docker.build("${dockerImages[i]}:${imageTag}", "server/${servicesName[i]}/.")
-    }
+    app1 = docker.build("${dockerImages[0]}:${imageTag}", "server/${servicesName[0]}/.")
+    app2 = docker.build("${dockerImages[1]}:${imageTag}", "server/${servicesName[1]}/.")
+    app3 = docker.build("${dockerImages[2]}:${imageTag}", "server/${servicesName[2]}/.")
+    app4 = docker.build("${dockerImages[3]}:${imageTag}", "server/${servicesName[3]}/.")
+    app5 = docker.build("${dockerImages[4]}:${imageTag}", "server/${servicesName[4]}/.")
+    app6 = docker.build("${dockerImages[5]}:${imageTag}", "server/${servicesName[5]}/.")
   }
 
   stage('Deploy') {
     docker.withRegistry('', 'docker-reg') {
-      for (int i = 0; i < servicesName.size(); i++) {
-        "app"+i.push()
-      }
+      app1.push()
+      app2.push()
+      app3.push()
+      app4.push()
+      app5.push()
+      app6.push()
     }
   }
 }
