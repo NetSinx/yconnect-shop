@@ -15,14 +15,14 @@ node {
 
   stage('Build') {
     for (int i = 0; i < servicesName.size(); i++) {
-      appi+1 = docker.build("${dockerImages[i]}:${imageTag}", "server/${servicesName[i]}/.")
+      app(i+1) = docker.build("${dockerImages[i]}:${imageTag}", "server/${servicesName[i]}/.")
     }
   }
 
   stage('Deploy') {
     docker.withRegistry('', 'docker-reg') {
       for (int i = 0; i < servicesName.size(); i++) {
-        appi+1.push()
+        app(i+1).push()
       }
     }
   }
