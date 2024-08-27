@@ -1,4 +1,11 @@
 node {
+  def app1
+  def app2
+  def app3
+  def app4
+  def app5
+  def app6
+
   environment {
     SERVICES_NAME = ["order", "user", "product", "category", "cart", "mail"]
     DOCKER_IMAGE = ["yasinah22/order-img", "yasinah22/user-img", "yasinah22/product-img", "yasinah22/category-img", "yasinah22/cart-img", "yasinah22/mail-img"]
@@ -10,12 +17,12 @@ node {
   }
 
   stage('Build') {
-    def app1 = docker.build("${env.DOCKER_IMAGE[0]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[0]}/.")
-    def app2 = docker.build("${env.DOCKER_IMAGE[1]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[1]}/.")
-    def app3 = docker.build("${env.DOCKER_IMAGE[2]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[2]}/.")
-    def app4 = docker.build("${env.DOCKER_IMAGE[3]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[3]}/.")
-    def app5 = docker.build("${env.DOCKER_IMAGE[4]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[4]}/.")
-    def app6 = docker.build("${env.DOCKER_IMAGE[5]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[5]}/.")
+    app1 = docker.build("${env.DOCKER_IMAGE[0]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[0]}/.")
+    app2 = docker.build("${env.DOCKER_IMAGE[1]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[1]}/.")
+    app3 = docker.build("${env.DOCKER_IMAGE[2]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[2]}/.")
+    app4 = docker.build("${env.DOCKER_IMAGE[3]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[3]}/.")
+    app5 = docker.build("${env.DOCKER_IMAGE[4]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[4]}/.")
+    app6 = docker.build("${env.DOCKER_IMAGE[5]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[5]}/.")
   }
 
   stage('Deploy') {
