@@ -17,7 +17,7 @@ node {
   }
 
   stage('Build') {
-    app1 = docker.build("$DOCKER_IMAGE[0]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[0]}/.")
+    app1 = docker.build("env.DOCKER_IMAGE[0]}:env.IMAGE_TAG}", "server/env.SERVICES_NAME[0]}/.")
     app2 = docker.build("${env.DOCKER_IMAGE[1]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[1]}/.")
     app3 = docker.build("${env.DOCKER_IMAGE[2]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[2]}/.")
     app4 = docker.build("${env.DOCKER_IMAGE[3]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[3]}/.")
