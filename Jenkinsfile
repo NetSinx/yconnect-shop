@@ -6,18 +6,18 @@ node {
   def app5
   def app6
 
-  environment {
-    SERVICES_NAME = ["order", "user", "product", "category", "cart", "mail"]
-    DOCKER_IMAGE = ["yasinah22/order-img", "yasinah22/user-img", "yasinah22/product-img", "yasinah22/category-img", "yasinah22/cart-img", "yasinah22/mail-img"]
-    IMAGE_TAG = "latest"
-  }
-
   stage('Checkout') {
     git url: 'https://github.com/NetSinx/yconnect-shop', branch: 'master'
   }
 
   stage('Build') {
-    app1 = docker.build("env.DOCKER_IMAGE[0]}:env.IMAGE_TAG}", "server/env.SERVICES_NAME[0]}/.")
+    environment {
+      SERVICES_NAME = ["order", "user", "product", "category", "cart", "mail"]
+      DOCKER_IMAGE = ["yasinah22/order-img", "yasinah22/user-img", "yasinah22/product-img", "yasinah22/category-img", "yasinah22/cart-img", "yasinah22/mail-img"]
+      IMAGE_TAG = "latest"
+    }
+
+    app1 = docker.build("${env.DOCKER_IMAGE[0]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[0]}/.")
     app2 = docker.build("${env.DOCKER_IMAGE[1]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[1]}/.")
     app3 = docker.build("${env.DOCKER_IMAGE[2]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[2]}/.")
     app4 = docker.build("${env.DOCKER_IMAGE[3]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[3]}/.")
