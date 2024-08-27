@@ -15,7 +15,7 @@ node {
 
   stage('Build') {
     for (int i = 0; i < servicesName.size(); i++) {
-      "app"+i} = docker.build("${dockerImages[i]}:${imageTag}", "server/${servicesName[i]}/.")
+      "app"+i = docker.build("${dockerImages[i]}:${imageTag}", "server/${servicesName[i]}/.")
     }
   }
 
