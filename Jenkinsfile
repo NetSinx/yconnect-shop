@@ -6,13 +6,12 @@ node {
   }
 
   def app
-  
+
   stage('Checkout') {
     git url: 'https://github.com/NetSinx/yconnect-shop', branch: 'master'
   }
 
   stage('Build') {
-    checkout scm
     app1 = docker.build("${env.DOCKER_IMAGE[0]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[0]}/.")
     app2 = docker.build("${env.DOCKER_IMAGE[1]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[1]}/.")
     app3 = docker.build("${env.DOCKER_IMAGE[2]}:${env.IMAGE_TAG}", "server/${env.SERVICES_NAME[2]}/.")
