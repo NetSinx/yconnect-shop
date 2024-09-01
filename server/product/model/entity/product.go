@@ -15,7 +15,7 @@ type Product struct {
 	Harga       int          `json:"harga" validate:"required"`
 	Stok        int          `json:"stok" validate:"required"`
 	Rating      float32      `json:"rating" validate:"required"`
-	Kategori    Kategori     `json:"kategori"`
+	Kategori    Kategori     `json:"kategori" gorm:"-"`
 }
 
 type Kategori struct {

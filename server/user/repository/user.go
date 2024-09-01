@@ -26,7 +26,7 @@ func (u userRepository) RegisterUser(users entity.User) error {
 	return nil
 }
 
-func (u userRepository) LoginUser(userLogin entity.UserLogin) (entity.User, error) {
+func (u userRepository) LoginUser(userLogin domain.UserLogin) (entity.User, error) {
 	var users entity.User
 	
 	if err := u.DB.Select("username", "password").First(&users, "email = ? OR username = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Error; err != nil {

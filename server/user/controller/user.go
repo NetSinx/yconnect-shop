@@ -98,7 +98,7 @@ func (u userController) RegisterUser(c echo.Context) error {
 }
 
 func (u userController) LoginUser(c echo.Context) error {
-	var userLogin entity.UserLogin
+	var userLogin domain.UserLogin
 
 	if err := c.Bind(&userLogin); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{

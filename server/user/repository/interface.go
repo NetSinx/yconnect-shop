@@ -7,7 +7,7 @@ import (
 
 type UserRepo interface {
 	RegisterUser(users entity.User) error
-	LoginUser(userLogin entity.UserLogin) (entity.User, error)
+	LoginUser(userLogin domain.UserLogin) (entity.User, error)
 	ListUsers(users []entity.User) ([]entity.User, error)
 	GetUser(user entity.User, username string) (entity.User, error)
 	UpdateUser(user entity.User, username string) error

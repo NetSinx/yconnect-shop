@@ -21,8 +21,8 @@ type User struct {
 	EmailVerifiedAt sql.NullTime        `json:"email_verified_at"`
 	CreatedAt       time.Time           `json:"created_at"`
 	UpdatedAt       time.Time           `json:"updated_at"`
-	Cart            []cartEntity.Cart   `json:"cart"`
-	Order           []orderEntity.Order `json:"order"`
+	Cart            []cartEntity.Cart   `json:"cart" gorm:"-"`
+	Order           []orderEntity.Order `json:"order" gorm:"-"`
 }
 
 type Alamat struct {
@@ -33,13 +33,8 @@ type Alamat struct {
 	Kelurahan   string     `json:"kelurahan" validate:"required"`
 	Kecamatan   string     `json:"kecamatan" validate:"required"`
 	Kota        string     `json:"kota" validate:"required"`
-	KodePos     string     `json:"kode_pos" validate:"required"`
+	KodePos     int        `json:"kode_pos" validate:"required"`
 	UserID      uint       `json:"user_id"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
-}
-
-type UserLogin struct {
-	UsernameorEmail string `json:"UsernameorEmail"`
-	Password        string `json:"password" validate:"required,min=5"`
 }

@@ -7,6 +7,11 @@ type VerifyEmail struct {
 	OTP		string `json:"otp" validate:"required"`
 }
 
+type UserLogin struct {
+	UsernameorEmail string `json:"UsernameorEmail"`
+	Password        string `json:"password" validate:"required,min=5"`
+}
+
 type EmailVerified struct {
 	EmailVerified 	bool
 	EmailVerifiedAt sql.NullTime

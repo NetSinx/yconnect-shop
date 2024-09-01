@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"sync"
-
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
@@ -77,7 +76,7 @@ func (u userService) RegisterUser(users entity.User) error {
 	return nil
 }
 
-func (u userService) LoginUser(userLogin entity.UserLogin) (string, string, error) {
+func (u userService) LoginUser(userLogin domain.UserLogin) (string, string, error) {
 	users, err := u.userRepository.LoginUser(userLogin)
 	if err != nil {
 		return "", "", fmt.Errorf("username / email atau password salah")

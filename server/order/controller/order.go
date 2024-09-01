@@ -45,7 +45,12 @@ func (oc *orderController) AddOrder(c echo.Context) error {
 		})
 	}
 
-	if err := oc.orderService.AddOrder(order); err != nil {
+	err := oc.orderService.AddOrder(order)
+	if err != nil && err == echo.ErrBadRequest{
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: err.Error(),
+		})
+	} else if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: err.Error(),
 		})
