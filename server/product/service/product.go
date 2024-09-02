@@ -27,16 +27,16 @@ func (p productService) ListProduct(products []entity.Product) ([]entity.Product
 	}
 
 	for _, prod := range product {
-		var preloadCategory domain.PreloadCategory
-
 		resCategory, err := http.Get(fmt.Sprintf("http://category-service:8080/category/%d", prod.KategoriId))
-		if err != nil {
-			prod.Kategori = preloadCategory.Data
-		} else if resCategory.StatusCode == 200 {
-			json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
-
-			prod.Kategori = preloadCategory.Data
+		if err != nil || resCategory.StatusCode != 200 {
+			return product, nil
 		}
+		
+		var preloadCategory domain.PreloadCategory
+		
+		json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
+
+		prod.Kategori = preloadCategory.Data
 	}
 
 	return product, nil
@@ -78,21 +78,21 @@ func (p productService) DeleteProduct(products entity.Product, slug string, id s
 }
 
 func (p productService) GetProduct(products entity.Product, slug string) (entity.Product, error) {
-	var preloadCategory domain.PreloadCategory
-
 	getProducts, err := p.productRepository.GetProduct(products, slug)
 	if err != nil {
 		return products, err
 	}
 	
 	resCategory, err := http.Get(fmt.Sprintf("http://category-service:8080/category/%d", getProducts.KategoriId))
-	if err != nil {
-		getProducts.Kategori = preloadCategory.Data
-	} else if resCategory.StatusCode == 200 {
-		json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
-
-		getProducts.Kategori = preloadCategory.Data
+	if err != nil || resCategory.StatusCode != 200 {
+		return getProducts, nil
 	}
+
+	var preloadCategory domain.PreloadCategory
+
+	json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
+
+	getProducts.Kategori = preloadCategory.Data
 
 	return getProducts, nil
 }

@@ -32,8 +32,8 @@ func (or *orderRepository) AddOrder(order entity.Order) error {
 	return nil
 }
 
-func (or *orderRepository) DeleteOrder(order entity.Order, username string) error {
-	if err := or.db.First(&order, "username = ?", username).Error; err != nil {
+func (or *orderRepository) DeleteOrder(order entity.Order, username, id string) error {
+	if err := or.db.First(&order, "username = ? AND id = ?", username, id).Error; err != nil {
 		return err
 	}
 

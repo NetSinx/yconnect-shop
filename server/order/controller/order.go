@@ -65,8 +65,9 @@ func (oc *orderController) DeleteOrder(c echo.Context) error {
 	var order entity.Order
 
 	username := c.Param("username")
+	id := c.Param("id")
 
-	err := oc.orderService.DeleteOrder(order, username)
+	err := oc.orderService.DeleteOrder(order, username, id)
 	if err != nil && err.Error() == "pesanan tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Pesanan tidak ditemukan",

@@ -12,10 +12,18 @@ import (
 )
 
 func TestListOrder(t *testing.T) {
-	resp, err := http.Get("http://localhost:8084/order")
-	if err != nil || resp.StatusCode != 200 {
-		t.Fatalf("Service is not response or status not ok!")
+	resp, err := http.Get("http://localhost:8084/order/netsinx_15")
+	if err != nil {
+		t.Fatalf("Error message: %v", err)
+	} else if resp.StatusCode != 200 {
+		var respErr interface{}
+		json.NewDecoder(resp.Body).Decode(&respErr)
+		t.Fatalf("Error status: %v, error message: %v", resp.Status, respErr)
 	}
+
+	var respData domain.DataResp
+	json.NewDecoder(resp.Body).Decode(&respData)
+	t.Log(respData)
 }
 
 func TestAddOrder(t *testing.T) {

@@ -27,7 +27,7 @@ func RoutesAPI() *echo.Echo {
 	// }))
 	router.GET("/order/:username", orderController.ListOrder)
 	router.POST("/order", orderController.AddOrder)
-	router.DELETE("/order/:username", orderController.DeleteOrder)
+	router.DELETE("/order/:username/:id", orderController.DeleteOrder)
 
 	return router
 }

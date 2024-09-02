@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"sync"
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
@@ -44,30 +43,15 @@ func (u userService) RegisterUser(users entity.User) error {
 	users.Password = string(passwdHash)
 	reqUser := []byte(fmt.Sprintf(`{"username": "%s"}`, users.Username))
 
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	go func(reqUser []byte) error {
-		_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
-		if err != nil {
-			return fmt.Errorf("consumer gagal dibuat")
-		}
-		defer wg.Done()
-		
-		return nil
-	}(reqUser)
-
-	go func(username string) error {
-		reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
-		if _, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", username), "application/json", bytes.NewBuffer(reqJwt)); err != nil {
-			return fmt.Errorf("token gagal dibuat")
-		}
-		defer wg.Done()
-
-		return nil
-	}(users.Username)
-
-	wg.Wait()
+	_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
+	if err != nil {
+		return fmt.Errorf("consumer gagal dibuat")
+	}
+	
+	reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
+	if _, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt)); err != nil {
+		return fmt.Errorf("token gagal dibuat")
+	}
 
 	if err := u.userRepository.RegisterUser(users); err != nil {
 		return err
@@ -129,26 +113,26 @@ func (u userService) ListUsers(users []entity.User) ([]entity.User, error) {
 
 	for i := range listUsers {
 		respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", listUsers[i].Id))
-		if err != nil {
+		if err != nil || respCart.StatusCode != 200{
 			return listUsers, nil
-		} else if respCart.StatusCode == 200 {
-			var preloadCart domain.PreloadCarts
-
-			json.NewDecoder(respCart.Body).Decode(&preloadCart)
-
-			listUsers[i].Cart = preloadCart.Data
 		}
+		
+		var preloadCart domain.PreloadCarts
+
+		json.NewDecoder(respCart.Body).Decode(&preloadCart)
+
+		listUsers[i].Cart = preloadCart.Data
 
 		respOrder, err := http.Get(fmt.Sprintf("http://order-service:8084/order/%s", listUsers[i].Username))
-		if err != nil {
+		if err != nil || respCart.StatusCode != 200 {
 			return listUsers, nil
-		} else if respCart.StatusCode == 200 {
-			var preloadOrder domain.PreloadOrders
-
-			json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
-
-			listUsers[i].Order = preloadOrder.Data
 		}
+		
+		var preloadOrder domain.PreloadOrders
+
+		json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
+
+		listUsers[i].Order = preloadOrder.Data
 	}
 
 	return listUsers, nil
@@ -234,26 +218,26 @@ func (u userService) GetUser(user entity.User, username string) (entity.User, er
 	}
 
 	respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", findUser.Id))
-	if err != nil {
+	if err != nil || respCart.StatusCode != 200 {
 		return findUser, nil
-	} else if respCart.StatusCode == 200 {
-		var preloadCart domain.PreloadCarts
+	} 
 
-		json.NewDecoder(respCart.Body).Decode(&preloadCart)
+	var preloadCart domain.PreloadCarts
 
-		findUser.Cart = preloadCart.Data
-	}
+	json.NewDecoder(respCart.Body).Decode(&preloadCart)
+
+	findUser.Cart = preloadCart.Data
 
 	respOrder, err := http.Get(fmt.Sprintf("http://order-service:8084/order/%s", findUser.Username))
-	if err != nil {
+	if err != nil || respCart.StatusCode != 200 {
 		return findUser, nil
-	} else if respCart.StatusCode == 200 {
-		var preloadOrder domain.PreloadOrders
-
-		json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
-
-		findUser.Order = preloadOrder.Data
 	}
+	
+	var preloadOrder domain.PreloadOrders
+
+	json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
+
+	findUser.Order = preloadOrder.Data
 
 	return findUser, nil
 }

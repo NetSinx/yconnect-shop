@@ -85,13 +85,12 @@ func (c categoryService) GetCategory(categories entity.Category, id string) (ent
 	}
 	
 	responseData, err := http.Get(fmt.Sprintf("http://product-service:8081/product/category/%d", getCategory.Id))
-	if err != nil {
+	if err != nil || responseData.StatusCode != 200 {
 		return getCategory, nil
-	} else if responseData.StatusCode == 200 {
-		json.NewDecoder(responseData.Body).Decode(&preloadProduct)
-
-		getCategory.Product = preloadProduct.Data
 	}
+	json.NewDecoder(responseData.Body).Decode(&preloadProduct)
+
+	getCategory.Product = preloadProduct.Data
 	
 	return getCategory, nil
 }
