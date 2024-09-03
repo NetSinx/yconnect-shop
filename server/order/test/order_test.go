@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	modelDB = map[string]entity.Order{
-	 "netsinx_15": entity.Order{
+	modelDB = map[string]*entity.Order{
+	 "netsinx_15": &entity.Order{
 		 ProductID: 1,
 		 Username: "netsinx_15",
 		 Kuantitas: 5,
@@ -43,13 +43,13 @@ func TestListOrder(t *testing.T) {
 	
 	if assert.NoError(t, h.ListOrder(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, orderJSON, rec.Body.String())
+		assert.Equal(t, reqOrder, rec.Body.String())
 	}
 }
 
 func TestAddOrder(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/order", strings.NewReader(orderJSON))
+	req := httptest.NewRequest(http.MethodPost, "/order", strings.NewReader(reqOrder))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
