@@ -1,70 +1,56 @@
 package test
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 	"github.com/NetSinx/yconnect-shop/server/order/model/entity"
-	prodEntity "github.com/NetSinx/yconnect-shop/server/product/model/entity"
-	"github.com/NetSinx/yconnect-shop/server/order/model/domain"
-	"time"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
+)
+
+var (
+	modelDB = map[string]*entity.Order{
+	 "netsinx_15": &entity.Order{
+		 ProductID: 1,
+		 Username: "netsinx_15",
+		 Kuantitas: 5,
+		 Status: "Dalam pengiriman",
+	 },
+ }
+
+ orderJSON = `{"product_id": 1, "username": "netsinx_15", "kuantitas": 5, "status": "Dalam pengiriman"}`
+
+ successAddOrder = `{"message": "Pesanan berhasil dibuat"}`
 )
 
 func TestListOrder(t *testing.T) {
-	resp, err := http.Get("http://localhost:8084/order/netsinx_15")
-	if err != nil {
-		t.Fatalf("Error message: %v", err)
-	} else if resp.StatusCode != 200 {
-		var respErr interface{}
-		json.NewDecoder(resp.Body).Decode(&respErr)
-		t.Fatalf("Error status: %v, error message: %v", resp.Status, respErr)
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/order", nil)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	ctx.SetPath("/:username")
+	ctx.SetParamNames("username")
+	ctx.SetParamValues("netsinx_15")
+	h := &orderHandler{db: modelDB}
+	
+	if assert.NoError(t, h.ListOrder(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, orderJSON, rec.Body.String())
 	}
-
-	var respData domain.DataResp
-	json.NewDecoder(resp.Body).Decode(&respData)
-	t.Log(respData)
 }
 
 func TestAddOrder(t *testing.T) {
-	gambar := []prodEntity.Gambar{}
-	gambar = append(gambar, prodEntity.Gambar{Nama: "baju_muslim.jpg"})
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/order", strings.NewReader(orderJSON))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	h := &orderHandler{db: modelDB}
 
-	reqData := entity.Order{
-		ProductID: 1,
-		Product: prodEntity.Product{
-			Nama: "Baju Muslim",
-			Slug: "baju-muslim",
-			Gambar: gambar,
-			Deskripsi: "Baju untuk orang muslim",
-			KategoriId: 1,
-			Harga: 15000,
-			Stok: 10,
-			Rating: 4.8,
-		},
-		Username: "netsinx_15",
-		Kuantitas: 5,
-		Status: "Sedang Dikirim",
-		Estimasi: time.Now().AddDate(0, 0 , 3),
+	if assert.NoError(t, h.AddOrder(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, successAddOrder, rec.Body.String())
 	}
-
-	data, err := json.Marshal(reqData)
-	if err != nil {
-		t.Fatalf("Was error when marshalling JSON data!")
-	}
-
-	resp, err := http.Post("http://localhost:8084/order", "application/json", bytes.NewReader(data))
-	if err != nil {
-		t.Fatalf("Error message: %v", err)
-	} else if resp.StatusCode != 200 {
-		var respErr interface{}
-
-		json.NewDecoder(resp.Body).Decode(&respErr)
-
-		t.Fatalf("Service is not response or status not ok with status error: %v and response error: %v", resp.Status, respErr)
-	}
-
-	var respData domain.DataResp
-	json.NewDecoder(resp.Body).Decode(&respData)
-	t.Log(respData)
 }
