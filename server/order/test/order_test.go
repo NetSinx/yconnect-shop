@@ -1,26 +1,32 @@
 package test
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
+
 	"github.com/NetSinx/yconnect-shop/server/order/model/entity"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	modelDB = map[string]*entity.Order{
-	 "netsinx_15": &entity.Order{
+	modelDB = map[string]entity.Order{
+	 "netsinx_15": entity.Order{
 		 ProductID: 1,
 		 Username: "netsinx_15",
 		 Kuantitas: 5,
 		 Status: "Dalam pengiriman",
+		 Estimasi: time.Now().AddDate(0, 0, 3),
 	 },
  }
 
- orderJSON = `{"product_id": 1, "username": "netsinx_15", "kuantitas": 5, "status": "Dalam pengiriman"}`
+ reqOrder = fmt.Sprintf(
+	`{"product_id": 1, "username": "netsinx_15", "kuantitas": 5, "status": "Dalam pengiriman", "estimasi": %v}`, time.Now().AddDate(0, 0, 3),
+	)
 
  successAddOrder = `{"message": "Pesanan berhasil dibuat"}`
 )
