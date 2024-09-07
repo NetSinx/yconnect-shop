@@ -3,6 +3,7 @@ package test
 import (
 	"net/http"
 	"strconv"
+	"time"
 	"github.com/NetSinx/yconnect-shop/server/order/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/order/model/entity"
 	"github.com/go-playground/validator/v10"
@@ -13,11 +14,20 @@ type DataTest struct {
 	Data entity.Order
 }
 
-type OrderHandler struct {
-	db map[string]*DataTest
+var modelDB = map[string]*DataTest{
+	"netsinx_15": {
+		Data: entity.Order{
+			Id: 1,
+			ProductID: 1,
+			Username: "netsinx_15",
+			Kuantitas: 5,
+			Status: "Dalam pengiriman",
+			Estimasi: time.Now().AddDate(0, 0, 3),
+		},
+	},
 }
 
-func (h *OrderHandler) AddOrder(c echo.Context) error {
+func AddOrder(c echo.Context) error {
 	var orderModel entity.Order
 
 	if err := c.Bind(&orderModel); err != nil {
@@ -35,36 +45,40 @@ func (h *OrderHandler) AddOrder(c echo.Context) error {
 	return c.JSON(http.StatusOK, orderModel)
 }
 
-func (h *OrderHandler) ListOrder(c echo.Context) error {
+func ListOrder(c echo.Context) error {
 	username := c.Param("username")
-	listOrder := h.db[username]
 
-	if listOrder == nil {
-		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "Pesanan masih kosong",
+	orders, ok := modelDB[username]
+	if !ok {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: "Pesanan masih kosong.",
 		})
 	}
 
-	return c.JSON(http.StatusOK, listOrder)
+	return c.JSON(http.StatusOK, orders)
 }
 
-func (h *OrderHandler) DeleteOrder(c echo.Context) error {
+func DeleteOrder(c echo.Context) error {
 	username := c.Param("username")
 	paramId := c.Param("id")
 	id, _ := strconv.Atoi(paramId)
 
-	getOrder := h.db[username]
-	if getOrder.Data.Id == uint(id) {
-		getOrder = nil
-
-		if getOrder != nil {
-			return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-				Message: "Pesanan tidak ditemukan",
-			})
-		}
+	getOrder, ok := modelDB[username]
+	if !ok {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Pesanan tidak ditemukan",
+		})
 	}
 	
-	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "Pesanan berhasil dibatalkan",
+	if getOrder.Data.Id == uint(id) {
+		getOrder = nil
+		
+		return c.JSON(http.StatusOK, domain.MessageResp{
+			Message: "Pesanan berhasil dibatalkan",
+		})
+	}
+
+	return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+		Message: "Pesanan tidak ditemukan",
 	})
 }

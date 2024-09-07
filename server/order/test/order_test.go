@@ -14,19 +14,6 @@ import (
 )
 
 var (
-	modelDB = map[string]*DataTest{
-		"netsinx_15": {
-			Data: entity.Order{
-				Id: 1,
-				ProductID: 1,
-				Username: "netsinx_15",
-				Kuantitas: 5,
-				Status: "Dalam pengiriman",
-				Estimasi: time.Now().AddDate(0, 0, 3),
-			},
-		},
-	}
-
  reqOrder = entity.Order{
 	Id: 1,
 	ProductID: 1,
@@ -44,7 +31,7 @@ var (
 		Stok: 10,
 		Rating: 4.8,
 	},
-	Username: "netsinx_15",
+	Username: "agus12",
 	Kuantitas: 5,
 	Status: "Dalam pengiriman",
 	Estimasi: time.Now().AddDate(0, 0, 3),
@@ -61,10 +48,9 @@ func TestListOrder(t *testing.T) {
 	ctx.SetPath("/:username")
 	ctx.SetParamNames("username")
 	ctx.SetParamValues("netsinx_15")
-	handler := &OrderHandler{modelDB}
-	respData, _ := json.Marshal(modelDB["netsinx_15"])
+	respData, _ := json.Marshal(modelDB[ctx.Param("username")])
 
-	if assert.NoError(t, handler.ListOrder(ctx)) {
+	if assert.NoError(t, ListOrder(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, string(respData)+"\n", rec.Body.String())
 	}
@@ -78,10 +64,9 @@ func TestAddOrder(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
-	handler := &OrderHandler{modelDB}
 	reqOrder, _ := json.Marshal(reqOrder)
 
-	if assert.NoError(t, handler.AddOrder(ctx)) {
+	if assert.NoError(t, AddOrder(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, string(reqOrder)+"\n", rec.Body.String())
 	}
@@ -95,9 +80,8 @@ func TestDeleteOrder(t *testing.T) {
 	ctx.SetPath("/:username/:id")
 	ctx.SetParamNames("username", "id")
 	ctx.SetParamValues("netsinx_15", "1")
-	handler := &OrderHandler{modelDB}
 
-	if assert.NoError(t, handler.DeleteOrder(ctx)) {
+	if assert.NoError(t, DeleteOrder(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, successDelOrder, rec.Body.String())
 	}
