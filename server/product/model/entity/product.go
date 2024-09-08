@@ -1,11 +1,8 @@
 package entity
 
-import (
-	"gorm.io/gorm"
-)
+import "time"
 
 type Product struct {
-	gorm.Model
 	Id          uint         `json:"id" gorm:"primaryKey"`
 	Nama        string       `json:"nama" gorm:"unique" validate:"required,max=255"`
 	Slug        string       `json:"slug" gorm:"unique" validate:"required"`
@@ -16,6 +13,8 @@ type Product struct {
 	Stok        int          `json:"stok" validate:"required"`
 	Rating      float32      `json:"rating" validate:"required"`
 	Kategori    Kategori     `json:"kategori" gorm:"-"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
 }
 
 type Kategori struct {
