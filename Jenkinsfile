@@ -1,4 +1,6 @@
 node {
+  label 'default-node'
+
   def app1
   def app2
   def app3
