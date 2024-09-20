@@ -2,3 +2,4 @@
 docker-compose.yaml
 /mail/credentials.json
 /mail/token.json
+/product/test/laptop*
