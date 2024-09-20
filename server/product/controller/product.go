@@ -1,17 +1,11 @@
 package controller
 
 import (
-	"crypto/md5"
-	"fmt"
-	"io"
 	"net/http"
-	"os"
-	"strings"
 	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 type productController struct {
@@ -41,44 +35,6 @@ func (p productController) ListProduct(c echo.Context) error {
 
 func (p productController) CreateProduct(c echo.Context) error {
 	var products entity.Product
-	var img []entity.Gambar
-
-	imageProduct, err := c.MultipartForm()
-	if err != nil {
-		return err
-	}
-
-	images := imageProduct.File["images"]
-
-	for i, image := range images {
-		src, err := image.Open()
-		if err != nil {
-			return err
-		}
-		defer src.Close()
-	
-		fileName := strings.Split(image.Filename, ".")[0]
-		fileExt := strings.Split(image.Filename, ".")[1]
-		hashedFileName := md5.New().Sum([]byte(fileName))
-	
-		if err := os.MkdirAll("assets/images", os.ModePerm); err != nil {
-			return err
-		}
-	
-		dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
-		if err != nil {
-			return err
-		}
-		defer dst.Close()
-	
-		if _, err := io.Copy(dst, src); err != nil {
-			return err
-		}
-	
-		img[i] = entity.Gambar{Nama: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)}
-	}
-
-	products.Gambar = img
 
 	if err := c.Bind(&products); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -86,10 +42,17 @@ func (p productController) CreateProduct(c echo.Context) error {
 		})
 	}
 	
-	product, err := p.productService.CreateProduct(products)
-	if err != nil && err == gorm.ErrDuplicatedKey {
+	imageProduct, err := c.MultipartForm()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
+		})
+	}
+	
+	product, err := p.productService.CreateProduct(products, imageProduct.File["images"])
+	if err != nil && err.Error() == "produk sudah tersedia" {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "Produk sudah tersedia.",
+			Message: err.Error(),
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -107,77 +70,27 @@ func (p productController) UpdateProduct(c echo.Context) error {
 
 	slug := c.Param("slug")
 
-	imageProduct, err := c.MultipartForm()
-	if err != nil {
-		return err
-	}
-
-	images := imageProduct.File["images"]
-
-	getProduct, err := p.productService.GetProduct(products, slug)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-
-	for i, image := range images {
-		src, err := image.Open()
-		if err != nil {
-			return err
-		}
-		defer src.Close()
-	
-		fileName := strings.Split(image.Filename, ".")[0]
-		fileExt := strings.Split(image.Filename, ".")[1]
-		hashedFileName := md5.New().Sum([]byte(fileName))
-	
-		if (len(getProduct.Gambar) <= i) {
-			dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
-			if err != nil {
-				return err
-			}
-			defer dst.Close()
-			
-			if _, err := io.Copy(dst, src); err != nil {
-				return err
-			}
-
-			getProduct.Gambar = append(getProduct.Gambar, entity.Gambar{Nama: fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt), ProductID: uint(getProduct.Id)})
-		} else {
-			dst, err := os.Create(fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt))
-			if err != nil {
-				return err
-			}
-			defer dst.Close()
-			
-			if _, err := io.Copy(dst, src); err != nil {
-				return err
-			}
-			
-			os.Remove("." + getProduct.Gambar[i].Nama)
-
-			getProduct.Gambar[i].Nama = fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)
-			getProduct.Gambar[i].ProductID = uint(getProduct.Id)
-		}
-	}
-
-	products.Gambar = getProduct.Gambar
-	
 	if err := c.Bind(&products); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	product, err := p.productService.UpdateProduct(products, slug, fmt.Sprintf("%d", getProduct.Id))
-	if err != nil && err == gorm.ErrRecordNotFound {
-		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "Produk tidak ditemukan.",
+	imageProduct, err := c.MultipartForm()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
 		})
-	} else if err != nil && err == gorm.ErrDuplicatedKey {
+	}
+
+	product, err := p.productService.UpdateProduct(products, imageProduct.File["images"], slug)
+	if err != nil && err.Error() == "produk tidak ditemukan" {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: err.Error(),
+		})
+	} else if err != nil && err.Error() == "produk sudah tersedia" {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "Produk sudah tersedia.",
+			Message: err.Error(),
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -195,24 +108,14 @@ func (p productController) DeleteProduct(c echo.Context) error {
 
 	slug := c.Param("slug")
 
-	getProduct, err := p.productService.GetProduct(products, slug)
-	if err != nil && err == gorm.ErrRecordNotFound {
+	err := p.productService.DeleteProduct(products, slug)
+	if err != nil && err.Error() == "produk tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "Produk tidak ditemukan.",
+			Message: err.Error(),
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: err.Error(),
-		})
-	}
-
-	for _, image := range getProduct.Gambar {
-		os.Remove("." + image.Nama)
-	}
-
-	if err := p.productService.DeleteProduct(products, slug, fmt.Sprintf("%d", getProduct.Id)); err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: "Produk tidak ditemukan.",
 		})
 	}
 
@@ -244,8 +147,8 @@ func (p productController) GetProductByCategory(c echo.Context) error {
 	id := c.Param("id")
 
 	getProdByCate, err := p.productService.GetProductByCategory(products, id)
-	if err != nil && err == gorm.ErrRecordNotFound{
-		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}

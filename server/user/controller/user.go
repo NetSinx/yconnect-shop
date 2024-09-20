@@ -111,7 +111,7 @@ func (u userController) LoginUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
 			Message: "Email atau password Anda salah.",
 		})
-	} else if err != nil && err.Error() == "email tidak mengandung karakter '@' dan hostname" {
+	} else if err != nil && err.Error() == echo.ErrBadRequest.Error() {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})

@@ -61,17 +61,21 @@ func (u userService) RegisterUser(users entity.User) error {
 }
 
 func (u userService) LoginUser(userLogin domain.UserLogin) (string, string, error) {
+	if err := validator.New().Struct(userLogin); err != nil {
+		return "", "", err
+	}
+
 	users, err := u.userRepository.LoginUser(userLogin)
 	if err != nil {
 		return "", "", fmt.Errorf("username / email atau password salah")
 	}
 
-	jwtToken := utils.JWTAuth(users.Username)
-
 	err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(userLogin.Password))
 	if err != nil {
 		return "", "", err
 	}
+	
+	jwtToken := utils.JWTAuth(users.Username, users.Role)
 
 	key1 := []byte("netsinxadmin")
 	key2 := []byte("yasinganteng15")
@@ -86,19 +90,15 @@ func (u userService) LoginUser(userLogin domain.UserLogin) (string, string, erro
 		if err != nil {
 			return "", "", err
 		} else if token.Valid {
-			for claim, value := range token.Claims.(jwt.MapClaims) {
-				if claim == "username" {
-					return jwtToken, value.(string), nil
-				}
+			if claims := token.Claims.(*utils.CustomClaims); claims.Role == "member" {
+				return jwtToken, claims.Username, nil
 			}
 		} else {
 			return "", "", err
 		}
 	} else if token.Valid {
-		for _, value := range token.Claims.(jwt.MapClaims) {
-			if value == "netsinx_15" {
-				return jwtToken, value.(string), nil
-			}
+		if claims := token.Claims.(*utils.CustomClaims); claims.Role == "admin" {
+			return jwtToken, claims.Username, nil
 		}
 	}
 

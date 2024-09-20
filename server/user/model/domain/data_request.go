@@ -8,7 +8,7 @@ type VerifyEmail struct {
 }
 
 type UserLogin struct {
-	UsernameorEmail string `json:"UsernameorEmail"`
+	UsernameorEmail string `json:"UsernameorEmail" validate:"required"`
 	Password        string `json:"password" validate:"required,min=5"`
 }
 

@@ -5,9 +5,9 @@ import (
 )
 
 type CategoryRepo interface {
-	ListCategory(categories []entity.Category) ([]entity.Category, error)
-	CreateCategory(categories entity.Category) (entity.Category, error)
-	UpdateCategory(categories entity.Category, id string) (entity.Category, error)
-	DeleteCategory(category entity.Category, id string) error
-	GetCategory(categories entity.Category, id string) (entity.Category, error)
+	ListCategory(categories []entity.Kategori) ([]entity.Kategori, error)
+	CreateCategory(categories entity.Kategori) (entity.Kategori, error)
+	UpdateCategory(categories entity.Kategori, id string) (entity.Kategori, error)
+	DeleteCategory(category entity.Kategori, id string) error
+	GetCategory(categories entity.Kategori, id string) (entity.Kategori, error)
 }

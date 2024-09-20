@@ -42,7 +42,9 @@ func AddOrder(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, orderModel)
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "Pesanan sedang diproses oleh penjual",
+	})
 }
 
 func ListOrder(c echo.Context) error {

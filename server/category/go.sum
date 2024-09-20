@@ -1,7 +1,5 @@
-github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240308001431-0382d8b4e31e h1:AbXm4DmAjDp7l15zT7hOaAE+fhLfv2PlbMtK3ZIyXCI=
-github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240308001431-0382d8b4e31e/go.mod h1:iXNXMWaru+lHOXHnYRwkLtpWTarUSHKrrgW/qnmcX14=
-github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240619004129-76d3c85416f7 h1:UPh6xIEXmSZ88ihpX0oRQu/o5bHxlyoPey8BbDba4js=
-github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240619004129-76d3c85416f7/go.mod h1:iXNXMWaru+lHOXHnYRwkLtpWTarUSHKrrgW/qnmcX14=
+github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240907023711-5b2737a20fbb h1:ZWw1pQmQKKBpIPLbX04PSskARPPT8zebSbfYedSQNdo=
+github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240907023711-5b2737a20fbb/go.mod h1:iXNXMWaru+lHOXHnYRwkLtpWTarUSHKrrgW/qnmcX14=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -64,6 +62,7 @@ golang.org/x/sys v0.12.0 h1:CM0HF96J0hcLAwsHPJZjfdNzs0gftsLfgKt57wWHJ0o=
 golang.org/x/sys v0.12.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/text v0.13.0 h1:ablQoSUd0tRdKxZewP80B+BaqeKJuVhuRxj/dkrun3k=
 golang.org/x/text v0.13.0/go.mod h1:TvPlkZtksWOMsz7fbANvkp4WM8x/WCo/om8BMLbz+aE=
+gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=

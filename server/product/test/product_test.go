@@ -1,145 +1,167 @@
 package test
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
+	"mime/multipart"
 	"net/http"
-	"strings"
+	"net/http/httptest"
+	"os"
 	"testing"
-	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
+
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestListProduct(t *testing.T) {
-	response, _ := http.Get("http://localhost:8081/product")
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/product", nil)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
 
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
+	reqByte, _ := json.Marshal(productModel)
 
-		json.NewDecoder(response.Body).Decode(&respData)
-
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	if assert.NoError(t, ListProduct(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(reqByte)+"\n", rec.Body.String())
 	}
 }
 
 func TestCreateProduct(t *testing.T) {
-	var genCSRF domain.ResponseCSRF
-	var respData domain.MessageResp
-	var httpClient http.Client
-	var httpCookie http.Cookie
+	expectedResp := `{"message":"Produk berhasil ditambahkan"}`+"\n"
 
-	body := `{
-		"name": "Ayam Bakar",
-		"slug": "ayam-bakar",
-		"images": {
-			"name": "ayam_bakar.jpg"
-		},
-		"description": "Ayam bakar sedap dengan cita rasa yang nikmat dan luar biasa",
-		"category_id": 1,
-		"seller_id": 1,
-		"price": 19000,
-		"stock": 10
-	}`
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
 
-	resp_gen_csrf, err := http.Get("http://localhost:8081/gencsrf")
-	if resp_gen_csrf.StatusCode != 200 || err != nil {
-		json.NewDecoder(resp_gen_csrf.Body).Decode(&respData)
+	writer.WriteField("nama", "Product Test")
+	writer.WriteField("slug", "product-test")
+	writer.WriteField("deskripsi", "ini hanyalah deskripsi product test")
+	writer.WriteField("kategori_id", "2")
+	writer.WriteField("harga", "50000")
+	writer.WriteField("stok", "15")
+	writer.WriteField("rating", "4.8")
+	
+	fileImages := []string{"laptop1.jpg", "laptop2.jpg", "laptop3.jpg"}
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", resp_gen_csrf.StatusCode, respData.Message)
+	for _, img := range fileImages {
+		file, err := os.Open(img)
+		assert.NoError(t, err)
+		defer file.Close()
+	
+		part, err := writer.CreateFormFile("gambar", img)
+		assert.NoError(t, err)
+	
+		_, err = io.Copy(part, file)
+		assert.NoError(t, err)
 	}
 	
-	json.NewDecoder(resp_gen_csrf.Body).Decode(&genCSRF)
+	writer.Close()
+
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/product", body)
+	req.Header.Set(echo.HeaderContentType, writer.FormDataContentType())
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
 	
-	request, _ := http.NewRequest("POST", "http://localhost:8081/product", strings.NewReader(body))
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Add("XSRF-Token", genCSRF.CSRFToken)
-
-	httpCookie.Name = "_csrf"
-	httpCookie.Value = genCSRF.CSRFToken
-	request.AddCookie(&httpCookie)
-
-	response, _ := httpClient.Do(request)
-
-	if response.StatusCode != 200 {
-		json.NewDecoder(response.Body).Decode(&respData)
-
-		t.Fatalf("Error Status Code: %d, Error Message: %s, csrf: %s, header: %s, cookie: %v", response.StatusCode, respData.Message,genCSRF.CSRFToken, request.Header.Get("XSRF-Token"), request.Cookies())
+	if assert.NoError(t, CreateProduct(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, expectedResp, rec.Body.String())
 	}
 }
 
 func TestUpdateProduct(t *testing.T) {
-	var httpClient http.Client
+	expectedResp := `{"message":"Produk berhasil diubah"}`+"\n"
 
-	body := `{
-		"name": "Ayam Bakar",
-		"slug": "ayam-bakar",
-		"description": "Ayam bakar sedap dengan cita rasa yang nikmat dan luar biasa",
-		"category_id": 1,
-		"seller_id": 1,
-		"price": 17000,
-		"stock": 10
-	}`
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
 
-	req, _ := http.NewRequest("PUT", "http://localhost:8081/product/11", strings.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
+	writer.WriteField("nama", "Product Test 2")
+	writer.WriteField("slug", "product-test-2")
+	writer.WriteField("deskripsi", "ini hanyalah deskripsi product test")
+	writer.WriteField("kategori_id", "2")
+	writer.WriteField("harga", "50000")
+	writer.WriteField("stok", "15")
+	writer.WriteField("rating", "4.8")
+	
+	fileImages := []string{"laptop2.jpg"}
 
-	response, _ := httpClient.Do(req)
+	for _, img := range fileImages {
+		file, err := os.Open(img)
+		assert.NoError(t, err)
+		defer file.Close()
+	
+		part, err := writer.CreateFormFile("gambar", img)
+		assert.NoError(t, err)
+	
+		_, err = io.Copy(part, file)
+		assert.NoError(t, err)
+	}
+	
+	writer.Close()
 
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
-
-		json.NewDecoder(response.Body).Decode(&respData)
-
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPut, "/product", body)
+	req.Header.Set(echo.HeaderContentType, writer.FormDataContentType())
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	ctx.SetPath("/:slug")
+	ctx.SetParamNames("slug")
+	ctx.SetParamValues("product-test")
+	
+	if assert.NoError(t, UpdateProduct(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, expectedResp, rec.Body.String())
 	}
 }
 
 func TestDeleteProduct(t *testing.T) {
-	var httpClient http.Client
+	expectedResp := `{"message":"Produk berhasil dihapus"}`+"\n"
 
-	req, _ := http.NewRequest("DELETE", "http://localhost:8081/product/11", nil)
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodDelete, "/product", nil)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	ctx.SetPath("/:slug")
+	ctx.SetParamNames("slug")
+	ctx.SetParamValues("product-test-2")
 
-	response, _ := httpClient.Do(req)
-
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
-
-		json.NewDecoder(response.Body).Decode(&respData)
-
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	if assert.NoError(t, DeleteProduct(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, expectedResp, rec.Body.String())
 	}
 }
 
 func TestGetProduct(t *testing.T) {
-	response, _ := http.Get("http://localhost:8081/product/11")
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/product", nil)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	ctx.SetPath("/:slug")
+	ctx.SetParamNames("slug")
+	ctx.SetParamValues("product-test-2")
 
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
+	respByte, _ := json.Marshal(productModel[2])
 
-		json.NewDecoder(response.Body).Decode(&respData)
-
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	if assert.NoError(t, GetProduct(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(respByte)+"\n", rec.Body.String())
 	}
 }
 
 func TestGetCategoryProduct(t *testing.T) {
-	response, _ := http.Get("http://localhost:8081/product/category/2")
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/product", nil)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	ctx.SetPath("/:id")
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("2")
 
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
+	respByte, _ := json.Marshal(productModel[2])
 
-		json.NewDecoder(response.Body).Decode(&respData)
-
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
-	}
-}
-
-func TestGetUserProduct(t *testing.T) {
-	response, _ := http.Get("http://localhost:8081/product/user/1")
-
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
-
-		json.NewDecoder(response.Body).Decode(&respData)
-
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	if assert.NoError(t, GetProductByCategory(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, "["+string(respByte)+"]\n", rec.Body.String())
 	}
 }

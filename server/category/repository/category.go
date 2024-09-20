@@ -15,7 +15,7 @@ func CategoryRepository(db *gorm.DB) categoryRepository {
 	}
 }
 
-func (c categoryRepository) ListCategory(categories []entity.Category) ([]entity.Category, error) {
+func (c categoryRepository) ListCategory(categories []entity.Kategori) ([]entity.Kategori, error) {
 	if err := c.DB.Select("id", "name", "slug").Find(&categories).Error; err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (c categoryRepository) ListCategory(categories []entity.Category) ([]entity
 	return categories, nil
 }
 
-func (c categoryRepository) CreateCategory(categories entity.Category) (entity.Category, error) {
+func (c categoryRepository) CreateCategory(categories entity.Kategori) (entity.Kategori, error) {
 	if err := c.DB.Create(&categories).Error; err != nil {
 		return categories, err
 	}
@@ -31,19 +31,19 @@ func (c categoryRepository) CreateCategory(categories entity.Category) (entity.C
 	return categories, nil
 }
 
-func (c categoryRepository) UpdateCategory(categories entity.Category, id string) (entity.Category, error) {
-	if err := c.DB.Where("id = ?", id).Updates(&categories).Error; err != nil {
+func (c categoryRepository) UpdateCategory(categories entity.Kategori, id string) (entity.Kategori, error) {
+	if err := c.DB.First(&categories, "id = ?", id).Error; err != nil {
 		return categories, err
 	}
-
-	if err := c.DB.First(&categories, "id = ?", id).Error; err != nil {
+	
+	if err := c.DB.Updates(&categories).Error; err != nil {
 		return categories, err
 	}
 	
 	return categories, nil
 }
 
-func(c categoryRepository) DeleteCategory(category entity.Category, id string) error {
+func(c categoryRepository) DeleteCategory(category entity.Kategori, id string) error {
 	if err := c.DB.First(&category, "id = ?", id).Error; err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func(c categoryRepository) DeleteCategory(category entity.Category, id string) e
 	return nil
 }
 
-func(c categoryRepository) GetCategory(categories entity.Category, id string) (entity.Category, error) {
+func(c categoryRepository) GetCategory(categories entity.Kategori, id string) (entity.Kategori, error) {
 	if err := c.DB.First(&categories, "id = ?", id).Error; err != nil {
 		return categories, err
 	}

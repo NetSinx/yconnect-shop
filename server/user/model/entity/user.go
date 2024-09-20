@@ -13,7 +13,7 @@ type User struct {
 	Username        string              `json:"username" gorm:"unique" validate:"required"`
 	Avatar          string              `json:"avatar"`
 	Email           string              `json:"email" gorm:"unique" validate:"required,email"`
-	Role            string              `json:"role" validate:"required"`
+	Role            string
 	Alamat          Alamat              `json:"alamat" validate:"required"`
 	NoTelp          string              `json:"no_telp" gorm:"unique" validate:"required"`
 	Password        string              `json:"password" validate:"required,min=5,containsany=!@#&*,containsany=0123456789,containsany=ABCDEFGHIJKLMNOPQRSTUVWXYZ"`

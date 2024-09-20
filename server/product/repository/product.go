@@ -31,7 +31,7 @@ func (p productRepository) CreateProduct(products entity.Product) (entity.Produc
 	return products, nil
 }
 
-func (p productRepository) UpdateProduct(products entity.Product, slug string, id string) (entity.Product, error) {
+func (p productRepository) UpdateProduct(products entity.Product, slug string) (entity.Product, error) {
 	if err := p.DB.First(&products, "slug = ?", slug).Error; err != nil {
 		return products, err
 	}
@@ -43,7 +43,7 @@ func (p productRepository) UpdateProduct(products entity.Product, slug string, i
 	return products, nil
 }
 
-func (p productRepository) DeleteProduct(products entity.Product, slug string, id string) error {
+func (p productRepository) DeleteProduct(products entity.Product, slug string) error {
 	if err := p.DB.First(&products, "slug = ?", slug).Error; err != nil {
 		return err
 	}

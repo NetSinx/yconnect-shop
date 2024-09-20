@@ -1,87 +1,106 @@
 package test
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
-	"strings"
+	"net/http/httptest"
 	"testing"
-	"github.com/NetSinx/yconnect-shop/server/category/model/domain"
+	"github.com/NetSinx/yconnect-shop/server/category/model/entity"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestListCategory(t *testing.T) {
-	response, _ := http.Get("http://localhost:8080/category")
-
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
-
-		json.NewDecoder(response.Body).Decode(&respData)
-		
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/category", nil)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	cateModel, _ := json.Marshal(categoryModel)
+	
+	if assert.NoError(t, ListCategory(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(cateModel)+"\n", rec.Body.String())
 	}
 }
 
 func TestCreateCategory(t *testing.T) {
-	body := `{
-		"name": "Makanan",
-		"slug": "makanan"
-	}`
+	expectedResp := `{"message":"Kategori berhasil ditambahkan"}`+"\n"
 
-	response, _ := http.Post("http://localhost:8080/category", "application/json", strings.NewReader(body))
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
+	reqCategory := entity.Kategori{
+		Name: "Hats",
+		Slug: "hats",
+	}
 
-		json.NewDecoder(response.Body).Decode(&respData)
+	byteReq, _ := json.Marshal(reqCategory)
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/category", bytes.NewReader(byteReq))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+
+	if assert.NoError(t, CreateCategory(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, expectedResp, rec.Body.String())
 	}
 }
 
 func TestUpdateCategory(t *testing.T) {
-	var httpClient http.Client
+	reqCategory := entity.Kategori{
+		Name: "Shoes",
+		Slug: "shoes",
+	}
 
-	body := `{
-		"name": "Pakaian",
-		"slug": "pakaian"
-	}`
+	expectedResp := `{"message":"Kategori berhasil diubah"}`+"\n"
 
-	req, _ := http.NewRequest("PUT", "http://localhost:8080/category/1", strings.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
+	byteReq, _ := json.Marshal(reqCategory)
 
-	response, _ := httpClient.Do(req)
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPut, "/category", bytes.NewReader(byteReq))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	ctx.SetPath("/:id")
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("2")
 
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
-		
-		json.NewDecoder(response.Body).Decode(&respData)
-
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	if assert.NoError(t, UpdateCategory(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, expectedResp, rec.Body.String())
 	}
 }
 
 func TestDeleteCategory(t *testing.T) {
-	var httpClient http.Client
+	expectedResp := `{"message":"Kategori berhasil dihapus"}`+"\n"
 
-	req, _ := http.NewRequest("DELETE", "http://localhost:8080/category/9", nil)
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodDelete, "/category", nil)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	ctx.SetPath("/:id")
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("1")
 
-	response, _ := httpClient.Do(req)
-
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
-		
-		json.NewDecoder(response.Body).Decode(&respData)
-
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	if assert.NoError(t, DeleteCategory(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, expectedResp, rec.Body.String())
 	}
 }
 
 func TestGetCategory(t *testing.T) {
-	response, _ := http.Get("http://localhost:8080/category/1")
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/category", nil)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	ctx.SetPath("/:id")
+	ctx.SetParamNames("id")
+	ctx.SetParamValues("1")
 
-	if response.StatusCode != 200 {
-		var respData domain.MessageResp
-		
-		json.NewDecoder(response.Body).Decode(&respData)
+	respData, _ := json.Marshal(categoryModel["data"][0])
 
-		t.Fatalf("Error Status Code: %d, Error Message: %s", response.StatusCode, respData.Message)
+	if assert.NoError(t, GetCategory(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(respData)+"\n", rec.Body.String())
 	}
 }

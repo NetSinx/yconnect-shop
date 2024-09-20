@@ -5,9 +5,9 @@ import (
 )
 	
 type CategoryServ interface {
-	ListCategory(categories []entity.Category) ([]entity.Category, error)
-	CreateCategory(categories entity.Category) (entity.Category, error)
-	UpdateCategory(categories entity.Category, id string) (entity.Category, error)
-	DeleteCategory(category entity.Category, id string) error
-	GetCategory(categories entity.Category, id string) (entity.Category, error)
+	ListCategory(categories []entity.Kategori) ([]entity.Kategori, error)
+	CreateCategory(category entity.Kategori) (entity.Kategori, error)
+	UpdateCategory(category entity.Kategori, id string) (entity.Kategori, error)
+	DeleteCategory(category entity.Kategori, id string) error
+	GetCategory(category entity.Kategori, id string) (entity.Kategori, error)
 }

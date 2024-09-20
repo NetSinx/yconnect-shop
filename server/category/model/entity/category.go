@@ -5,7 +5,7 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 )
 
-type Category struct {
+type Kategori struct {
 	Id        uint            `json:"id" gorm:"primaryKey"`
 	Name      string          `json:"name" gorm:"unique" validate:"required,min=3"`
 	Slug      string          `json:"slug" gorm:"unique" validate:"required,min=3,lowercase"`

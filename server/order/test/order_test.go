@@ -13,32 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
- reqOrder = entity.Order{
-	Id: 1,
-	ProductID: 1,
-	Product: prodEntity.Product{
-		Nama: "Baju Muslim",
-		Slug: "baju-muslim",
-		Gambar: append([]prodEntity.Gambar{}, prodEntity.Gambar{
-			Id: 1,
-			Nama: "baju_muslim.jpg",
-			ProductID: 1,
-		}),
-		Deskripsi: "Baju nyaman dengan desain yang trendi",
-		KategoriId: 1,
-		Harga: 85000,
-		Stok: 10,
-		Rating: 4.8,
-	},
-	Username: "agus12",
-	Kuantitas: 5,
-	Status: "Dalam pengiriman",
-	Estimasi: time.Now().AddDate(0, 0, 3),
- }
-
- successDelOrder = `{"message":"Pesanan berhasil dibatalkan"}`+"\n"
-)
 
 func TestListOrder(t *testing.T) {
 	e := echo.New()
@@ -57,6 +31,30 @@ func TestListOrder(t *testing.T) {
 }
 
 func TestAddOrder(t *testing.T) {
+	reqOrder := entity.Order{
+		Id: 1,
+		ProductID: 1,
+		Product: prodEntity.Product{
+			Nama: "Baju Muslim",
+			Slug: "baju-muslim",
+			Gambar: append([]prodEntity.Gambar{}, prodEntity.Gambar{
+				Id: 1,
+				Nama: "baju_muslim.jpg",
+				ProductID: 1,
+			}),
+			Deskripsi: "Baju nyaman dengan desain yang trendi",
+			KategoriId: 1,
+			Harga: 85000,
+			Stok: 10,
+			Rating: 4.8,
+		},
+		Username: "agus12",
+		Kuantitas: 5,
+		Status: "Dalam pengiriman",
+		Estimasi: time.Now().AddDate(0, 0, 3),
+	}
+
+	expectedResp := `{"message":"Pesanan sedang diproses oleh penjual"}`+"\n"
 	reqByte, _ := json.Marshal(reqOrder)
 
 	e := echo.New()
@@ -64,15 +62,16 @@ func TestAddOrder(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
-	reqOrder, _ := json.Marshal(reqOrder)
 
 	if assert.NoError(t, AddOrder(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, string(reqOrder)+"\n", rec.Body.String())
+		assert.Equal(t, expectedResp, rec.Body.String())
 	}
 }
 
 func TestDeleteOrder(t *testing.T) {
+	expectedResp := `{"message":"Pesanan berhasil dibatalkan"}`+"\n"
+
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodDelete, "/order", nil)
 	rec := httptest.NewRecorder()
@@ -83,6 +82,6 @@ func TestDeleteOrder(t *testing.T) {
 
 	if assert.NoError(t, DeleteOrder(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, successDelOrder, rec.Body.String())
+		assert.Equal(t, expectedResp, rec.Body.String())
 	}
 }

@@ -21,7 +21,7 @@ func CategoryController(categoryservice service.CategoryServ) categoryController
 }
 
 func (cc categoryController) ListCategory(c echo.Context) error {
-	var categories []entity.Category
+	var categories []entity.Kategori
 
 	listCategories, err := cc.categoryService.ListCategory(categories)
 	if err != nil {
@@ -36,7 +36,7 @@ func (cc categoryController) ListCategory(c echo.Context) error {
 }
 
 func (cc categoryController) CreateCategory(c echo.Context) error {
-	var categories entity.Category
+	var categories entity.Kategori
 
 	if err := c.Bind(&categories); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -61,7 +61,7 @@ func (cc categoryController) CreateCategory(c echo.Context) error {
 }
 
 func (cc categoryController) UpdateCategory(c echo.Context) error {
-	var categories entity.Category
+	var categories entity.Kategori
 
 	id := c.Param("id")
 
@@ -96,7 +96,7 @@ func (cc categoryController) UpdateCategory(c echo.Context) error {
 }
 
 func (cc categoryController) DeleteCategory(c echo.Context) error {
-	var category entity.Category
+	var category entity.Kategori
 
 	id := c.Param("id")
 
@@ -113,7 +113,7 @@ func (cc categoryController) DeleteCategory(c echo.Context) error {
 }
 
 func (cc categoryController) GetCategory(c echo.Context) error {
-	var categories entity.Category
+	var categories entity.Kategori
 
 	id := c.Param("id")
 

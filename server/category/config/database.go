@@ -13,7 +13,7 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	var category entity.Category
+	var category entity.Kategori
 
 	godotenv.Load()
 
