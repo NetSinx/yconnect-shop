@@ -25,6 +25,12 @@ node('default-node') {
   }
 
   stage('Cleanup') {
-    docker.image()
+    for (int i = 0; i < dockerImages.size(); i++) {
+      app = docker.image("${dockerImages[i]}:${imageTag}")
+      
+      docker.withRegistry('', 'docker-reg') {
+        app.push()
+      }
+    }
   }
 }
