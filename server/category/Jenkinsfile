@@ -1,11 +1,11 @@
 node('default-node') {
-  withEnv(["DOCKER_IMAGE=yasinah22/category-img", "IMAGE_TAG=latest"]) {
+  withEnv(["DOCKER_IMAGE=yasinah22/category-img", "IMAGE_TAG=latest", "SERVICE_NAME=category"]) {
     stage('Checkout') {
       git url: 'https://github.com/NetSinx/yconnect-shop', branch: 'master'
     }
 
     stage('Build') {
-      docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}")
+      docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}", "server/${SERVICE_NAME}/.")
     }
 
     stage('Deploy') {
