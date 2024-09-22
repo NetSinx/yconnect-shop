@@ -1,25 +1,23 @@
 node('default-node') {
   withEnv(["DOCKER_IMAGE=yasinah22/category-img", "IMAGE_TAG=latest", "SERVICE_NAME=category"]) {
-    stage('Checkout') {
-      git url: 'https://github.com/NetSinx/yconnect-shop', branch: 'master'
-    }
-
-    stage('Build') {
-      docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}", "server/${SERVICE_NAME}/.")
-    }
-
-    stage('Deploy') {
-      def app = docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}")
-      
-      docker.withRegistry('', 'docker-reg') {
-        app.push()
+    try {
+      stage('Checkout') {
+        git url: 'https://github.com/NetSinx/yconnect-shop', branch: 'master'
       }
-    }
 
-    post {
-      cleanup {
-        sh "docker rmi ${DOCKER_IMAGE}:${IMAGE_TAG}"
+      stage('Build') {
+        docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}", "server/${SERVICE_NAME}/.")
       }
+
+      stage('Deploy') {
+        def app = docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}")
+        
+        docker.withRegistry('', 'docker-reg') {
+          app.push()
+        }
+      }
+    } finally {
+      sh "docker rmi ${DOCKER_IMAGE}:${IMAGE_TAG}"
     }
   }
 }
