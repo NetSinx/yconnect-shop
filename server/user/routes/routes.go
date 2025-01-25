@@ -45,7 +45,8 @@ func ApiRoutes() *echo.Echo {
 	router.POST("/user/sign-up", userController.RegisterUser)
 	router.POST("/user/sign-in", userController.LoginUser)
 
-	router.Use(echojwt.WithConfig(echojwt.Config{
+	authRoute := router.Group("/auth")
+	authRoute.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey: []byte("yasinnetsinx15"),
 		SigningMethod: "HS512",
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
@@ -62,16 +63,16 @@ func ApiRoutes() *echo.Echo {
 			}
 		},
 	}))
-	router.POST("/user/send-otp", userController.SendOTP)
-	router.POST("/user/email-verify", userController.VerifyEmail)
-	router.POST("/user/set-timezone", userController.SetTimezone)
-	router.GET("/user/userinfo", userController.GetUserInfo)
-	router.GET("/user/:username", userController.GetUser)
-	router.GET("/user/logout", userController.UserLogout)
+	authRoute.POST("/user/send-otp", userController.SendOTP)
+	authRoute.POST("/user/email-verify", userController.VerifyEmail)
+	authRoute.POST("/user/set-timezone", userController.SetTimezone)
+	authRoute.GET("/user/userinfo", userController.GetUserInfo)
+	authRoute.GET("/user/:username", userController.GetUser)
+	authRoute.GET("/user/logout", userController.UserLogout)
 	
-	router.GET("/user", userController.ListUsers)
-	router.PUT("/user/:username", userController.UpdateUser)
-	router.DELETE("/user/:username", userController.DeleteUser)
+	authRoute.GET("/user", userController.ListUsers)
+	authRoute.PUT("/user/:username", userController.UpdateUser)
+	authRoute.DELETE("/user/:username", userController.DeleteUser)
 	
 	return router
 }
