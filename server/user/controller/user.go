@@ -13,7 +13,6 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/user/service"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -339,59 +338,6 @@ func (u userController) DeleteUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil dihapus.",
 	})
-}
-
-func (u userController) Verify(c echo.Context) error {
-	cookie, err := c.Cookie("user_session")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: err.Error(),
-		})
-	} else if cookie.Value == "" {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: "Your token is empty.",
-		})
-	} else {
-		token, err := u.userService.Verify(cookie.Value)
-		if err != nil {
-			token, err := u.userService.Verify(cookie.Value)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-					Message: err.Error(),
-				})
-			} else if !token.Valid {
-				return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-					Message: "Your token is invalid.",
-				})
-			} else {
-				for _, value := range token.Claims.(jwt.MapClaims) {
-					if value == "netsinx_15" {
-						utils.SetCookies(c, "user_id", value.(string))
-						break
-					}
-				}
-
-				return c.JSON(http.StatusOK, domain.MessageResp{
-					Message: "Your token is valid.",
-				})
-			}
-		} else if token.Valid {
-			for claim, value := range token.Claims.(jwt.MapClaims) {
-				if claim == "username" {
-					utils.SetCookies(c, "user_id", value.(string))
-					break
-				}
-			}
-
-			return c.JSON(http.StatusOK, domain.MessageResp{
-				Message: "Your token is valid.",
-			})
-		} else {
-			return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-				Message: "Your token is invalid.",
-			})
-		}
-	}
 }
 
 func (u userController) GetUserInfo(c echo.Context) error {

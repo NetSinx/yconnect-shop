@@ -10,7 +10,7 @@ func SetCookies(c echo.Context, name string, value string) {
 	cookie := http.Cookie{
 		Name: name,
 		Value: value,
-		Expires: time.Now().Add(30 * time.Minute),
+		Expires: time.Now().Add(1 * time.Hour),
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 		Secure: true,

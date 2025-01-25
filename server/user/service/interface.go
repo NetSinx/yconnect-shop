@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
-	"github.com/golang-jwt/jwt/v4"
 )
 
 type UserServ interface {
@@ -15,5 +14,4 @@ type UserServ interface {
 	DeleteUser(user entity.User, username string) error
 	SendOTP(verifyEmail domain.VerifyEmail) (string, error)
 	VerifyEmail(verifyEmail domain.VerifyEmail) error
-	Verify(token string) (*jwt.Token, error)
 }

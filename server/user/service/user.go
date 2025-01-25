@@ -11,7 +11,7 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -77,32 +77,18 @@ func (u userService) LoginUser(userLogin domain.UserLogin) (string, string, erro
 	
 	jwtToken := utils.JWTAuth(users.Username, users.Role)
 
-	key1 := []byte("netsinxadmin")
-	key2 := []byte("yasinganteng15")
+	signKey := []byte("yasinnetsinx15")
 
 	token, err := jwt.Parse(jwtToken, func(t *jwt.Token) (interface{}, error) {
-		return key1, nil
+		return signKey, nil
 	})
 	if err != nil {
-		token, err := jwt.Parse(jwtToken, func(t *jwt.Token) (interface{}, error) {
-			return key2, nil
-		})
-		if err != nil {
-			return "", "", err
-		} else if token.Valid {
-			if claims := token.Claims.(*utils.CustomClaims); claims.Role == "member" {
-				return jwtToken, claims.Username, nil
-			}
-		} else {
-			return "", "", err
-		}
-	} else if token.Valid {
-		if claims := token.Claims.(*utils.CustomClaims); claims.Role == "admin" {
-			return jwtToken, claims.Username, nil
-		}
+		return "", "", err
 	}
-
-	return "", "", err
+	
+	claims := token.Claims.(*utils.CustomClaims)
+	
+	return jwtToken, claims.Username, nil
 }
 
 func (u userService) ListUsers(users []entity.User) ([]entity.User, error) {
@@ -269,29 +255,4 @@ func (u userService) DeleteUser(user entity.User, username string) error {
 	}
 
 	return nil
-}
-
-func (u userService) Verify(token string) (*jwt.Token, error) {
-	jwtKey1 := []byte("netsinxadmin")
-	jwtKey2 := []byte("yasinganteng15")
-
-	resultToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-		return jwtKey1, nil
-	})
-	if err != nil {
-		resultToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-			return jwtKey2, nil
-		})
-		if err != nil {
-			return nil, err
-		} else if resultToken.Valid {
-			return resultToken, nil
-		} else {
-			return nil, err
-		}
-	} else if resultToken.Valid {
-		return resultToken, nil
-	} else {
-		return nil, err
-	}
 }
