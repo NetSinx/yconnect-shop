@@ -49,18 +49,25 @@ func ApiRoutes() *echo.Echo {
 	authRoute.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey: []byte("yasinnetsinx15"),
 		SigningMethod: "HS512",
-		NewClaimsFunc: func(c echo.Context) jwt.Claims {
+		ErrorHandler: func(c echo.Context, err error) error {
 			authToken, _ := c.Cookie("Authorization")
-			token, _ := jwt.Parse(authToken.Value, func(t *jwt.Token) (interface{}, error) {
+			token, err := jwt.Parse(authToken.Value, func(t *jwt.Token) (interface{}, error) {
 				return []byte("yasinnetsinx15"), nil
 			})
-			claims := token.Claims.(*utils.CustomClaims)
-
-			return &utils.CustomClaims{
-				RegisteredClaims: claims.RegisteredClaims,
-				Username: claims.Username,
-				Role: claims.Role,
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+					"message": "Your token is invalid",
+				})
 			}
+
+			claims := token.Claims.(*utils.CustomClaims)
+			if claims.Username == "" && claims.Role == "" {
+				return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+					"message": "Your claims is invalid",
+				})
+			}
+
+			return nil
 		},
 	}))
 	authRoute.POST("/user/send-otp", userController.SendOTP)
