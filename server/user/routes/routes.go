@@ -28,6 +28,12 @@ func ApiRoutes() *echo.Echo {
 		CookieMaxAge: 60,
 		CookieSecure: true,
 	}))
+	router.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
+		KeyLookup: "header:api-token",
+		Validator: func(auth string, c echo.Context) (bool, error) {
+			return auth == "dfkgjdgj#753846873248358645*&#%^*$54%hgdf", nil
+		},
+	}))
 
 	router.GET("/gencsrf", func(c echo.Context) error {
 		csrfToken := c.Get("csrf")
