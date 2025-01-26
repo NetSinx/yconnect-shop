@@ -3,11 +3,12 @@ package routes
 import (
 	"github.com/NetSinx/yconnect-shop/server/category/config"
 	"github.com/NetSinx/yconnect-shop/server/category/controller"
+	authMiddleware "github.com/NetSinx/yconnect-shop/server/category/middleware"
 	"github.com/NetSinx/yconnect-shop/server/category/repository"
 	"github.com/NetSinx/yconnect-shop/server/category/service"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	authMiddleware "github.com/NetSinx/yconnect-shop/server/category/middleware"
 )
 
 func ApiRoutes() *echo.Echo {
@@ -25,6 +26,10 @@ func ApiRoutes() *echo.Echo {
 	router.GET("/category", categoryController.ListCategory)
 	router.GET("/category/:id", categoryController.GetCategory)
 	authRoute := router.Group("/auth")
+	authRoute.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte("yasinnetsinx15"),
+		SigningMethod: "HS512",
+	}))
 	authRoute.Use(authMiddleware.JWTAuthMiddleware)
 	authRoute.POST("/category", categoryController.CreateCategory)
 	authRoute.PUT("/category/:id", categoryController.UpdateCategory)
