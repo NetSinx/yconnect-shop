@@ -7,6 +7,7 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/category/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	authMiddleware "github.com/NetSinx/yconnect-shop/server/category/middleware"
 )
 
 func ApiRoutes() *echo.Echo {
@@ -23,9 +24,11 @@ func ApiRoutes() *echo.Echo {
 	}))
 	router.GET("/category", categoryController.ListCategory)
 	router.GET("/category/:id", categoryController.GetCategory)
-	router.POST("/category", categoryController.CreateCategory)
-	router.PUT("/category/:id", categoryController.UpdateCategory)
-	router.DELETE("/category/:id", categoryController.DeleteCategory)
+	authRoute := router.Group("/auth")
+	authRoute.Use(authMiddleware.JWTAuthMiddleware)
+	authRoute.POST("/category", categoryController.CreateCategory)
+	authRoute.PUT("/category/:id", categoryController.UpdateCategory)
+	authRoute.DELETE("/category/:id", categoryController.DeleteCategory)
 
 	return router
 }
