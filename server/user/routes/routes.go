@@ -6,11 +6,10 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/user/controller"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/NetSinx/yconnect-shop/server/user/utils"
+	authMiddleware "github.com/NetSinx/yconnect-shop/server/user/middleware"
 )
 
 func ApiRoutes() *echo.Echo {
@@ -34,7 +33,6 @@ func ApiRoutes() *echo.Echo {
 			return auth == "dfkgjdgj#753846873248358645*&#%^*$54%hgdf", nil
 		},
 	}))
-
 	router.GET("/gencsrf", func(c echo.Context) error {
 		csrfToken := c.Get("csrf")
 
@@ -49,27 +47,8 @@ func ApiRoutes() *echo.Echo {
 	authRoute.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey: []byte("yasinnetsinx15"),
 		SigningMethod: "HS512",
-		ErrorHandler: func(c echo.Context, err error) error {
-			authToken, _ := c.Cookie("Authorization")
-			token, err := jwt.Parse(authToken.Value, func(t *jwt.Token) (interface{}, error) {
-				return []byte("yasinnetsinx15"), nil
-			})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
-					"message": "Your token is invalid",
-				})
-			}
-
-			claims := token.Claims.(*utils.CustomClaims)
-			if claims.Username == "" && claims.Role == "" {
-				return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
-					"message": "Your claims is invalid",
-				})
-			}
-
-			return nil
-		},
 	}))
+	authRoute.Use(authMiddleware.JWTAuthMiddleware)
 	authRoute.POST("/user/send-otp", userController.SendOTP)
 	authRoute.POST("/user/email-verify", userController.VerifyEmail)
 	authRoute.POST("/user/set-timezone", userController.SetTimezone)

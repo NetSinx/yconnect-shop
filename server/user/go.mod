@@ -3,10 +3,9 @@ module github.com/NetSinx/yconnect-shop/server/user
 go 1.19
 
 require (
-	github.com/NetSinx/yconnect-shop/server/cart v0.0.0-20240804004704-1d851dacb7fd
+	github.com/NetSinx/yconnect-shop/server/cart v0.0.0-20250125153909-bde6dbfc6fd1
 	github.com/NetSinx/yconnect-shop/server/order v0.0.0-20240813135508-69e6d9adca22
 	github.com/go-playground/validator/v10 v10.22.0
-	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-jwt/v4 v4.3.0
@@ -19,7 +18,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240804004704-1d851dacb7fd // indirect
+	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240619004129-76d3c85416f7 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gabriel-vasile/mimetype v1.4.5 // indirect
