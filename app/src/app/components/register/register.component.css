@@ -1,32 +1,3 @@
-.overlay {
-  background-color: rgba(0, 0, 0, 0.6);
-  position: fixed;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 99;
-}
-
-.loading {
-  background-color: white;
-  height: 50%;
-  width: 30%;
-  border-radius: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  text-align: center;
-}
-
-.loading img {
-  width: 50%;
-}
-
-@media (max-width: 920px) {
-  .loading {
-    width: 50%;
-  }
+.form {
+  margin-top: 50px;
 }

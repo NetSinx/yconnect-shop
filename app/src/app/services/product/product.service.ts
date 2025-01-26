@@ -11,10 +11,10 @@ export class ProductService {
   constructor(private http: HttpClient) {}
 
   public getProducts(): Observable<{data: Product[]}> {
-    return this.http.get<{data: Product[]}>(`${environment.apiUrl}/product`)
+    return this.http.get<{data: Product[]}>(`${environment.API_URL}/product`)
   }
 
   public getDetailProduct(slug: string): Observable<{data: Product}> {
-    return this.http.get<{data: Product}>(`${environment.apiUrl}/product/${slug}`)
+    return this.http.get<{data: Product}>(`${environment.API_URL}/product/${slug}`)
   }
 }

@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Playwrite+DK+Loopet:wght@100..400&display=swap');
 
 nav {
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  height: 110px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
   padding-bottom: 5px;
 }
@@ -52,15 +56,13 @@ nav .category a:hover {
   background-color: #cfcfcf;
 }
 
-.active {
+.showLogin {
   display: none;
 }
 
 @media (max-width: 920px) {
   nav {
-    position: fixed;
     padding-top: 5px;
-    z-index: 999;
     height: 55px !important;
     overflow: hidden;
     transition: all ease-in-out .3s;

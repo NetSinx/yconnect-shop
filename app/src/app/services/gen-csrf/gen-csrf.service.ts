@@ -12,7 +12,7 @@ export class GenCsrfService {
   constructor(private http: HttpClient) {}
 
   public getCSRF(): Observable<{csrf_token: string}> {
-    return this.http.get<{csrf_token: string}>(`${environment.apiUrl}/gencsrf`, {withCredentials: true}).pipe(
+    return this.http.get<{csrf_token: string}>(`${environment.API_URL}/gencsrf`, {withCredentials: true}).pipe(
       tap(
         resp => this.csrfToken = resp.csrf_token
       )

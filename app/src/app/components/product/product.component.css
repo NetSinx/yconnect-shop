@@ -11,11 +11,8 @@
   font-size: 50px;
 }
 
-.hero-bg img {
-  margin-top: 1rem;
-}
-
 .hero-bg .overlay {
+  margin-top: 92px;
   background-color: rgba(0, 0, 0, 0.5);
   position: relative;
   height: inherit;
@@ -84,6 +81,19 @@
   padding-bottom: 20px;
 }
 
+.card-body h4, .card-body .rating {
+  position: absolute;
+  bottom: 0;
+}
+
+.card-body h4 {
+  bottom: 50px;
+}
+
+.card-body .rating {
+  bottom: 10px;
+}
+
 .rating {
   color: #dadada; /* Warna bintang */
 }
@@ -122,13 +132,10 @@ footer a {
 
   .hero-bg .overlay {
     height: 100vh;
+    margin-top: 0px;
   }
 
   .event {
     margin-top: 5rem !important;
-  }
-
-  .card-product {
-    height: 550px;
   }
 }

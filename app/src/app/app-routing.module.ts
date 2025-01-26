@@ -23,7 +23,7 @@ const routes: Routes = [
   {path: 'register', component: RegisterComponent, title: "Register | Y-Connect Shop", canActivate: [loginGuard]},
   {path: 'login', component: LoginComponent, title: "Login | Y-Connect Shop", canActivate: [loginGuard]},
   {path: 'dashboard/:userId', component: DashboardComponent, title: "Dashboard | Y-Connect Shop", canActivate: [authGuardGuard], pathMatch: 'full'},
-  {path: '**', component: PageNotFoundComponent, title: "404 Not Found"}
+  {path: '**', component: PageNotFoundComponent, title: "Upss... | Y-Connect Shop"}
 ];
 
 @NgModule({

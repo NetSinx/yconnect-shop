@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ProductService } from '../../services/product/product.service';
 import { Product } from 'src/app/interfaces/product';
 import { LoadingService } from 'src/app/services/loading/loading.service';
@@ -29,7 +29,19 @@ export class ProductComponent implements OnInit {
 
   public scrollToProduct(event: Event): void {
     event.target?.addEventListener('click', () => {
-      window.scrollTo({top: 208, behavior: 'smooth'})
+      window.scrollTo({top: 890, behavior: 'smooth'})
+    })
+  }
+
+  public scrollToFlashSale(event: Event): void {
+    event.target?.addEventListener('click', () => {
+      window.scrollTo({top: 1490, behavior: 'smooth'})
+    })
+  }
+
+  public scrollToDiskon(event: Event): void {
+    event.target?.addEventListener('click', () => {
+      window.scrollTo({top: 2520, behavior: 'smooth'})
     })
   }
 }

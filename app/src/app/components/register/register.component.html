@@ -1,8 +1,10 @@
 <div class="container">
-  <div class="row justify-content-center align-items-center" style="height: 90vh;">
-    <div class="col-lg-8 col-md-8 col-9 bg-light rounded shadow px-5 pt-3 pb-5 my-4">
+  <div class="row justify-content-center align-items-center form">
+    <div class="col-lg-8 col-md-8 col-9 bg-light rounded shadow px-5 pt-4 pb-5 mb-4">
       <div class="d-flex justify-content-center">
-        <img src="../../../assets/y-logo.png" width="70" class="rounded-circle">
+        <a routerLink="/">
+          <img src="../../../assets/img/y-logo.png" width="70" class="rounded-circle">
+        </a>
       </div>
       <h1 class="text-center mb-5">Registrasi Akun</h1>
       <div class="alert alert-danger" role="alert" *ngIf="errorRegister">
@@ -106,6 +108,7 @@
             </div>
           </div>
           <div class="row mt-4 px-2">
+            <p class="text-center">Sudah punya akun? <a routerLink="/login">Login</a></p>
             <button type="submit" class="btn btn-success" [disabled]="formGroup.invalid">Daftar Akun</button>
           </div>
         </form>

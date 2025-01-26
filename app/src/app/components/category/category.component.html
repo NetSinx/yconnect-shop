@@ -1,9 +1,9 @@
-<nav class="sticky-top bg-light h-100 w-100 pt-2" #nav>
+<nav class="bg-light w-100 pt-2" #nav>
   <div class="container h-100 w-100">
     <div class="row align-items-center justify-content-between h-100 w-100">
       <div class="col-lg navbar-brand">
         <a href="#" class="text-decoration-none text-dark d-flex logo">
-          <img ngSrc="assets/y-logo.png" width="40" height="40" priority>
+          <img ngSrc="assets/img/y-logo.png" width="40" height="40" priority>
           <h3 class="m-auto ms-2">Y-Connect Shop</h3>
         </a>
         <button class="btn" #button (click)="hamburgerMenu(button, nav)">
@@ -32,7 +32,7 @@
           <button class="btn btn-dark me-2"><i class="bi bi-heart-fill"></i></button>
           <button class="btn btn-dark me-2"><i class="bi bi-cart4"></i></button>
         </div>
-        <a routerLink="/login" routerLinkActive="active" class="text-decoration-none text-dark fs-5 rounded login p-2" *ngIf="!isLoggedIn">Login <i class="bi bi-box-arrow-in-right"></i></a>
+        <a routerLink="/login" routerLinkActive="showLogin" class="text-decoration-none text-dark fs-5 rounded login p-2" *ngIf="!isLoggedIn">Login <i class="bi bi-box-arrow-in-right"></i></a>
         <div class="dropdown" *ngIf="isLoggedIn">
           <a class="text-decoration-none text-dark dropdown-toggle fs-5 rounded" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <img ngSrc="favicon.ico" width="30" height="30" priority>
