@@ -30,60 +30,16 @@ func UserController(userServ service.UserServ) userController {
 func (u userController) RegisterUser(c echo.Context) error {
 	var users entity.User
 
-	avatar, err := c.FormFile("avatar")
-	if err != nil {
-		if err := c.Bind(&users); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-				Message: err.Error(),
-			})
-		}
-
-		err := u.userService.RegisterUser(users)
-		if err != nil && err == gorm.ErrDuplicatedKey {
-			return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-				Message: "User sudah terdaftar.",
-			})
-		} else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
-			return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-				Message: err.Error(),
-			})
-		} else if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-				Message: err.Error(),
-			})
-		}
-
-		return c.JSON(http.StatusOK, domain.MessageResp{
-			Message: "Registrasi user berhasil.",
-		})
-	}
-
-	if err := os.MkdirAll("assets/images", os.ModePerm); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-
-	src, _ := avatar.Open()
-	dst, _ := os.Create(fmt.Sprintf("assets/images/%v", avatar.Filename))
-	io.Copy(dst, src)
-
-	users.Avatar = fmt.Sprintf("assets/images/%v", avatar.Filename)
-
 	if err := c.Bind(&users); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	err = u.userService.RegisterUser(users)
-	if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
-		})
-	} else if err != nil && err == gorm.ErrDuplicatedKey {
+	err := u.userService.RegisterUser(users)
+	if err != nil && err == gorm.ErrDuplicatedKey {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "User sudah pernah dibuat.",
+			Message: "User sudah terdaftar.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -154,7 +110,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 	if err != nil {
 		user.Avatar = ""
 
-		os.Remove("." + getDbUser.Avatar)
+		os.Remove(getDbUser.Avatar)
 
 		if err := c.Bind(&user); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -205,10 +161,10 @@ func (u userController) UpdateUser(c echo.Context) error {
 	}
 
 	if getDbUser.Avatar != "" {
-		os.Remove("." + getDbUser.Avatar)
+		os.Remove(getDbUser.Avatar)
 	}
 
-	user.Avatar = fmt.Sprintf("/assets/images/%x.%s", hashedFileName, fileExt)
+	user.Avatar = fmt.Sprintf("assets/images/%x.%s", hashedFileName, fileExt)
 
 	if err := c.Bind(&user); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -229,11 +185,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
-		} else if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-				Message: err.Error(),
-			})
-		}
+	}
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil diupdate.",

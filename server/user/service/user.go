@@ -32,7 +32,7 @@ func (u userService) RegisterUser(users entity.User) error {
 	if users.Username == "netsinx_15" || users.Email == "yasin03ckm@gmail.com" {
 		users.Role = "admin"
 	} else {
-		users.Role = "member"
+		users.Role = "customer"
 	}
 
 	if err := validator.New().Struct(users); err != nil {
@@ -41,17 +41,6 @@ func (u userService) RegisterUser(users entity.User) error {
 
 	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 15)
 	users.Password = string(passwdHash)
-	reqUser := []byte(fmt.Sprintf(`{"username": "%s"}`, users.Username))
-
-	_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
-	if err != nil {
-		return fmt.Errorf("consumer gagal dibuat")
-	}
-	
-	reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
-	if _, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt)); err != nil {
-		return fmt.Errorf("token gagal dibuat")
-	}
 
 	if err := u.userRepository.RegisterUser(users); err != nil {
 		return err
