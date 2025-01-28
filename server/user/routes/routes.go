@@ -56,9 +56,14 @@ func ApiRoutes() *echo.Echo {
 	authRoute.GET("/user/:username", userController.GetUser)
 	authRoute.GET("/user/logout", userController.UserLogout)
 	
-	authRoute.GET("/user", userController.ListUsers)
-	authRoute.PUT("/user/:username", userController.UpdateUser)
-	authRoute.DELETE("/user/:username", userController.DeleteUser)
+	adminRoute := router.Group("/admin/")
+	adminRoute.GET("/user", userController.ListUsers)
+	adminRoute.PUT("/user/:username", userController.UpdateUser)
+	adminRoute.DELETE("/user/:username", userController.DeleteUser)
+	adminRoute.POST("/user/set-timezone", userController.SetTimezone)
+	adminRoute.GET("/user/userinfo", userController.GetUserInfo)
+	adminRoute.GET("/user/:username", userController.GetUser)
+	adminRoute.GET("/user/logout", userController.UserLogout)
 	
 	return router
 }
