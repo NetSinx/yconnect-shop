@@ -2,13 +2,10 @@ package routes
 
 import (
 	"net/http"
-
 	"github.com/NetSinx/yconnect-shop/server/cart/config"
 	"github.com/NetSinx/yconnect-shop/server/cart/controller"
-	authMiddleware "github.com/NetSinx/yconnect-shop/server/cart/middleware"
 	"github.com/NetSinx/yconnect-shop/server/cart/repository"
 	"github.com/NetSinx/yconnect-shop/server/cart/service"
-	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -28,11 +25,6 @@ func ApiRoutes() *echo.Echo {
 		CookieSecure: true,
 		CookieMaxAge: 60,
 	}))
-	router.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte("yasinnetsinx15"),
-		SigningMethod: "HS512",
-	}))
-	router.Use(authMiddleware.JWTAuthMiddleware)
 	router.GET("/cart", cartController.ListCart)
 	router.POST("/cart/:id", cartController.AddToCart)
 	router.PUT("/cart/:id", cartController.UpdateCart)

@@ -27,12 +27,6 @@ func ApiRoutes() *echo.Echo {
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure: true,
 	}))
-	router.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
-		KeyLookup: "header:api-token",
-		Validator: func(auth string, c echo.Context) (bool, error) {
-			return auth == "dfkgjdgj#753846873248358645*&#%^*$54%hgdf", nil
-		},
-	}))
 	router.GET("/product", productController.ListProduct)
 	router.GET("/product/:slug", productController.GetProduct)
 	router.GET("/product/category/:id", productController.GetProductByCategory)
