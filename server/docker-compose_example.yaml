@@ -1,55 +1,22 @@
 version: '3.9'
 
 services:
-  kong-db:
-    container_name: kong-db
-    image: postgres
-    restart: always
-    pull_policy: if_not_present
-    networks:
-      - kong-network
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=kong
-      - POSTGRES_PASSWORD=test123
-      - POSTGRES_DB=kong
-
   api-gateway:
-    container_name: kong-gateway
-    image: kong/kong-gateway:3.3.1.0
-    restart: always
+    container_name: nginx-gateway
+    image: nginx
+    restart: on-failure
     pull_policy: if_not_present
-    depends_on:
-      - kong-db
     networks:
-      - kong-network
+      - nginx-gateway
     ports:
-      - "8000:8000"
-      - "8443:8443"
-      - "8001:8001"
-      - "8444:8444"
-      - "8002:8002"
-      - "8445:8445"
-      - "8003:8003"
-      - "8004:8004"
-    environment:
-      - KONG_DATABASE=postgres
-      - KONG_PG_HOST=kong-db
-      - KONG_PG_USER=kong
-      - KONG_PG_PASSWORD=test123
-      - KONG_PROXY_ACCESS_LOG=/dev/stdout
-      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
-      - KONG_PROXY_ERROR_LOG=/dev/stderr
-      - KONG_ADMIN_ERROR_LOG=/dev/stderr
-      - KONG_ADMIN_LISTEN=0.0.0.0:8001
-      - KONG_ADMIN_GUI_URL=http://localhost:8002
-      - KONG_LICENSE_DATA
+      - 8000:80
+    volumes:
+      - D/"Dokumen Yasin"/"NetSinx Repository"/yconnect-shop/server/nginx.conf:/etc/nginx/nginx.conf:ro
 
   product-db:
     container_name: db-product
     image: mysql
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     networks:
       - yconnect-net
@@ -62,13 +29,13 @@ services:
   product:
     container_name: product-service
     image: product-img
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     depends_on:
       - product-db
     networks:
       - yconnect-net
-      - kong-network
+      - nginx-gateway
     environment:
       - DB_USER=test
       - DB_PASS=test123
@@ -79,7 +46,7 @@ services:
   category-db:
     container_name: db-category
     image: mysql
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     networks:
       - yconnect-net
@@ -92,13 +59,13 @@ services:
   category:
     container_name: category-service
     image: category-img
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     depends_on:
       - category-db
     networks:
       - yconnect-net
-      - kong-network
+      - nginx-gateway
     environment:
       - DB_USER=test
       - DB_PASS=test123
@@ -109,7 +76,7 @@ services:
   user-db:
     container_name: db-user
     image: mysql
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     networks:
       - yconnect-net
@@ -122,13 +89,13 @@ services:
   user:
     container_name: user-service
     image: user-img
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     depends_on:
       - user-db
     networks:
       - yconnect-net
-      - kong-network
+      - nginx-gateway
     environment:
       - DB_USER=test
       - DB_PASS=test123
@@ -139,7 +106,7 @@ services:
   cart-db:
     container_name: db-cart
     image: mysql
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     networks:
       - yconnect-net
@@ -152,13 +119,13 @@ services:
   cart:
     container_name: cart-service
     image: cart-img
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     depends_on:
       - cart-db
     networks:
       - yconnect-net
-      - kong-network
+      - nginx-gateway
     environment:
       - DB_USER=test
       - DB_PASSWORD=test123
@@ -169,7 +136,7 @@ services:
   order-db:
     container_name: db-order
     image: mysql
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     networks:
       - yconnect-net
@@ -182,13 +149,13 @@ services:
   order:
     container_name: order-service
     image: order-img
-    restart: always
+    restart: on-failure
     pull_policy: if_not_present
     depends_on:
       - order-db
     networks:
       - yconnect-net
-      - kong-network
+      - nginx-gateway
     environment:
       - DB_USER=test
       - DB_PASSWORD=test123
@@ -203,7 +170,7 @@ services:
     pull_policy: if_not_present
     networks:
       - kong-network
-      - yconnect-net
+      - nginx-gateway
 
   redis-service:
     container_name: redis-cache
@@ -211,7 +178,7 @@ services:
     image: redis
     networks:
       - yconnect-net
-      - kong-network
+      - nginx-gateway
     volumes:
       - .\mail\myredis\config:/usr/local/etc/redis/
     command: redis-server /usr/local/etc/redis/redis.conf
@@ -219,5 +186,5 @@ services:
 networks:
   yconnect-net:
     external: true
-  kong-network:
+  nginx-gateway:
     external: true

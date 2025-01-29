@@ -56,7 +56,7 @@ func ApiRoutes() *echo.Echo {
 	authRoute.GET("/user/:username", userController.GetUser)
 	authRoute.GET("/user/logout", userController.UserLogout)
 	
-	adminRoute := router.Group("/admin/")
+	adminRoute := router.Group("/admin")
 	adminRoute.GET("/user", userController.ListUsers)
 	adminRoute.PUT("/user/:username", userController.UpdateUser)
 	adminRoute.DELETE("/user/:username", userController.DeleteUser)
