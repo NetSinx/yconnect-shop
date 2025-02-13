@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
+
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -16,7 +18,7 @@ func JWTAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			})
 		}
 
-		token, err := jwt.Parse(auth_token.Value, func(t *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(auth_token.Value, &utils.CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
 			return []byte("yasinnetsinx15"), nil
 		})
 		if err != nil {
@@ -30,7 +32,11 @@ func JWTAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		
 		claims := token.Claims.(*utils.CustomClaims)
-		if claims.Username == "" && claims.Role == "" {
+		if claims.Role != "admin" && strings.Split(c.Path(), "/")[1] == "admin" {
+			return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+				"message": "your claims is invalid",
+			})
+		} else if claims.Username != "" && claims.Role != "" {
 			return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 				"message": "your claims is invalid",
 			})

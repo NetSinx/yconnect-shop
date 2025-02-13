@@ -14,6 +14,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"sync"
 )
 
 type userService struct {
@@ -32,26 +33,15 @@ func (u userService) RegisterUser(users entity.User) error {
 	if users.Username == "netsinx_15" || users.Email == "yasin03ckm@gmail.com" {
 		users.Role = "admin"
 	} else {
-		users.Role = "member"
+		users.Role = "customer"
 	}
 
 	if err := validator.New().Struct(users); err != nil {
 		return err
 	}
 
-	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 15)
+	passwdHash, _ := bcrypt.GenerateFromPassword([]byte(users.Password), 8)
 	users.Password = string(passwdHash)
-	reqUser := []byte(fmt.Sprintf(`{"username": "%s"}`, users.Username))
-
-	_, err := http.Post("http://kong-gateway:8001/consumers", "application/json", bytes.NewBuffer(reqUser))
-	if err != nil {
-		return fmt.Errorf("consumer gagal dibuat")
-	}
-	
-	reqJwt := []byte(`{"key": "jwtyasinganteng", "secret": "yasinganteng15", "algorithm": "HS512"}`)
-	if _, err := http.Post(fmt.Sprintf("http://kong-gateway:8001/consumers/%s/jwt", users.Username), "application/json", bytes.NewBuffer(reqJwt)); err != nil {
-		return fmt.Errorf("token gagal dibuat")
-	}
 
 	if err := u.userRepository.RegisterUser(users); err != nil {
 		return err
@@ -60,35 +50,35 @@ func (u userService) RegisterUser(users entity.User) error {
 	return nil
 }
 
-func (u userService) LoginUser(userLogin domain.UserLogin) (string, string, error) {
+func (u userService) LoginUser(userLogin domain.UserLogin) (string, string, string, error) {
 	if err := validator.New().Struct(userLogin); err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 
 	users, err := u.userRepository.LoginUser(userLogin)
 	if err != nil {
-		return "", "", fmt.Errorf("username / email atau password salah")
+		return "", "", "", fmt.Errorf("username / email atau password salah")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(userLogin.Password))
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 	
-	jwtToken := utils.JWTAuth(users.Username, users.Role)
-
+	accessToken := utils.GenerateAccessToken(users.Username, users.Role)
 	signKey := []byte("yasinnetsinx15")
-
-	token, err := jwt.Parse(jwtToken, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &utils.CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
 		return signKey, nil
 	})
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
+
+	refreshToken := utils.GenerateRefreshToken(users.Username, users.Role)
 	
 	claims := token.Claims.(*utils.CustomClaims)
 	
-	return jwtToken, claims.Username, nil
+	return accessToken, refreshToken, claims.Username, nil
 }
 
 func (u userService) ListUsers(users []entity.User) ([]entity.User, error) {
@@ -97,29 +87,36 @@ func (u userService) ListUsers(users []entity.User) ([]entity.User, error) {
 		return nil, err
 	}
 
+	var wg sync.WaitGroup
 	for i := range listUsers {
-		respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", listUsers[i].Id))
-		if err != nil || respCart.StatusCode != 200{
-			return listUsers, nil
-		}
-		
-		var preloadCart domain.PreloadCarts
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
 
-		json.NewDecoder(respCart.Body).Decode(&preloadCart)
+			respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", listUsers[i].Id))
+			if err != nil || respCart.StatusCode != 200 {
+				return
+			}
+			
+			var preloadCart domain.PreloadCarts
 
-		listUsers[i].Cart = preloadCart.Data
+			json.NewDecoder(respCart.Body).Decode(&preloadCart)
 
-		respOrder, err := http.Get(fmt.Sprintf("http://order-service:8084/order/%s", listUsers[i].Username))
-		if err != nil || respCart.StatusCode != 200 {
-			return listUsers, nil
-		}
-		
-		var preloadOrder domain.PreloadOrders
+			listUsers[i].Cart = preloadCart.Data
 
-		json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
+			respOrder, err := http.Get(fmt.Sprintf("http://order-service:8084/order/%s", listUsers[i].Username))
+			if err != nil || respOrder.StatusCode != 200 {
+				return
+			}
+			
+			var preloadOrder domain.PreloadOrders
 
-		listUsers[i].Order = preloadOrder.Data
+			json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
+
+			listUsers[i].Order = preloadOrder.Data
+		}(i)
 	}
+	wg.Wait()
 
 	return listUsers, nil
 }

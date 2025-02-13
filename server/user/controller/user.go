@@ -12,7 +12,7 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
-	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -30,60 +30,16 @@ func UserController(userServ service.UserServ) userController {
 func (u userController) RegisterUser(c echo.Context) error {
 	var users entity.User
 
-	avatar, err := c.FormFile("avatar")
-	if err != nil {
-		if err := c.Bind(&users); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-				Message: err.Error(),
-			})
-		}
-
-		err := u.userService.RegisterUser(users)
-		if err != nil && err == gorm.ErrDuplicatedKey {
-			return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-				Message: "User sudah terdaftar.",
-			})
-		} else if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
-			return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-				Message: err.Error(),
-			})
-		} else if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-				Message: err.Error(),
-			})
-		}
-
-		return c.JSON(http.StatusOK, domain.MessageResp{
-			Message: "Registrasi user berhasil.",
-		})
-	}
-
-	if err := os.MkdirAll("assets/images", os.ModePerm); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-
-	src, _ := avatar.Open()
-	dst, _ := os.Create(fmt.Sprintf("assets/images/%v", avatar.Filename))
-	io.Copy(dst, src)
-
-	users.Avatar = fmt.Sprintf("assets/images/%v", avatar.Filename)
-
 	if err := c.Bind(&users); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	err = u.userService.RegisterUser(users)
-	if err != nil && (err.Error() == "consumer gagal dibuat" || err.Error() == "token gagal dibuat") {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
-		})
-	} else if err != nil && err == gorm.ErrDuplicatedKey {
+	err := u.userService.RegisterUser(users)
+	if err != nil && err == gorm.ErrDuplicatedKey {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: "User sudah pernah dibuat.",
+			Message: "User sudah terdaftar.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -105,7 +61,7 @@ func (u userController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	jwtToken, user_id, err := u.userService.LoginUser(userLogin)
+	accessToken, refreshToken, user_id, err := u.userService.LoginUser(userLogin)
 	if err != nil && err.Error() == "email atau password salah" {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
 			Message: "Email atau password Anda salah.",
@@ -120,8 +76,10 @@ func (u userController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	utils.SetCookies(c, "user_session", jwtToken)
-	utils.SetCookies(c, "user_id", user_id)
+	utils.SetCookies(c, "user_session", accessToken, time.Now().Add(15 * time.Minute))
+	utils.SetCookies(c, "refresh_token", refreshToken, time.Now().Add(1 * time.Hour))
+	utils.SetCookies(c, "user_id", user_id, time.Now().Add(15 * time.Minute))
+	utils.SetCookies(c, "tz", time.Now().String(), time.Now().Add(15 * time.Minute))
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil login",
@@ -229,11 +187,11 @@ func (u userController) UpdateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
-		} else if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-				Message: err.Error(),
-			})
-		}
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			Message: err.Error(),
+		})
+	}
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil diupdate.",
@@ -340,86 +298,88 @@ func (u userController) DeleteUser(c echo.Context) error {
 	})
 }
 
-func (u userController) GetUserInfo(c echo.Context) error {
-	username_cookie, err := c.Cookie("user_id")
-	if err != nil {
-		return err
-	}
-
-	tz_cookie, err := c.Cookie("tz")
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, domain.RespData{
-		Data: map[string]string{
-			username_cookie.Name: username_cookie.Value,
-			tz_cookie.Name:       tz_cookie.Value,
-		},
-	})
-}
-
-func (u userController) SetTimezone(c echo.Context) error {
-	var reqTz domain.RequestTimezone
-
-	if err := c.Bind(&reqTz); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-
-	if err := validator.New().Struct(&reqTz); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-
-	if _, err := time.LoadLocation(reqTz.Timezone); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: "Timezone tidak valid.",
-		})
-	}
-
-	utils.SetCookies(c, "tz", reqTz.Timezone)
-
-	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "Cookie timezone telah ditetapkan.",
-	})
-}
-
 func (u userController) UserLogout(c echo.Context) error {
 	session, err := c.Cookie("user_session")
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: "user session in cookie is not available",
 		})
 	}
-	session.Expires = time.Unix(0, 0)
+	session.Path = "/"
 	session.MaxAge = -1
+
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: "refresh token in cookie is not available",
+		})
+	}
+	refreshToken.Path = "/"
+	refreshToken.MaxAge = -1
 
 	user_id, err := c.Cookie("user_id")
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: "user id in cookie is not available",
 		})
 	}
-	user_id.Expires = time.Unix(0, 0)
+	user_id.Path = "/"
 	user_id.MaxAge = -1
 
 	tz, err := c.Cookie("tz")
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
+		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+			Message: "timezone in cookie is not available",
 		})
 	}
-	tz.Expires = time.Unix(0, 0)
+	tz.Path = "/"
 	tz.MaxAge = -1
 
 	c.SetCookie(session)
+	c.SetCookie(refreshToken)
 	c.SetCookie(user_id)
 	c.SetCookie(tz)
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil logout",
+	})
+}
+
+func (u userController) GetAccessToken(c echo.Context) error {
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+			Message: "refresh token not available",
+		})
+	}
+
+	token, err := jwt.ParseWithClaims(refreshToken.Value, &utils.CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
+		return []byte("adminyasinnetsinx_15"), nil
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+			Message: err.Error(),
+		})
+	}
+	if !token.Valid {
+		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+			Message: "your token is invalid",
+		})
+	}
+
+	claims := token.Claims.(*utils.CustomClaims)
+	if claims.Username == "" && claims.Role == "" {
+		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+			Message: "your claims is invalid",
+		})
+	}
+
+	newAccessToken := utils.GenerateAccessToken(claims.Username, claims.Role)
+	utils.SetCookies(c, "user_session", newAccessToken, time.Now().Add(15 * time.Minute))
+	utils.SetCookies(c, "user_id", claims.Username, time.Now().Add(15 * time.Minute))
+	utils.SetCookies(c, "tz", time.Now().String(), time.Now().Add(15 * time.Minute))
+
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "Access token regenerated successfully",
 	})
 }
