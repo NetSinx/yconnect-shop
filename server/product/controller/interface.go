@@ -7,6 +7,7 @@ type ProductContr interface {
 	CreateProduct(c echo.Context) error
 	UpdateProduct(c echo.Context) error
 	DeleteProduct(c echo.Context) error
-	GetProduct(c echo.Context) error
+	GetProductByID(c echo.Context) error
+	GetProductBySlug(c echo.Context) error
 	GetProductByCategory(c echo.Context) error
 }

@@ -5,9 +5,9 @@ go 1.19
 require (
 	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20240619004129-76d3c85416f7
 	github.com/go-playground/validator/v10 v10.19.0
-	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.4
+	github.com/rabbitmq/amqp091-go v1.10.0
 	gorm.io/driver/mysql v1.5.4
 	gorm.io/gorm v1.25.7
 )

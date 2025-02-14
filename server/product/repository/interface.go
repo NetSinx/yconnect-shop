@@ -7,6 +7,7 @@ type ProductRepo interface {
 	CreateProduct(products entity.Product) (entity.Product, error)
 	UpdateProduct(products entity.Product, slug string) (entity.Product, error)
 	DeleteProduct(products entity.Product, slug string) error
-	GetProduct(products entity.Product, slug string) (entity.Product, error)
+	GetProductByID(product entity.Product, id string) (entity.Product, error)
+	GetProductBySlug(products entity.Product, slug string) (entity.Product, error)
 	GetProductByCategory(products []entity.Product, id string) ([]entity.Product, error)
 }

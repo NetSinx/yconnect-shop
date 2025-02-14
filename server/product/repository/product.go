@@ -16,7 +16,7 @@ func ProductRepository(db *gorm.DB) productRepository {
 }
 
 func (p productRepository) ListProduct(products []entity.Product) ([]entity.Product, error) {
-	if err := p.DB.Preload("Image").Find(&products).Error; err != nil {
+	if err := p.DB.Preload("Images").Find(&products).Error; err != nil {
 		return nil, err
 	}
 
@@ -55,7 +55,15 @@ func (p productRepository) DeleteProduct(products entity.Product, slug string) e
 	return nil
 }
 
-func (p productRepository) GetProduct(products entity.Product, slug string) (entity.Product, error) {
+func (p productRepository) GetProductByID(product entity.Product, id string) (entity.Product, error) {
+	if err := p.DB.Where("id = ?", id).Preload("Image").First(&product).Error; err != nil {
+		return product, err
+	}
+
+	return product, nil
+}
+
+func (p productRepository) GetProductBySlug(products entity.Product, slug string) (entity.Product, error) {
 	if err := p.DB.Where("slug = ?", slug).Preload("Image").First(&products).Error; err != nil {
 		return products, err
 	}

@@ -42,14 +42,25 @@ func (p productController) CreateProduct(c echo.Context) error {
 		})
 	}
 	
-	imageProduct, err := c.MultipartForm()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
+	// imageProduct, err := c.MultipartForm()
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+	// 		Message: err.Error(),
+	// 	})
+	// }
 	
-	product, err := p.productService.CreateProduct(products, imageProduct.File["images"])
+	// product, err := p.productService.CreateProduct(products, imageProduct.File["images"])
+	// if err != nil && err.Error() == "produk sudah tersedia" {
+	// 	return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+	// 		Message: err.Error(),
+	// 	})
+	// } else if err != nil {
+	// 	return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+	// 		Message: err.Error(),
+	// 	})
+	// }
+
+	product, err := p.productService.CreateProduct(products)
 	if err != nil && err.Error() == "produk sudah tersedia" {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
 			Message: err.Error(),
@@ -124,12 +135,29 @@ func (p productController) DeleteProduct(c echo.Context) error {
 	})
 }
 
-func (p productController) GetProduct(c echo.Context) error {
+func (p productController) GetProductByID(c echo.Context) error {
+	var product entity.Product
+
+	id := c.Param("id")
+
+	getProduct, err := p.productService.GetProductBySlug(product, id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Produk tidak ditemukan",
+		})
+	}
+	
+	return c.JSON(http.StatusOK, domain.RespData{
+		Data: getProduct,
+	})
+}
+
+func (p productController) GetProductBySlug(c echo.Context) error {
 	var product entity.Product
 
 	slug := c.Param("slug")
 
-	getProduct, err := p.productService.GetProduct(product, slug)
+	getProduct, err := p.productService.GetProductBySlug(product, slug)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Produk tidak ditemukan.",

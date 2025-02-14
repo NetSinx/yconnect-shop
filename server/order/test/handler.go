@@ -19,7 +19,6 @@ var modelDB = map[string]*DataTest{
 		Data: entity.Order{
 			Id: 1,
 			ProductID: 1,
-			Username: "netsinx_15",
 			Kuantitas: 5,
 			Status: "Dalam pengiriman",
 			Estimasi: time.Now().AddDate(0, 0, 3),

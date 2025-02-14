@@ -18,6 +18,10 @@ func ApiRoutes() *echo.Echo {
 	productController := controller.ProductController(productService)
 
 	router := echo.New()
+	router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:4200"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
+	}))
 	router.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		TokenLookup: "header:xsrf",
 		CookieName: "xsrf",
@@ -28,7 +32,8 @@ func ApiRoutes() *echo.Echo {
 		CookieSecure: true,
 	}))
 	router.GET("/product", productController.ListProduct)
-	router.GET("/product/:slug", productController.GetProduct)
+	router.GET("/product/:id", productController.GetProductByID)
+	router.GET("/product/:slug", productController.GetProductBySlug)
 	router.GET("/product/category/:id", productController.GetProductByCategory)
 
 	authRoute := router.Group("/auth")

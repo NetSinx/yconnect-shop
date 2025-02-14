@@ -16,8 +16,8 @@ func OrderRepo(db *gorm.DB) *orderRepository {
 	}
 }
 
-func (or *orderRepository) ListOrder(order []entity.Order, username string) ([]entity.Order, error) {
-	if err := or.db.Find(&order, "username = ?", username).Error; err != nil {
+func (or *orderRepository) GetOrder(order []entity.Order, user_id string) ([]entity.Order, error) {
+	if err := or.db.Find(&order, "user_id = ?", user_id).Error; err != nil {
 		return order, err
 	}
 

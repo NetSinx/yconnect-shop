@@ -2,8 +2,6 @@ package entity
 
 import (
 	"database/sql"
-	cartEntity "github.com/NetSinx/yconnect-shop/server/cart/model/entity"
-	orderEntity "github.com/NetSinx/yconnect-shop/server/order/model/entity"
 	"time"
 )
 
@@ -21,8 +19,6 @@ type User struct {
 	EmailVerifiedAt sql.NullTime        `json:"email_verified_at"`
 	CreatedAt       time.Time           `json:"created_at"`
 	UpdatedAt       time.Time           `json:"updated_at"`
-	Cart            []cartEntity.Cart   `json:"cart" gorm:"-"`
-	Order           []orderEntity.Order `json:"order" gorm:"-"`
 }
 
 type Alamat struct {

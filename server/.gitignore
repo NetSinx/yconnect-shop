@@ -3,4 +3,4 @@ docker-compose.yaml
 /mail/credentials.json
 /mail/token.json
 nginx.conf
-Dockerfile
+Dockerfile_jenkins

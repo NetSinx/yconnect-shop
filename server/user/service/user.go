@@ -14,7 +14,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"sync"
 )
 
 type userService struct {
@@ -86,37 +85,6 @@ func (u userService) ListUsers(users []entity.User) ([]entity.User, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var wg sync.WaitGroup
-	for i := range listUsers {
-		wg.Add(1)
-		go func(i int) {
-			defer wg.Done()
-
-			respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", listUsers[i].Id))
-			if err != nil || respCart.StatusCode != 200 {
-				return
-			}
-			
-			var preloadCart domain.PreloadCarts
-
-			json.NewDecoder(respCart.Body).Decode(&preloadCart)
-
-			listUsers[i].Cart = preloadCart.Data
-
-			respOrder, err := http.Get(fmt.Sprintf("http://order-service:8084/order/%s", listUsers[i].Username))
-			if err != nil || respOrder.StatusCode != 200 {
-				return
-			}
-			
-			var preloadOrder domain.PreloadOrders
-
-			json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
-
-			listUsers[i].Order = preloadOrder.Data
-		}(i)
-	}
-	wg.Wait()
 
 	return listUsers, nil
 }
@@ -200,34 +168,10 @@ func (u userService) GetUser(user entity.User, username string) (entity.User, er
 		return user, fmt.Errorf("user tidak ditemukan")
 	}
 
-	respCart, err := http.Get(fmt.Sprintf("http://cart-service:8083/cart/user/%d", findUser.Id))
-	if err != nil || respCart.StatusCode != 200 {
-		return findUser, nil
-	} 
-
-	var preloadCart domain.PreloadCarts
-
-	json.NewDecoder(respCart.Body).Decode(&preloadCart)
-
-	findUser.Cart = preloadCart.Data
-
-	respOrder, err := http.Get(fmt.Sprintf("http://order-service:8084/order/%s", findUser.Username))
-	if err != nil || respCart.StatusCode != 200 {
-		return findUser, nil
-	}
-	
-	var preloadOrder domain.PreloadOrders
-
-	json.NewDecoder(respOrder.Body).Decode(&preloadOrder)
-
-	findUser.Order = preloadOrder.Data
-
 	return findUser, nil
 }
 
 func (u userService) DeleteUser(user entity.User, username string) error {
-	var httpClient http.Client
-
 	getUser, err := u.userRepository.GetUser(user, username)
 	if err != nil {
 		return fmt.Errorf("user tidak ditemukan")
@@ -236,13 +180,6 @@ func (u userService) DeleteUser(user entity.User, username string) error {
 	if getUser.Avatar != "" {
 		os.Remove("." + getUser.Avatar)
 	}
-
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("http://kong-gateway:8001/consumers/%s", getUser.Username), nil)
-	if err != nil {
-		return nil
-	}
-
-	httpClient.Do(req)
 
 	err = u.userRepository.DeleteUser(user, username)
 	if err != nil && err == gorm.ErrRecordNotFound {

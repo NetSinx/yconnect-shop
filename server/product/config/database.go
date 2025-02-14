@@ -14,7 +14,7 @@ var DB *gorm.DB
 
 func ConnectDB() {
 	var products entity.Product
-	var gambar entity.Gambar
+	var gambar entity.Images
 
 	godotenv.Load()
 
@@ -23,7 +23,7 @@ func ConnectDB() {
 													os.Getenv("DB_PASS"),
 													os.Getenv("DB_HOST"),
 													os.Getenv("DB_PORT"),
-													os.Getenv("DB_DBNAME"),
+													os.Getenv("DB_NAME"),
 	)
 	
 	db, err := gorm.Open(mysql.Open(initDb), &gorm.Config{})
@@ -32,6 +32,5 @@ func ConnectDB() {
 	}
 
 	db.AutoMigrate(&products, &gambar)
-
 	DB = db
 }

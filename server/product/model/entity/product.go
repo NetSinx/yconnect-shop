@@ -6,7 +6,7 @@ type Product struct {
 	Id          uint         `json:"id" gorm:"primaryKey"`
 	Nama        string       `json:"nama" gorm:"unique" validate:"required,max=255"`
 	Slug        string       `json:"slug" gorm:"unique" validate:"required"`
-	Gambar      []Gambar     `json:"gambar" validate:"required"`
+	Images      []Images     `json:"gambar" validate:"required"`
 	Deskripsi   string       `json:"deskripsi" validate:"required"`
 	KategoriId  uint         `json:"kategori_id" validate:"required"`
 	Harga       int          `json:"harga" validate:"required"`
@@ -23,8 +23,8 @@ type Kategori struct {
 	Slug      string      `json:"slug"`
 }
 
-type Gambar struct {
+type Images struct {
 	Id         uint   `json:"id"`
-	Nama       string `json:"nama"`
+	Path       string `json:"path"`
 	ProductID  uint   `json:"product_id"`
 }
