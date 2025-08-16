@@ -16,39 +16,35 @@ func ProductRepository(db *gorm.DB) productRepository {
 }
 
 func (p productRepository) ListProduct(products []entity.Product) ([]entity.Product, error) {
-	if err := p.DB.Preload("Images").Find(&products).Error; err != nil {
+	if err := p.DB.Preload("Gambar").Find(&products).Error; err != nil {
 		return nil, err
 	}
 
 	return products, nil
 }
 
-func (p productRepository) CreateProduct(products entity.Product) (entity.Product, error) {
-	if err := p.DB.Create(&products).Error; err != nil {
-		return products, err
-	}
-
-	return products, nil
-}
-
-func (p productRepository) UpdateProduct(products entity.Product, slug string) (entity.Product, error) {
-	if err := p.DB.First(&products, "slug = ?", slug).Error; err != nil {
-		return products, err
-	}
-	
-	if err := p.DB.Updates(&products).Error; err != nil {
-		return products, err
-	}
-
-	return products, nil
-}
-
-func (p productRepository) DeleteProduct(products entity.Product, slug string) error {
-	if err := p.DB.First(&products, "slug = ?", slug).Error; err != nil {
+func (p productRepository) CreateProduct(product entity.Product) error {
+	if err := p.DB.Create(&product).Error; err != nil {
 		return err
 	}
 
-	if err := p.DB.Delete(&products).Error; err != nil {
+	return nil
+}
+
+func (p productRepository) UpdateProduct(product entity.Product, slug string) error {
+	if err := p.DB.First(&product, "slug = ?", slug).Error; err != nil {
+		return err
+	}
+	
+	if err := p.DB.Save(&product).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p productRepository) DeleteProduct(product entity.Product, slug string) error {
+	if err := p.DB.Where("slug = ?", slug).Delete(&product).Error; err != nil {
 		return err
 	}
 
@@ -56,25 +52,17 @@ func (p productRepository) DeleteProduct(products entity.Product, slug string) e
 }
 
 func (p productRepository) GetProductByID(product entity.Product, id string) (entity.Product, error) {
-	if err := p.DB.Where("id = ?", id).Preload("Image").First(&product).Error; err != nil {
+	if err := p.DB.Where("id = ?", id).Preload("Gambar").First(&product).Error; err != nil {
 		return product, err
 	}
 
 	return product, nil
 }
 
-func (p productRepository) GetProductBySlug(products entity.Product, slug string) (entity.Product, error) {
-	if err := p.DB.Where("slug = ?", slug).Preload("Image").First(&products).Error; err != nil {
-		return products, err
+func (p productRepository) GetProductBySlug(product entity.Product, slug string) (entity.Product, error) {
+	if err := p.DB.Where("slug = ?", slug).Preload("Gambar").First(&product).Error; err != nil {
+		return product, err
 	}
 
-	return products, nil
-}
-
-func (p productRepository) GetProductByCategory(products []entity.Product, id string) ([]entity.Product, error) {
-	if err := p.DB.Preload("Image").Find(&products, "category_id = ?", id).Error; err != nil {
-		return nil, err
-	}
-
-	return products, nil
+	return product, nil
 }

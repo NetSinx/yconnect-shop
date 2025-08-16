@@ -26,16 +26,6 @@ func (u userRepository) RegisterUser(users entity.User) error {
 	return nil
 }
 
-func (u userRepository) LoginUser(userLogin domain.UserLogin) (entity.User, error) {
-	var users entity.User
-	
-	if err := u.DB.Select("username", "password", "role").First(&users, "email = ? OR username = ?", userLogin.UsernameorEmail, userLogin.UsernameorEmail).Error; err != nil {
-		return users, err
-	}
-
-	return users, nil
-}
-
 func (u userRepository) ListUsers(users []entity.User) ([]entity.User, error) {
 	if err := u.DB.Preload("Alamat").Find(&users).Error; err != nil {
 		return nil, err
@@ -62,7 +52,7 @@ func (u userRepository) UpdateUser(user entity.User, username string) error {
 	return nil
 }
 
-func (u userRepository) SendOTP(verifyEmail domain.VerifyEmail) error {
+func (u userRepository) VerifyOTP(verifyEmail domain.VerifyEmail) error {
 	var user entity.User
 
 	if err := u.DB.First(&user, "email = ?", verifyEmail.Email).Error; err != nil {
@@ -86,8 +76,8 @@ func (u userRepository) VerifyEmail(verifyEmail domain.VerifyEmail) error {
 	return nil
 }
 
-func (u userRepository) GetUser(user entity.User, username string) (entity.User, error) {
-	if err := u.DB.Preload("Alamat").First(&user, "username = ?", username).Error; err != nil {
+func (u userRepository) GetUser(user entity.User, username, email string) (entity.User, error) {
+	if err := u.DB.Preload("Alamat").First(&user, "username = ? OR email = ?", username, email).Error; err != nil {
 		return user, err
 	}
 

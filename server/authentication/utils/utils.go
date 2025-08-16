@@ -10,10 +10,11 @@ import (
 type CustomClaims struct {
 	jwt.RegisteredClaims
 	Username  string  `json:"username"`
+	Email     string  `json:"email"`
 	Role      string  `json:"role"`
 }
 
-func GenerateAccessToken(username, role string) string {
+func GenerateAccessToken(username, email, role string) string {
 		signingKey := []byte("yasinnetsinx15")
 
 		claims := CustomClaims{
@@ -23,6 +24,7 @@ func GenerateAccessToken(username, role string) string {
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(30 * time.Minute)),
 			},
 			username,
+			email,
 			role,
 		}
 
@@ -32,7 +34,7 @@ func GenerateAccessToken(username, role string) string {
 		return token
 }
 
-func GenerateRefreshToken(username, role string) string {
+func GenerateRefreshToken(username, email, role string) string {
 	signingKey := []byte("adminyasinnetsinx_15")
 
 	claims := CustomClaims{
@@ -42,6 +44,7 @@ func GenerateRefreshToken(username, role string) string {
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Hour)),
 		},
 		username,
+		email,
 		role,
 	}
 

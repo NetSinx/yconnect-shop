@@ -11,7 +11,6 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -49,37 +48,6 @@ func (u userService) RegisterUser(users entity.User) error {
 	return nil
 }
 
-func (u userService) LoginUser(userLogin domain.UserLogin) (string, string, string, error) {
-	if err := validator.New().Struct(userLogin); err != nil {
-		return "", "", "", err
-	}
-
-	users, err := u.userRepository.LoginUser(userLogin)
-	if err != nil {
-		return "", "", "", fmt.Errorf("username / email atau password salah")
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(userLogin.Password))
-	if err != nil {
-		return "", "", "", err
-	}
-	
-	accessToken := utils.GenerateAccessToken(users.Username, users.Role)
-	signKey := []byte("yasinnetsinx15")
-	token, err := jwt.ParseWithClaims(accessToken, &utils.CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return signKey, nil
-	})
-	if err != nil {
-		return "", "", "", err
-	}
-
-	refreshToken := utils.GenerateRefreshToken(users.Username, users.Role)
-	
-	claims := token.Claims.(*utils.CustomClaims)
-	
-	return accessToken, refreshToken, claims.Username, nil
-}
-
 func (u userService) ListUsers(users []entity.User) ([]entity.User, error) {
 	listUsers, err := u.userRepository.ListUsers(users)
 	if err != nil {
@@ -109,7 +77,7 @@ func (u userService) UpdateUser(user entity.User, username string) error {
 	return nil
 }
 
-func (u userService) SendOTP(verifyEmail domain.VerifyEmail) (string, error) {
+func (u userService) VerifyOTP(verifyEmail domain.VerifyEmail) (string, error) {
 	otpCode := utils.GenerateOTP()
 	verifyEmail.OTP = otpCode
 
@@ -117,7 +85,7 @@ func (u userService) SendOTP(verifyEmail domain.VerifyEmail) (string, error) {
 		return "", err
 	}
 
-	if err := u.userRepository.SendOTP(verifyEmail); err != nil {
+	if err := u.userRepository.VerifyOTP(verifyEmail); err != nil {
 		return "", err
 	}
 
@@ -143,7 +111,7 @@ func (u userService) SendOTP(verifyEmail domain.VerifyEmail) (string, error) {
 		return "", err
 	}
 
-	return "Kode OTP berhasil dikirim.", nil
+	return "Kode OTP berhasil dikirim", nil
 }
 
 func (u userService) VerifyEmail(verifyEmail domain.VerifyEmail) error {
@@ -162,8 +130,8 @@ func (u userService) VerifyEmail(verifyEmail domain.VerifyEmail) error {
 	return nil
 }
 
-func (u userService) GetUser(user entity.User, username string) (entity.User, error) {
-	findUser, err := u.userRepository.GetUser(user, username)
+func (u userService) GetUser(user entity.User, username, email string) (entity.User, error) {
+	findUser, err := u.userRepository.GetUser(user, username, email)
 	if err != nil {
 		return user, fmt.Errorf("user tidak ditemukan")
 	}
@@ -171,8 +139,8 @@ func (u userService) GetUser(user entity.User, username string) (entity.User, er
 	return findUser, nil
 }
 
-func (u userService) DeleteUser(user entity.User, username string) error {
-	getUser, err := u.userRepository.GetUser(user, username)
+func (u userService) DeleteUser(user entity.User, username, email string) error {
+	getUser, err := u.userRepository.GetUser(user, username, email)
 	if err != nil {
 		return fmt.Errorf("user tidak ditemukan")
 	}

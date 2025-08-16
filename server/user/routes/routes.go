@@ -2,11 +2,8 @@ package routes
 
 import (
 	"fmt"
-	"net/http"
-
 	"github.com/NetSinx/yconnect-shop/server/user/config"
 	"github.com/NetSinx/yconnect-shop/server/user/controller"
-	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
@@ -16,7 +13,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func ApiRoutes() *echo.Echo {
+func APIRoutes() *echo.Echo {
 	userRepository := repository.UserRepository(config.DB)
 	userService := service.UserService(userRepository)
 	userController := controller.UserController(userService)
@@ -26,25 +23,8 @@ func ApiRoutes() *echo.Echo {
 		AllowOrigins: []string{"http://localhost:4200"},
 		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	}))
-	router.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "cookie:_csrf",
-		CookiePath: "/",
-		CookieHTTPOnly: true,
-		CookieSameSite: http.SameSiteStrictMode,
-		CookieMaxAge: 60,
-		CookieSecure: true,
-		ErrorHandler: func(err error, c echo.Context) error {
-			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-				Message: "csrf token not available",
-			})
-		},
-	}))
-	router.GET("/gencsrf", func(c echo.Context) error {
-		return c.JSON(200, map[string]interface{}{
-			"message": "CSRF token berhasil di-generate",
-		})
-	})
-	router.GET("/user", userController.ListUsers, 
+	router.GET("/user", userController.GetUser)
+	router.GET("/users", userController.ListUsers, 
 		echojwt.WithConfig(echojwt.Config{
 			SigningKey: []byte("yasinnetsinx15"),
 			SigningMethod: "HS512",
@@ -69,9 +49,6 @@ func ApiRoutes() *echo.Echo {
 			},
 		}),
 	)
-	router.POST("/user/sign-up", userController.RegisterUser)
-	router.POST("/user/sign-in", userController.LoginUser)
-	router.GET("/user/refresh_token", userController.GetAccessToken)
 
 	authRoute := router.Group("/auth")
 	authRoute.Use(echojwt.WithConfig(echojwt.Config{
@@ -98,10 +75,10 @@ func ApiRoutes() *echo.Echo {
 		},
 	}))
 	// authRoute.Use(authMiddleware.JWTAuthMiddleware)
-	authRoute.POST("/user/send-otp", userController.SendOTP)
-	authRoute.POST("/user/email-verify", userController.VerifyEmail)
-	authRoute.GET("/user/:username", userController.GetUser)
-	authRoute.POST("/user/logout", userController.UserLogout)
+	authRoute.POST("/user/verify_otp", userController.VerifyOTP)
+	authRoute.POST("/user/email_verify", userController.VerifyEmail)
+	authRoute.PUT("/user", userController.UpdateUser)
+	authRoute.DELETE("/user", userController.DeleteUser)
 	
 	return router
 }

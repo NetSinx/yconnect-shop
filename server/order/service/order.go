@@ -26,12 +26,7 @@ func OrderServ(orderRepo repository.OrderRepository) *orderService {
 
 
 func (os *orderService) GetOrder(order []entity.Order, username string) ([]entity.Order, error) {
-	rabbitmq.GetUserID(username)
-
-	user_id, err := rabbitmq.ConsumeUserID()
-	if err != nil {
-		return order, err
-	}
+	respUser, err := http.Get("http://user-service:8082/user/")
 
 	getOrder, err := os.orderRepo.GetOrder(order, user_id)
 	if err != nil {

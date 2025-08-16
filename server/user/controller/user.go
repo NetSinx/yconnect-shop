@@ -7,12 +7,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/service"
-	"github.com/NetSinx/yconnect-shop/server/user/utils"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -52,40 +49,6 @@ func (u userController) RegisterUser(c echo.Context) error {
 	})
 }
 
-func (u userController) LoginUser(c echo.Context) error {
-	var userLogin domain.UserLogin
-
-	if err := c.Bind(&userLogin); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-
-	accessToken, refreshToken, user_id, err := u.userService.LoginUser(userLogin)
-	if err != nil && err.Error() == "email atau password salah" {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: "Email atau password Anda salah.",
-		})
-	} else if err != nil && err.Error() == echo.ErrBadRequest.Error() {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: err.Error(),
-		})
-	} else if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-
-	utils.SetCookies(c, "user_session", accessToken, time.Now().Add(15 * time.Minute))
-	utils.SetCookies(c, "refresh_token", refreshToken, time.Now().Add(1 * time.Hour))
-	utils.SetCookies(c, "user_id", user_id, time.Now().Add(15 * time.Minute))
-	utils.SetCookies(c, "tz", time.Now().String(), time.Now().Add(15 * time.Minute))
-
-	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "User berhasil login",
-	})
-}
-
 func (u userController) ListUsers(c echo.Context) error {
 	var users []entity.User
 
@@ -105,8 +68,9 @@ func (u userController) UpdateUser(c echo.Context) error {
 	var user entity.User
 
 	username := c.Param("username")
+	email := c.Param("email")
 
-	getDbUser, _ := u.userService.GetUser(user, username)
+	getDbUser, _ := u.userService.GetUser(user, username, email)
 	
 	avatar, err := c.FormFile("avatar")
 	if err != nil {
@@ -198,7 +162,7 @@ func (u userController) UpdateUser(c echo.Context) error {
 	})
 }
 
-func (u userController) SendOTP(c echo.Context) error {
+func (u userController) VerifyOTP(c echo.Context) error {
 	var verifyEmail domain.VerifyEmail
 
 	if err := c.Bind(&verifyEmail); err != nil {
@@ -207,7 +171,7 @@ func (u userController) SendOTP(c echo.Context) error {
 		})
 	}
 
-	successMsg, err := u.userService.SendOTP(verifyEmail)
+	successMsg, err := u.userService.VerifyOTP(verifyEmail)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Email tidak sesuai dengan yang diverifikasi.",
@@ -230,9 +194,10 @@ func (u userController) SendOTP(c echo.Context) error {
 func (u userController) GetUser(c echo.Context) error {
 	var users entity.User
 
-	username := c.Param("username")
+	username := c.QueryParam("username")
+	email := c.QueryParam("email")
 
-	findUser, err := u.userService.GetUser(users, username)
+	getUser, err := u.userService.GetUser(users, username, email)
 	if err != nil && err.Error() == "user tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: err.Error(),
@@ -244,7 +209,7 @@ func (u userController) GetUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, domain.RespData{
-		Data: findUser,
+		Data: getUser,
 	})
 }
 
@@ -281,8 +246,9 @@ func (u userController) DeleteUser(c echo.Context) error {
 	var users entity.User
 
 	username := c.Param("username")
+	email := c.Param("email")
 
-	err := u.userService.DeleteUser(users, username)
+	err := u.userService.DeleteUser(users, username, email)
 	if err != nil && err.Error() == "user tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: err.Error(),
@@ -295,91 +261,5 @@ func (u userController) DeleteUser(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil dihapus.",
-	})
-}
-
-func (u userController) UserLogout(c echo.Context) error {
-	session, err := c.Cookie("user_session")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: "user session in cookie is not available",
-		})
-	}
-	session.Path = "/"
-	session.MaxAge = -1
-
-	refreshToken, err := c.Cookie("refresh_token")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: "refresh token in cookie is not available",
-		})
-	}
-	refreshToken.Path = "/"
-	refreshToken.MaxAge = -1
-
-	user_id, err := c.Cookie("user_id")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: "user id in cookie is not available",
-		})
-	}
-	user_id.Path = "/"
-	user_id.MaxAge = -1
-
-	tz, err := c.Cookie("tz")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: "timezone in cookie is not available",
-		})
-	}
-	tz.Path = "/"
-	tz.MaxAge = -1
-
-	c.SetCookie(session)
-	c.SetCookie(refreshToken)
-	c.SetCookie(user_id)
-	c.SetCookie(tz)
-
-	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "User berhasil logout",
-	})
-}
-
-func (u userController) GetAccessToken(c echo.Context) error {
-	refreshToken, err := c.Cookie("refresh_token")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: "refresh token not available",
-		})
-	}
-
-	token, err := jwt.ParseWithClaims(refreshToken.Value, &utils.CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte("adminyasinnetsinx_15"), nil
-	})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-	if !token.Valid {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: "your token is invalid",
-		})
-	}
-
-	claims := token.Claims.(*utils.CustomClaims)
-	if claims.Username == "" && claims.Role == "" {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: "your claims is invalid",
-		})
-	}
-
-	newAccessToken := utils.GenerateAccessToken(claims.Username, claims.Role)
-	utils.SetCookies(c, "user_session", newAccessToken, time.Now().Add(15 * time.Minute))
-	utils.SetCookies(c, "user_id", claims.Username, time.Now().Add(15 * time.Minute))
-	utils.SetCookies(c, "tz", time.Now().String(), time.Now().Add(15 * time.Minute))
-
-	return c.JSON(http.StatusOK, domain.MessageResp{
-		Message: "Access token regenerated successfully",
 	})
 }

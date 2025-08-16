@@ -46,7 +46,7 @@ func ResponseGetUsernameByID() {
 		for msg := range msgs {
 			log.Printf("Received a message: %s", msg.Body)
 
-			var username string
+			var username, email string
 
 			userRepo := repository.UserRepository(config.DB)
 
@@ -54,7 +54,7 @@ func ResponseGetUsernameByID() {
 				continue
 			}
 
-			user, _ := userRepo.GetUser(entity.User{}, username)
+			user, _ := userRepo.GetUser(entity.User{}, username, email)
 			
 			body, err := json.Marshal(user.Id)
 			if err != nil {

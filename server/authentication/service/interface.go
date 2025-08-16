@@ -1,6 +1,6 @@
 package service
 
-import "github.com/NetSinx/yconnect-shop/server/authentication/model/domain"
+import "github.com/NetSinx/yconnect-shop/server/authentication/domain"
 
 type AuthService interface {
 	LoginUser(userLogin domain.UserLogin) (string, string, string, error)

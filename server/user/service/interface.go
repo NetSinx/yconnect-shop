@@ -7,11 +7,10 @@ import (
 
 type UserServ interface {
 	RegisterUser(users entity.User) error
-	LoginUser(userLogin domain.UserLogin) (string, string, string, error)
 	ListUsers(users []entity.User) ([]entity.User, error)
-	GetUser(user entity.User, username string) (entity.User, error)
+	GetUser(user entity.User, username, email string) (entity.User, error)
 	UpdateUser(user entity.User, username string) error
-	DeleteUser(user entity.User, username string) error
-	SendOTP(verifyEmail domain.VerifyEmail) (string, error)
+	DeleteUser(user entity.User, username, email string) error
+	VerifyOTP(verifyEmail domain.VerifyEmail) (string, error)
 	VerifyEmail(verifyEmail domain.VerifyEmail) error
 }

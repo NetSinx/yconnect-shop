@@ -3,7 +3,6 @@ package middleware
 import (
 	"net/http"
 	"strings"
-
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"

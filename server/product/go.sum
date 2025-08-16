@@ -1,5 +1,7 @@
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=
 filippo.io/edwards25519 v1.1.0/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4VDT4=
+github.com/NetSinx/yconnect-shop/server/category v0.0.0-20250216021655-92f412e389c7 h1:FwyJWbg9u0pGEU95DhVQynoIGsd0kwTTXAcTjrvff5o=
+github.com/NetSinx/yconnect-shop/server/category v0.0.0-20250216021655-92f412e389c7/go.mod h1:xtGA/eNr1TU9C3Tly3uneJTAy0VXjQorZQwNnKvVgb0=
 github.com/NetSinx/yconnect-shop/server/user v0.0.0-20250126030636-148323b85d14 h1:LoMx/0afYAtChfobSfgMVmr3xhAv00MWlm+SENjyP6A=
 github.com/NetSinx/yconnect-shop/server/user v0.0.0-20250126030636-148323b85d14/go.mod h1:rKM9wEvbn3/ZmjcvsVJJOMRzm6rPUgFYQqi9TUe7DCQ=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
