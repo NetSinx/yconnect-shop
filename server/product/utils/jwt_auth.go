@@ -15,7 +15,7 @@ var (
 type CustomClaims struct {
 	Username  string  `json:"username"`
 	Admin     bool    `json:"admin"`
-	Key				string  `json:"key"`
+	Key		  string  `json:"key"`
 	jwt.RegisteredClaims
 }
 
