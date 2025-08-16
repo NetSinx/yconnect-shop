@@ -3,6 +3,7 @@ package middleware
 import (
 	"net/http"
 	"github.com/NetSinx/yconnect-shop/server/user/utils"
+	utilsProduct "github.com/NetSinx/yconnect-shop/server/product/utils"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
@@ -16,8 +17,8 @@ func JWTAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			})
 		}
 
-		token, err := jwt.Parse(auth_token.Value, func(t *jwt.Token) (interface{}, error) {
-			return []byte("yasinnetsinx15"), nil
+		token, err := jwt.Parse(auth_token.Value, func(t *jwt.Token) (any, error) {
+			return []byte(utilsProduct.AdminJwtKey), nil
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{

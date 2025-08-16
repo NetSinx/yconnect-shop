@@ -9,4 +9,5 @@ type ProductRepo interface {
 	DeleteProduct(product entity.Product, slug string) error
 	GetProductByID(product entity.Product, id string) (entity.Product, error)
 	GetProductBySlug(product entity.Product, slug string) (entity.Product, error)
+	GetCategoryProduct(product entity.Product, slug string) error
 }

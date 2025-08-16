@@ -5,16 +5,13 @@ import (
 	"os"
 	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/utils"
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func ConnectDB() {
+func ConnectDB() *gorm.DB {
 	var products entity.Product
-	var gambar entity.Images
-
-	godotenv.Load()
+	var gambar entity.Gambar
 
 	initDb := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 							os.Getenv("DB_USER"),
@@ -30,4 +27,6 @@ func ConnectDB() {
 	}
 
 	db.AutoMigrate(&products, &gambar)
+
+	return db
 }

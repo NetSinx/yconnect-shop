@@ -7,13 +7,14 @@ import (
 	authMiddleware "github.com/NetSinx/yconnect-shop/server/product/middleware"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
+	"github.com/NetSinx/yconnect-shop/server/product/utils"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func ApiRoutes() *echo.Echo {
-	productRepository := repository.ProductRepository(config.DB)
+	productRepository := repository.ProductRepository(config.ConnectDB())
 	productService := service.ProductService(productRepository)
 	productController := controller.ProductController(productService)
 
@@ -34,11 +35,11 @@ func ApiRoutes() *echo.Echo {
 	router.GET("/product", productController.ListProduct)
 	router.GET("/product/:id", productController.GetProductByID)
 	router.GET("/product/:slug", productController.GetProductBySlug)
-	router.GET("/product/category/:id", productController.GetProductByCategory)
+	router.GET("/product/:slug/category", productController.GetCategoryProduct)
 
 	authRoute := router.Group("/auth")
 	authRoute.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte("yasinnetsinx15"),
+		SigningKey: []byte(utils.AdminJwtKey),
 		SigningMethod: "HS512",
 	}))
 	authRoute.Use(authMiddleware.JWTAuthMiddleware)

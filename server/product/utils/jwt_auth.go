@@ -3,7 +3,14 @@ package utils
 import (
 	"time"
 	"github.com/golang-jwt/jwt/v4"
+	"os"
 )
+
+var (
+	AdminJwtKey = os.Getenv("JWT_KEY_ADMIN")
+	CustomerJwtKey = os.Getenv("JWT_KEY_CUSTOMER")
+)
+
 
 type CustomClaims struct {
 	Username  string  `json:"username"`

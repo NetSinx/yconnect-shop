@@ -34,36 +34,18 @@ func (p productController) ListProduct(c echo.Context) error {
 }
 
 func (p productController) CreateProduct(c echo.Context) error {
-	var products entity.Product
+	var product entity.Product
 
-	if err := c.Bind(&products); err != nil {
+	if err := c.Bind(&product); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
-	
-	// imageProduct, err := c.MultipartForm()
-	// if err != nil {
-	// 	return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-	// 		Message: err.Error(),
-	// 	})
-	// }
-	
-	// product, err := p.productService.CreateProduct(products, imageProduct.File["images"])
-	// if err != nil && err.Error() == "produk sudah tersedia" {
-	// 	return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-	// 		Message: err.Error(),
-	// 	})
-	// } else if err != nil {
-	// 	return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-	// 		Message: err.Error(),
-	// 	})
-	// }
 
-	product, err := p.productService.CreateProduct(products)
+	err := p.productService.CreateProduct(product)
 	if err != nil && err.Error() == "produk sudah tersedia" {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: err.Error(),
+			Message: "Produk sudah tersedia.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -71,37 +53,30 @@ func (p productController) CreateProduct(c echo.Context) error {
 		})
 	} 
 
-	return c.JSON(http.StatusOK, domain.RespData{
-		Data: product,
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "Produk berhasil ditambahkan.",
 	})
 }
 
 func (p productController) UpdateProduct(c echo.Context) error {
-	var products entity.Product
+	var product entity.Product
 
 	slug := c.Param("slug")
 
-	if err := c.Bind(&products); err != nil {
+	if err := c.Bind(&product); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	imageProduct, err := c.MultipartForm()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
-		})
-	}
-
-	product, err := p.productService.UpdateProduct(products, imageProduct.File["images"], slug)
+	err := p.productService.UpdateProduct(product, slug)
 	if err != nil && err.Error() == "produk tidak ditemukan" {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: err.Error(),
+			Message: "Produk tidak ditemukan.",
 		})
 	} else if err != nil && err.Error() == "produk sudah tersedia" {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
-			Message: err.Error(),
+			Message: "Produk sudah tersedia.",
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -109,23 +84,19 @@ func (p productController) UpdateProduct(c echo.Context) error {
 		})
 	} 
 
-	return c.JSON(http.StatusOK, domain.RespData{
-		Data: product,
+	return c.JSON(http.StatusOK, domain.MessageResp{
+		Message: "Produk berhasil diubah.",
 	})
 }
 
 func (p productController) DeleteProduct(c echo.Context) error {
-	var products entity.Product
+	var product entity.Product
 
 	slug := c.Param("slug")
 
-	err := p.productService.DeleteProduct(products, slug)
-	if err != nil && err.Error() == "produk tidak ditemukan" {
+	err := p.productService.DeleteProduct(product, slug)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
-			Message: err.Error(),
-		})
-	} else if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
@@ -140,7 +111,7 @@ func (p productController) GetProductByID(c echo.Context) error {
 
 	id := c.Param("id")
 
-	getProduct, err := p.productService.GetProductBySlug(product, id)
+	getProduct, err := p.productService.GetProductByID(product, id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
 			Message: "Produk tidak ditemukan",
@@ -169,19 +140,23 @@ func (p productController) GetProductBySlug(c echo.Context) error {
 	})
 }
 
-func (p productController) GetProductByCategory(c echo.Context) error {
-	var products []entity.Product
+func (p productController) GetCategoryProduct(c echo.Context) error {
+	var product entity.Product
 
-	id := c.Param("id")
+	slug := c.Param("slug")
 
-	getProdByCate, err := p.productService.GetProductByCategory(products, id)
-	if err != nil {
+	getCategoryProduct, err := p.productService.GetCategoryProduct(product, slug)
+	if err != nil && err.Error() == "produk tidak ditemukan" {
+		return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+			Message: "Produk tidak ditemukan.",
+		})
+	} else if err != nil && err.Error() == "service kategori sedang bermasalah" {
 		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
-			Message: err.Error(),
+			Message: "Service kategori sedang bermasalah.",
 		})
 	}
 
 	return c.JSON(http.StatusOK, domain.RespData{
-		Data: getProdByCate,
+		Data: getCategoryProduct,
 	})
 }

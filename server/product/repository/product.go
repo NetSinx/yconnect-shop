@@ -66,3 +66,11 @@ func (p productRepository) GetProductBySlug(product entity.Product, slug string)
 
 	return product, nil
 }
+
+func (p productRepository) GetCategoryProduct(product entity.Product, slug string) error {
+	if err := p.DB.Where("slug = ?", slug).First(&product).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

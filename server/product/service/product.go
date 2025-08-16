@@ -1,15 +1,11 @@
 package service
 
 import (
-	"crypto/md5"
 	"encoding/json"
 	"fmt"
-	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
-	"strings"
-	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
+	categoryEntity "github.com/NetSinx/yconnect-shop/server/category/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
 	"github.com/go-playground/validator/v10"
@@ -27,187 +23,83 @@ func ProductService(prodRepo repository.ProductRepo) productService {
 }
 
 func (p productService) ListProduct(products []entity.Product) ([]entity.Product, error) {
-	product, err := p.productRepository.ListProduct(products)
+	listProduct, err := p.productRepository.ListProduct(products)
 	if err != nil {
-		return nil, err
+		return products, err
 	}
 
-	for _, prod := range product {
-		resCategory, err := http.Get(fmt.Sprintf("http://category-service:8080/category/%d", prod.KategoriId))
-		if err != nil || resCategory.StatusCode != 200 {
-			return product, nil
-		}
-		
-		var preloadCategory domain.PreloadCategory
-		
-		json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
-
-		prod.Kategori = preloadCategory.Data
-	}
-
-	return product, nil
+	return listProduct, nil
 }
 
-func (p productService) CreateProduct(products entity.Product) (entity.Product, error) {
-	// var img []entity.Images
-	
-	// for _, image := range images {
-	// 	src, err := image.Open()
-	// 	if err != nil {
-	// 		return entity.Product{}, err
-	// 	}
-	// 	defer src.Close()
-	
-	// 	fileName := strings.Split(image.Filename, ".")[0]
-	// 	fileExt := strings.Split(image.Filename, ".")[1]
-	// 	hashedFileName := md5.New().Sum([]byte(fileName))
-	
-	// 	if err := os.MkdirAll("../assets/images", os.ModePerm); err != nil {
-	// 		return entity.Product{}, err
-	// 	}
-	
-	// 	dst, err := os.Create(fmt.Sprintf("../assets/images/%x.%s", hashedFileName, fileExt))
-	// 	if err != nil {
-	// 		return entity.Product{}, err
-	// 	}
-	// 	defer dst.Close()
-	
-	// 	if _, err := io.Copy(dst, src); err != nil {
-	// 		return entity.Product{}, err
-	// 	}
-	
-	// 	img = append(img, entity.Images{Path: fmt.Sprintf("../assets/images/%x.%s", hashedFileName, fileExt)})
-	// }
-
-	// products.Images = img
-
-	// if err := validator.New().Struct(products); err != nil {
-	// 	return entity.Product{}, err
-	// }
-
-	product, err := p.productRepository.CreateProduct(products)
-	if err != nil {
-		return entity.Product{}, fmt.Errorf("produk sudah tersedia")
+func (p productService) CreateProduct(product entity.Product) error {
+	if err := validator.New().Struct(product); err != nil {
+		return err
 	}
 
-	return product, nil
+	err := p.productRepository.CreateProduct(product)
+	if err != nil {
+		return fmt.Errorf("produk sudah tersedia")
+	}
+
+	return nil
 }
 
-func (p productService) UpdateProduct(products entity.Product, images []*multipart.FileHeader, slug string) (entity.Product, error) {
-	getProduct, err := p.productRepository.GetProductBySlug(products, slug)
-	if err != nil {
-		return entity.Product{}, err
+func (p productService) UpdateProduct(product entity.Product, slug string) error {
+	if err := validator.New().Struct(product); err != nil {
+		return err
 	}
 
-	for _, gambar := range getProduct.Images {
-		os.Remove(gambar.Path)
-	}
-
-	for _, image := range images {
-		src, err := image.Open()
-		if err != nil {
-			return entity.Product{}, err
-		}
-		defer src.Close()
-	
-		fileName := strings.Split(image.Filename, ".")[0]
-		fileExt := strings.Split(image.Filename, ".")[1]
-		hashedFileName := md5.New().Sum([]byte(fileName))
-	
-		dst, err := os.Create(fmt.Sprintf("../assets/images/%x.%s", hashedFileName, fileExt))
-		if err != nil {
-			return entity.Product{}, err
-		}
-		defer dst.Close()
-		
-		if _, err := io.Copy(dst, src); err != nil {
-			return entity.Product{}, err
-		}
-
-		getProduct.Images = append(getProduct.Images, entity.Images{Path: fmt.Sprintf("../assets/images/%x.%s", hashedFileName, fileExt), ProductID: uint(getProduct.Id)})
-	}
-
-	products.Images = getProduct.Images
-
-	if err := validator.New().Struct(products); err != nil {
-		return entity.Product{}, err
-	}
-
-	product, err := p.productRepository.UpdateProduct(products, slug)
+	err := p.productRepository.UpdateProduct(product, slug)
 	if err != nil && err == gorm.ErrRecordNotFound {
-		return entity.Product{}, fmt.Errorf("produk tidak ditemukan")
+		return fmt.Errorf("produk tidak ditemukan")
 	} else if err != nil && err == gorm.ErrDuplicatedKey {
-		return entity.Product{}, fmt.Errorf("produk sudah tersedia")
+		return fmt.Errorf("produk sudah tersedia")
 	}
 
-	return product, nil
+	return nil
 }
 
-func (p productService) DeleteProduct(products entity.Product, slug string) error {
-	getProduct, err := p.productRepository.GetProductBySlug(products, slug)
+func (p productService) DeleteProduct(product entity.Product, slug string) error {
+	err := p.productRepository.DeleteProduct(product, slug)
 	if err != nil {
-		return fmt.Errorf("produk tidak ditemukan")
-	}
-
-	for _, image := range getProduct.Images {
-		if err := os.Remove("." + image.Path); err != nil {
-			return err
-		}
-	}
-
-	err = p.productRepository.DeleteProduct(products, slug)
-	if err != nil && err == gorm.ErrRecordNotFound{
-		return fmt.Errorf("produk tidak ditemukan")
+		return err
 	}
 
 	return nil
 }
 
 func (p productService) GetProductByID(product entity.Product, id string) (entity.Product, error) {
-	getProduct, err := p.productRepository.GetProductBySlug(product, id)
+	getProduct, err := p.productRepository.GetProductByID(product, id)
 	if err != nil {
-		return entity.Product{}, err
+		return product, err
 	}
-	
-	resCategory, err := http.Get(fmt.Sprintf("http://category-service:8080/category/%d", getProduct.KategoriId))
-	if err != nil || resCategory.StatusCode != 200 {
-		return getProduct, nil
-	}
-
-	var preloadCategory domain.PreloadCategory
-
-	json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
-
-	getProduct.Kategori = preloadCategory.Data
 
 	return getProduct, nil
 }
 
-func (p productService) GetProductBySlug(products entity.Product, slug string) (entity.Product, error) {
-	getProducts, err := p.productRepository.GetProductBySlug(products, slug)
+func (p productService) GetProductBySlug(product entity.Product, slug string) (entity.Product, error) {
+	getProduct, err := p.productRepository.GetProductBySlug(product, slug)
 	if err != nil {
-		return entity.Product{}, err
-	}
-	
-	resCategory, err := http.Get(fmt.Sprintf("http://category-service:8080/category/%d", getProducts.KategoriId))
-	if err != nil || resCategory.StatusCode != 200 {
-		return getProducts, nil
+		return product, err
 	}
 
-	var preloadCategory domain.PreloadCategory
-
-	json.NewDecoder(resCategory.Body).Decode(&preloadCategory)
-
-	getProducts.Kategori = preloadCategory.Data
-
-	return getProducts, nil
+	return getProduct, nil
 }
 
-func (p productService) GetProductByCategory(products []entity.Product, id string) ([]entity.Product, error) {
-	getProdByCate, err := p.productRepository.GetProductByCategory(products, id)
+func (p productService) GetCategoryProduct(product entity.Product, slug string) (categoryEntity.Category, error) {
+	if err := p.productRepository.GetCategoryProduct(product, slug); err != nil {
+		return categoryEntity.Category{}, fmt.Errorf("produk tidak ditemukan")
+	}
+	
+	baseUrl := os.Getenv("BASE_URL")
+
+	respCategory, err := http.Get(fmt.Sprintf(baseUrl + ":8080/category/%d", product.KategoriID))
 	if err != nil {
-		return nil, err
+		return categoryEntity.Category{}, fmt.Errorf("service kategori sedang bermasalah")
 	}
 
-	return getProdByCate, nil
+	var respDataCategory categoryEntity.Category
+	json.NewDecoder(respCategory.Body).Decode(&respDataCategory)
+
+	return respDataCategory, nil
 }
