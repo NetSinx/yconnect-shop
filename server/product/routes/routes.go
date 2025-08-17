@@ -7,7 +7,7 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
-	"github.com/NetSinx/yconnect-shop/server/product/utils"
+	"github.com/NetSinx/yconnect-shop/server/authentication/utils"
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -39,11 +39,6 @@ func ApiRoutes() *echo.Echo {
 			})
 		},
 	}))
-	apiGroup.GET("/gencsrf", func(c echo.Context) error {
-		return c.JSON(200, map[string]any{
-			"message": "CSRF token berhasil di-generate",
-		})
-	})
 	apiGroup.GET("/product", productController.ListProduct)
 	apiGroup.GET("/product/id/:id", productController.GetProductByID)
 	apiGroup.GET("/product/slug/:slug", productController.GetProductBySlug)

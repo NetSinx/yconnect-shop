@@ -14,9 +14,10 @@ func APIRoutes() *echo.Echo {
 	authController := controller.AuthContrllr(authService)
 
 	router := echo.New()
-	apiRouter := router.Group("/api")
-	apiRouter.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "cookie:_csrf",
+	apiGroup := router.Group("/api")
+	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLookup: "cookie:csrf_token",
+		CookieName: "csrf_token",
 		CookiePath: "/",
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteStrictMode,
@@ -28,14 +29,14 @@ func APIRoutes() *echo.Echo {
 			})
 		},
 	}))
-	apiRouter.GET("/gencsrf", func(c echo.Context) error {
-		return c.JSON(200, map[string]interface{}{
+	apiGroup.GET("/gencsrf", func(c echo.Context) error {
+		return c.JSON(200, map[string]any{
 			"message": "CSRF token berhasil di-generate",
 		})
 	})
-	apiRouter.POST("/login", authController.LoginUser)
-	apiRouter.POST("/logout", authController.UserLogout)
-	apiRouter.GET("/refresh_token", authController.RefreshToken)
+	apiGroup.POST("/login", authController.LoginUser)
+	apiGroup.POST("/logout", authController.UserLogout)
+	apiGroup.GET("/refresh_token", authController.RefreshToken)
 
 	return router
 }

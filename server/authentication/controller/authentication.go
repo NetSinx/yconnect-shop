@@ -29,7 +29,7 @@ func (ac *authController) LoginUser(ctx echo.Context) error {
 		})
 	}
 
-	accessToken, refreshToken, user_id, err := ac.authService.LoginUser(userLogin)
+	accessToken, refreshToken, err := ac.authService.LoginUser(userLogin)
 	if err != nil && err.Error() == "email atau password salah" {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
 			Message: err.Error(),
@@ -45,9 +45,7 @@ func (ac *authController) LoginUser(ctx echo.Context) error {
 	}
 
 	utils.SetCookies(ctx, "user_session", accessToken, time.Now().Add(15 * time.Minute))
-	utils.SetCookies(ctx, "refresh_token", refreshToken, time.Now().Add(1 * time.Hour))
-	utils.SetCookies(ctx, "user_id", user_id, time.Now().Add(15 * time.Minute))
-	utils.SetCookies(ctx, "tz", time.Now().String(), time.Now().Add(15 * time.Minute))
+	utils.SetCookies(ctx, "refresh_token", refreshToken, time.Now().Add(2 * time.Hour))
 
 	return ctx.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil login",
@@ -73,28 +71,8 @@ func (ac *authController) UserLogout(ctx echo.Context) error {
 	refreshToken.Path = "/"
 	refreshToken.MaxAge = -1
 
-	user_id, err := ctx.Cookie("user_id")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: "user id in cookie is not available",
-		})
-	}
-	user_id.Path = "/"
-	user_id.MaxAge = -1
-
-	tz, err := ctx.Cookie("tz")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
-			Message: "timezone in cookie is not available",
-		})
-	}
-	tz.Path = "/"
-	tz.MaxAge = -1
-
 	ctx.SetCookie(session)
 	ctx.SetCookie(refreshToken)
-	ctx.SetCookie(user_id)
-	ctx.SetCookie(tz)
 
 	return ctx.JSON(http.StatusOK, domain.MessageResp{
 		Message: "User berhasil logout",
@@ -109,8 +87,8 @@ func (ac *authController) RefreshToken(ctx echo.Context) error {
 		})
 	}
 
-	token, err := jwt.ParseWithClaims(refreshToken.Value, &utils.CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte("adminyasinnetsinx_15"), nil
+	token, err := jwt.ParseWithClaims(refreshToken.Value, &utils.CustomClaims{}, func(t *jwt.Token) (any, error) {
+		return []byte(utils.AdminJwtKey), nil
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
@@ -118,22 +96,44 @@ func (ac *authController) RefreshToken(ctx echo.Context) error {
 		})
 	}
 	if !token.Valid {
-		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
-			Message: "your token is invalid",
+		token, err := jwt.ParseWithClaims(refreshToken.Value, &utils.CustomClaims{}, func(t *jwt.Token) (any, error) {
+			return []byte(utils.CustomerJwtKey), nil
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+				Message: err.Error(),
+			})
+		}
+		if !token.Valid {
+			return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+				Message: "your token is invalid",
+			})
+		}
+
+		claims := token.Claims.(*utils.CustomClaims)
+		if claims.Username == "" && claims.Role == "" {
+			return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
+				Message: "your claims is invalid",
+			})
+		}
+
+		newAccessToken := utils.GenerateAccessToken(claims.Username, claims.Role)
+		utils.SetCookies(ctx, "user_session", newAccessToken, time.Now().Add(15 * time.Minute))
+
+		return ctx.JSON(http.StatusOK, domain.MessageResp{
+			Message: "Access token regenerated successfully",
 		})
 	}
 
 	claims := token.Claims.(*utils.CustomClaims)
-	if claims.Username == "" && claims.Role == "" && claims.Email == "" {
+	if claims.Username == "" && claims.Role == "" {
 		return echo.NewHTTPError(http.StatusUnauthorized, domain.MessageResp{
 			Message: "your claims is invalid",
 		})
 	}
 
-	newAccessToken := utils.GenerateAccessToken(claims.Username, claims.Email, claims.Role)
+	newAccessToken := utils.GenerateAccessToken(claims.Username, claims.Role)
 	utils.SetCookies(ctx, "user_session", newAccessToken, time.Now().Add(15 * time.Minute))
-	utils.SetCookies(ctx, "user_id", claims.Username, time.Now().Add(15 * time.Minute))
-	utils.SetCookies(ctx, "tz", time.Now().String(), time.Now().Add(15 * time.Minute))
 
 	return ctx.JSON(http.StatusOK, domain.MessageResp{
 		Message: "Access token regenerated successfully",

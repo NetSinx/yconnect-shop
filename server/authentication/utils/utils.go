@@ -5,47 +5,84 @@ import (
 	"time"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"os"
+)
+
+var (
+	AdminJwtKey = os.Getenv("JWT_KEY_ADMIN")
+	CustomerJwtKey = os.Getenv("JWT_KEY_CUSTOMER")
 )
 
 type CustomClaims struct {
-	jwt.RegisteredClaims
 	Username  string  `json:"username"`
-	Email     string  `json:"email"`
 	Role      string  `json:"role"`
+	jwt.RegisteredClaims
 }
 
-func GenerateAccessToken(username, email, role string) string {
-		signingKey := []byte("yasinnetsinx15")
-
+func GenerateAccessToken(username, role string) string {
+	if role == "admin" {
+		signingKey := []byte(AdminJwtKey)
 		claims := CustomClaims{
+			username,
+			role,
 			jwt.RegisteredClaims{
 				Issuer: "this is a jwt",
 				IssuedAt: jwt.NewNumericDate(time.Now()),
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(30 * time.Minute)),
 			},
-			username,
-			email,
-			role,
 		}
 
 		genToken := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 		token, _ := genToken.SignedString(signingKey)
 
 		return token
+	}
+
+	signingKey := []byte(CustomerJwtKey)
+	claims := CustomClaims{
+		username,
+		role,
+		jwt.RegisteredClaims{
+			Issuer: "this is a jwt",
+			IssuedAt: jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(30 * time.Minute)),
+		},
+	}
+
+	genToken := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
+	token, _ := genToken.SignedString(signingKey)
+
+	return token
 }
 
-func GenerateRefreshToken(username, email, role string) string {
-	signingKey := []byte("adminyasinnetsinx_15")
+func GenerateRefreshToken(username, role string) string {
+	if role == "admin" {
+		signingKey := []byte(AdminJwtKey)	
+		claims := CustomClaims{
+			username,
+			role,
+			jwt.RegisteredClaims{
+				Issuer: "this is a jwt",
+				IssuedAt: jwt.NewNumericDate(time.Now()),
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Hour)),
+			},
+		}
+	
+		genToken := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
+		token, _ := genToken.SignedString(signingKey)
+	
+		return token
+	}
 
+	signingKey := []byte(CustomerJwtKey)
 	claims := CustomClaims{
+		username,
+		role,
 		jwt.RegisteredClaims{
 			Issuer: "this is a jwt",
 			IssuedAt: jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Hour)),
 		},
-		username,
-		email,
-		role,
 	}
 
 	genToken := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
