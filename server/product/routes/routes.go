@@ -4,10 +4,11 @@ import (
 	"net/http"
 	"github.com/NetSinx/yconnect-shop/server/product/config"
 	"github.com/NetSinx/yconnect-shop/server/product/controller"
-	authMiddleware "github.com/NetSinx/yconnect-shop/server/product/middleware"
+	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
 	"github.com/NetSinx/yconnect-shop/server/product/utils"
+	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -19,33 +20,50 @@ func ApiRoutes() *echo.Echo {
 	productController := controller.ProductController(productService)
 
 	router := echo.New()
-	router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	apiGroup := router.Group("/api")
+	apiGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:4200"},
 		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	}))
-	router.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "header:xsrf",
-		CookieName: "xsrf",
+	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLookup: "cookie:csrf_token",
+		CookieName: "csrf_token",
 		CookiePath: "/",
-		CookieMaxAge: 60,
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteStrictMode,
+		CookieMaxAge: 60,
 		CookieSecure: true,
+		ErrorHandler: func(err error, c echo.Context) error {
+			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+				Message: "csrf token not available",
+			})
+		},
 	}))
-	router.GET("/product", productController.ListProduct)
-	router.GET("/product/:id", productController.GetProductByID)
-	router.GET("/product/:slug", productController.GetProductBySlug)
-	router.GET("/product/:slug/category", productController.GetCategoryProduct)
+	apiGroup.GET("/gencsrf", func(c echo.Context) error {
+		return c.JSON(200, map[string]any{
+			"message": "CSRF token berhasil di-generate",
+		})
+	})
+	apiGroup.GET("/product", productController.ListProduct)
+	apiGroup.GET("/product/id/:id", productController.GetProductByID)
+	apiGroup.GET("/product/slug/:slug", productController.GetProductBySlug)
+	apiGroup.GET("/product/:slug/category", productController.GetCategoryProduct)
 
-	authRoute := router.Group("/auth")
-	authRoute.Use(echojwt.WithConfig(echojwt.Config{
+	adminGroup := apiGroup.Group("/admin")
+	adminGroup.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey: []byte(utils.AdminJwtKey),
 		SigningMethod: "HS512",
+		NewClaimsFunc: func(c echo.Context) jwt.Claims {
+			return new(utils.CustomClaims)
+		},
+		ErrorHandler: func(c echo.Context, err error) error {
+			return echo.ErrUnauthorized
+		},
 	}))
-	authRoute.Use(authMiddleware.JWTAuthMiddleware)
-	authRoute.POST("/product", productController.CreateProduct)
-	authRoute.PUT("/product/:slug", productController.UpdateProduct)
-	authRoute.DELETE("/product/:slug", productController.DeleteProduct)
+	adminGroup.Use(utils.CheckAdminRole)
+	adminGroup.POST("/product", productController.CreateProduct)
+	adminGroup.PUT("/product/:slug", productController.UpdateProduct)
+	adminGroup.DELETE("/product/:slug", productController.DeleteProduct)
 
 	return router
 }

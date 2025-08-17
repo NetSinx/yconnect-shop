@@ -17,7 +17,14 @@ type Product struct {
 	KategoriID  uint         `json:"kategori_id" validate:"required"`
 	Harga       int          `json:"harga" validate:"required"`
 	Stok        int          `json:"stok" validate:"required"`
-	Rating      float32      `json:"rating" validate:"required"`
 	CreatedAt   time.Time    `json:"created_at"`
 	UpdatedAt   time.Time    `json:"updated_at"`
+}
+
+type Tabler interface {
+  TableName() string
+}
+
+func (Gambar) TableName() string {
+  return "gambar"
 }
