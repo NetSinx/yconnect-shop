@@ -6,13 +6,11 @@ services:
     image: mysql
     restart: always
     pull_policy: if_not_present
-    networks:
-      - yconnect-net
     environment:
-      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_USER: "test"
       MYSQL_PASSWORD: "test123"
-      MYSQL_DATABASE: "test_db"
+      MYSQL_DATABASE: "yconnect_shop_product"
 
   product:
     container_name: product-service
@@ -21,15 +19,15 @@ services:
     pull_policy: if_not_present
     depends_on:
       - product-db
-    networks:
-      - yconnect-net
-      - kong-network
     environment:
       - DB_USER=test
       - DB_PASS=test123
       - DB_HOST=db-product
       - DB_PORT=3306
-      - DB_DBNAME=test_db
+      - DB_DBNAME=yconnect_shop_product
+      - BASE_URL=http://localhost
+      - JWT_KEY_ADMIN=adminjwtkey
+      - JWT_KEY_CUSTOMER=customerjwtkey
 
   category-db:
     container_name: db-category
@@ -150,6 +148,14 @@ services:
       - DB_HOST=db-order
       - DB_PORT=3306
       - DB_DATABASE=test_db
+  
+  auth_user:
+    container_name: auth-service
+    image: auth-img
+    restart: on-failure
+    pull_policy: if_not_present
+    environment:
+      - name=value
   
   mail:
     container_name: mail-service
