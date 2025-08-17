@@ -7,7 +7,8 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
-	"github.com/NetSinx/yconnect-shop/server/authentication/utils"
+	productUtils "github.com/NetSinx/yconnect-shop/server/product/utils"
+	authUtils "github.com/NetSinx/yconnect-shop/server/authentication/utils"
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -46,16 +47,16 @@ func ApiRoutes() *echo.Echo {
 
 	adminGroup := apiGroup.Group("/admin")
 	adminGroup.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte(utils.AdminJwtKey),
+		SigningKey: []byte(authUtils.AdminJwtKey),
 		SigningMethod: "HS512",
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
-			return new(utils.CustomClaims)
+			return new(authUtils.CustomClaims)
 		},
 		ErrorHandler: func(c echo.Context, err error) error {
 			return echo.ErrUnauthorized
 		},
 	}))
-	adminGroup.Use(utils.CheckAdminRole)
+	adminGroup.Use(productUtils.CheckAdminRole)
 	adminGroup.POST("/product", productController.CreateProduct)
 	adminGroup.PUT("/product/:slug", productController.UpdateProduct)
 	adminGroup.DELETE("/product/:slug", productController.DeleteProduct)
