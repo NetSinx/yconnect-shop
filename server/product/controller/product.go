@@ -34,15 +34,15 @@ func (p productController) ListProduct(c echo.Context) error {
 }
 
 func (p productController) CreateProduct(c echo.Context) error {
-	var product entity.Product
+	var productReq domain.ProductRequest
 
-	if err := c.Bind(&product); err != nil {
+	if err := c.Bind(&productReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	err := p.productService.CreateProduct(product)
+	err := p.productService.CreateProduct(productReq)
 	if err != nil && err.Error() == "produk sudah tersedia" {
 		return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
 			Message: "Produk sudah tersedia.",
@@ -59,7 +59,7 @@ func (p productController) CreateProduct(c echo.Context) error {
 }
 
 func (p productController) UpdateProduct(c echo.Context) error {
-	var product entity.Product
+	var product domain.ProductRequest
 
 	slug := c.Param("slug")
 

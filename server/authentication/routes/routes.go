@@ -19,9 +19,8 @@ func APIRoutes() *echo.Echo {
 		TokenLookup: "cookie:csrf_token",
 		CookieName: "csrf_token",
 		CookiePath: "/",
+		CookieMaxAge: 30,
 		CookieHTTPOnly: true,
-		CookieSameSite: http.SameSiteStrictMode,
-		CookieMaxAge: 60,
 		CookieSecure: true,
 		ErrorHandler: func(err error, c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{

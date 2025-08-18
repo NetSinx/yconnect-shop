@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
 	categoryEntity "github.com/NetSinx/yconnect-shop/server/category/model/entity"
+	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
+	"github.com/NetSinx/yconnect-shop/server/product/utils"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
@@ -31,9 +34,20 @@ func (p productService) ListProduct(products []entity.Product) ([]entity.Product
 	return listProduct, nil
 }
 
-func (p productService) CreateProduct(product entity.Product) error {
-	if err := validator.New().Struct(product); err != nil {
+func (p productService) CreateProduct(productReq domain.ProductRequest) error {
+	if err := validator.New().Struct(productReq); err != nil {
 		return err
+	}
+
+	slug := utils.GenerateSlugByName(productReq.Nama)
+	product := entity.Product{
+		Nama: productReq.Nama,
+		Deskripsi: productReq.Deskripsi,
+		Slug: slug,
+		Gambar: productReq.Gambar,
+		KategoriID: productReq.KategoriID,
+		Harga: productReq.Harga,
+		Stok: productReq.Stok,
 	}
 
 	err := p.productRepository.CreateProduct(product)
@@ -44,12 +58,12 @@ func (p productService) CreateProduct(product entity.Product) error {
 	return nil
 }
 
-func (p productService) UpdateProduct(product entity.Product, slug string) error {
-	if err := validator.New().Struct(product); err != nil {
+func (p productService) UpdateProduct(productReq domain.ProductRequest, slug string) error {
+	if err := validator.New().Struct(productReq); err != nil {
 		return err
 	}
 
-	err := p.productRepository.UpdateProduct(product, slug)
+	err := p.productRepository.UpdateProduct(productReq, slug)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return fmt.Errorf("produk tidak ditemukan")
 	} else if err != nil && err == gorm.ErrDuplicatedKey {

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
 	"gorm.io/gorm"
 )
@@ -31,7 +32,7 @@ func (p productRepository) CreateProduct(product entity.Product) error {
 	return nil
 }
 
-func (p productRepository) UpdateProduct(product entity.Product, slug string) error {
+func (p productRepository) UpdateProduct(product domain.ProductRequest, slug string) error {
 	if err := p.DB.First(&product, "slug = ?", slug).Error; err != nil {
 		return err
 	}

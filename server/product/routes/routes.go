@@ -7,10 +7,6 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
-	productUtils "github.com/NetSinx/yconnect-shop/server/product/utils"
-	authUtils "github.com/NetSinx/yconnect-shop/server/authentication/utils"
-	"github.com/golang-jwt/jwt/v5"
-	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -26,13 +22,18 @@ func ApiRoutes() *echo.Echo {
 		AllowOrigins: []string{"http://localhost:4200"},
 		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	}))
-	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+	apiGroup.GET("/product", productController.ListProduct)
+	apiGroup.GET("/product/id/:id", productController.GetProductByID)
+	apiGroup.GET("/product/slug/:slug", productController.GetProductBySlug)
+	apiGroup.GET("/product/:slug/category", productController.GetCategoryProduct)
+
+	adminGroup := apiGroup.Group("/admin")
+	adminGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		TokenLookup: "cookie:csrf_token",
 		CookieName: "csrf_token",
 		CookiePath: "/",
 		CookieHTTPOnly: true,
-		CookieSameSite: http.SameSiteStrictMode,
-		CookieMaxAge: 60,
+		CookieMaxAge: 30,
 		CookieSecure: true,
 		ErrorHandler: func(err error, c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
@@ -40,23 +41,6 @@ func ApiRoutes() *echo.Echo {
 			})
 		},
 	}))
-	apiGroup.GET("/product", productController.ListProduct)
-	apiGroup.GET("/product/id/:id", productController.GetProductByID)
-	apiGroup.GET("/product/slug/:slug", productController.GetProductBySlug)
-	apiGroup.GET("/product/:slug/category", productController.GetCategoryProduct)
-
-	adminGroup := apiGroup.Group("/admin")
-	adminGroup.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte(authUtils.AdminJwtKey),
-		SigningMethod: "HS512",
-		NewClaimsFunc: func(c echo.Context) jwt.Claims {
-			return new(authUtils.CustomClaims)
-		},
-		ErrorHandler: func(c echo.Context, err error) error {
-			return echo.ErrUnauthorized
-		},
-	}))
-	adminGroup.Use(productUtils.CheckAdminRole)
 	adminGroup.POST("/product", productController.CreateProduct)
 	adminGroup.PUT("/product/:slug", productController.UpdateProduct)
 	adminGroup.DELETE("/product/:slug", productController.DeleteProduct)
