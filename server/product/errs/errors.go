@@ -2,6 +2,10 @@ package errs
 
 import "log"
 
+var (
+	ErrDuplicatedKey = ""
+)
+
 func PanicError(err error) {
 	log.Panic(err)
 }

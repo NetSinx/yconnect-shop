@@ -8,7 +8,7 @@ import (
 type ProductRepo interface {
 	ListProduct(products []model.Product) ([]model.Product, error)
 	CreateProduct(product model.Product) error
-	UpdateProduct(product model.Product, slug string) error
+	UpdateProduct(product model.Product, gambar []model.Gambar, slug string) error
 	DeleteProduct(product model.Product, slug string) error
 	GetProductByID(product model.Product, id string) (model.Product, error)
 	GetProductBySlug(product model.Product, slug string) (model.Product, error)
@@ -41,8 +41,20 @@ func (p productRepository) CreateProduct(product model.Product) error {
 	return nil
 }
 
-func (p productRepository) UpdateProduct(product model.Product, slug string) error {
-	if err := p.DB.Where("slug = ?", slug).Updates(&product).Error; err != nil {
+func (p productRepository) UpdateProduct(product model.Product, gambar []model.Gambar, slug string) error {
+	if err := p.DB.Where("slug = ?", slug).First(&product).Error; err != nil {
+		return err
+	}
+
+	if err := p.DB.Where("product_id = ?", product.Id).Delete(&gambar).Error; err != nil {
+		return err
+	}
+
+	if err := p.DB.Updates(&product).Error; err != nil {
+		return err
+	}
+
+	if err := p.DB.Model(&product).Association("Gambar").Replace(product.Gambar, gambar); err != nil {
 		return err
 	}
 
@@ -50,7 +62,15 @@ func (p productRepository) UpdateProduct(product model.Product, slug string) err
 }
 
 func (p productRepository) DeleteProduct(product model.Product, slug string) error {
-	if err := p.DB.Where("slug = ?", slug).Delete(&product).Error; err != nil {
+	if err := p.DB.Where("slug = ?", slug).First(&product).Error; err != nil {
+		return err
+	}
+	
+	if err := p.DB.Where("product_id = ?", product.Id).Delete(&model.Gambar{}).Error; err != nil {
+		return err
+	}
+
+	if err := p.DB.Delete(&product).Error; err != nil {
 		return err
 	}
 

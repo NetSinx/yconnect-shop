@@ -5,7 +5,7 @@ import "time"
 type Gambar struct {
 	Id           uint      `json:"id" gorm:"primaryKey"`
 	Path         string    `json:"path" validate:"required"`
-	ProductID    uint      `json:"-"`
+	ProductID    uint
 }
 
 type Product struct {

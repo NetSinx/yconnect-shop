@@ -72,18 +72,18 @@ func (p productService) UpdateProduct(productReq dto.ProductRequest, slug string
 		return err
 	}
 
-	slugGenerator := helpers.GenerateSlugByName(productReq.Nama)
 	product := model.Product{
 		Nama: productReq.Nama,
 		Deskripsi: productReq.Deskripsi,
-		Slug: slugGenerator,
-		Gambar: productReq.Gambar,
+		Slug: slug,
 		KategoriID: productReq.KategoriID,
 		Harga: productReq.Harga,
 		Stok: productReq.Stok,
 	}
 
-	err := p.productRepository.UpdateProduct(product, slug)
+	gambar := productReq.Gambar
+
+	err := p.productRepository.UpdateProduct(product, gambar, slug)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		return fmt.Errorf("produk tidak ditemukan")
 	} else if err != nil && err == gorm.ErrDuplicatedKey {
