@@ -1,9 +1,17 @@
 package repository
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/category/model/entity"
+	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"gorm.io/gorm"
 )
+
+type CategoryRepo interface {
+	ListCategory(categories []model.Category) ([]model.Category, error)
+	CreateCategory(categories model.Category) (model.Category, error)
+	UpdateCategory(categories model.Category, id string) (model.Category, error)
+	DeleteCategory(category model.Category, id string) error
+	GetCategory(categories model.Category, id string) (model.Category, error)
+}
 
 type categoryRepository struct {
 	DB *gorm.DB
@@ -15,7 +23,7 @@ func CategoryRepository(db *gorm.DB) categoryRepository {
 	}
 }
 
-func (c categoryRepository) ListCategory(categories []entity.Kategori) ([]entity.Kategori, error) {
+func (c categoryRepository) ListCategory(categories []model.Category) ([]model.Category, error) {
 	if err := c.DB.Select("id", "name", "slug").Find(&categories).Error; err != nil {
 		return nil, err
 	}
@@ -23,7 +31,7 @@ func (c categoryRepository) ListCategory(categories []entity.Kategori) ([]entity
 	return categories, nil
 }
 
-func (c categoryRepository) CreateCategory(categories entity.Kategori) (entity.Kategori, error) {
+func (c categoryRepository) CreateCategory(categories model.Category) (model.Category, error) {
 	if err := c.DB.Create(&categories).Error; err != nil {
 		return categories, err
 	}
@@ -31,7 +39,7 @@ func (c categoryRepository) CreateCategory(categories entity.Kategori) (entity.K
 	return categories, nil
 }
 
-func (c categoryRepository) UpdateCategory(categories entity.Kategori, id string) (entity.Kategori, error) {
+func (c categoryRepository) UpdateCategory(categories model.Category, id string) (model.Category, error) {
 	if err := c.DB.First(&categories, "id = ?", id).Error; err != nil {
 		return categories, err
 	}
@@ -43,7 +51,7 @@ func (c categoryRepository) UpdateCategory(categories entity.Kategori, id string
 	return categories, nil
 }
 
-func(c categoryRepository) DeleteCategory(category entity.Kategori, id string) error {
+func(c categoryRepository) DeleteCategory(category model.Category, id string) error {
 	if err := c.DB.First(&category, "id = ?", id).Error; err != nil {
 		return err
 	}
@@ -53,7 +61,7 @@ func(c categoryRepository) DeleteCategory(category entity.Kategori, id string) e
 	return nil
 }
 
-func(c categoryRepository) GetCategory(categories entity.Kategori, id string) (entity.Kategori, error) {
+func(c categoryRepository) GetCategory(categories model.Category, id string) (model.Category, error) {
 	if err := c.DB.First(&categories, "id = ?", id).Error; err != nil {
 		return categories, err
 	}

@@ -4,47 +4,25 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"github.com/NetSinx/yconnect-shop/server/category/model/domain"
-	"github.com/NetSinx/yconnect-shop/server/category/model/entity"
-	prodEntity "github.com/NetSinx/yconnect-shop/server/product/model/entity"
+	"github.com/NetSinx/yconnect-shop/server/category/handler/dto"
+	"github.com/NetSinx/yconnect-shop/server/category/model"
+	prodEntity "github.com/NetSinx/yconnect-shop/server/product/model"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
-var categoryModel = map[string][]entity.Kategori{
-	"data": append([]entity.Kategori{},
-		entity.Kategori{
-			Id: 1,
-			Name: "Baju",
-			Slug: "baju",
-			Product: append([]prodEntity.Product{}, prodEntity.Product{
-				Id: 1,
-				Nama: "Baju Muslim",
-				Slug: "baju-muslim",
-				Gambar: append([]prodEntity.Gambar{}, 
-					prodEntity.Gambar{
-						Nama: "baju_muslim1.jpg",
-						ProductID: 1,
-					},
-					prodEntity.Gambar{
-						Nama: "baju_muslim2.jpg",
-						ProductID: 1,
-					},
-				),
-				Deskripsi: "Baju muslim yang nyaman digunakan untuk beribadah",
-				KategoriId: 1,
-				Harga: 95000,
-				Stok: 15,
-				Rating: 4.9,
-			}),
-		},
-		entity.Kategori{
-			Id: 2,
-			Name: "Celana",
-			Slug: "celana",
-		},
-	),
-}
+var categoryModel = append([]model.Category{},
+	model.Category{
+		Id: 1,
+		Name: "Baju",
+		Slug: "baju",
+	},
+	model.Category{
+		Id: 2,
+		Name: "Celana",
+		Slug: "celana",
+	},
+)
 
 var productModel = append([]prodEntity.Product{}, 
 	prodEntity.Product{
@@ -53,74 +31,65 @@ var productModel = append([]prodEntity.Product{},
 		Slug: "baju-muslim",
 		Gambar: append([]prodEntity.Gambar{}, 
 			prodEntity.Gambar{
-				Nama: "baju_muslim1.jpg",
+				Path: "baju_muslim1.jpg",
 				ProductID: 1,
 			},
 			prodEntity.Gambar{
-				Nama: "baju_muslim2.jpg",
+				Path: "baju_muslim2.jpg",
 				ProductID: 1,
 			},
 		),
 		Deskripsi: "Baju muslim yang nyaman digunakan untuk beribadah",
-		KategoriId: 1,
+		KategoriID: 1,
 		Harga: 95000,
 		Stok: 15,
-		Rating: 4.9,
 	},
 )
 
 func ListCategory(c echo.Context) error {
-	for _, category := range categoryModel["data"] {
-		for _, product := range productModel {
-			if category.Id == product.KategoriId {
-				category.Product = append(category.Product, product)
-			}
-		}
-	}
-
-	return c.JSON(http.StatusOK, domain.RespData{
-		Data: categoryModel["data"],
+	return c.JSON(http.StatusOK, dto.RespData{
+		Data: categoryModel,
 	})
 }
 
 func CreateCategory(c echo.Context) error {
-	var reqCategory entity.Kategori
+	var categoryReq model.Category
 	
-	if err := c.Bind(&reqCategory); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+	if err := c.Bind(&categoryReq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	reqCategory.Name = strings.Title(reqCategory.Name)
-	reqCategory.Slug = strings.ToLower(reqCategory.Slug)
+	categoryReq.Name = strings.ToTitle(categoryReq.Name)
+	categoryReq.Slug = strings.ToLower(categoryReq.Slug)
 
-	if err := validator.New().Struct(reqCategory); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+	if err := validator.New().Struct(categoryReq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	for _, category := range categoryModel["data"] {
-		if reqCategory.Name == category.Name && reqCategory.Slug == category.Slug {
-			return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+	for _, category := range categoryModel {
+		if categoryReq.Name == category.Name || categoryReq.Slug == category.Slug {
+			return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
 				Message: "Kategori tersebut sudah terdaftar",
 			})
 		}
 	}
 
-	return c.JSON(http.StatusOK, domain.MessageResp{
+	return c.JSON(http.StatusOK, dto.MessageResp{
 		Message: "Kategori berhasil ditambahkan",
 	})
 }
 
 func UpdateCategory(c echo.Context) error {
-	var reqCategory entity.Kategori
+	var reqCategory model.Category
 
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	if err := c.Bind(&reqCategory); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
@@ -129,16 +98,16 @@ func UpdateCategory(c echo.Context) error {
 	reqCategory.Slug = strings.ToLower(reqCategory.Slug)
 
 	if err := validator.New().Struct(reqCategory); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
 	
-	for _, category := range categoryModel["data"] {
+	for _, category := range categoryModel {
 		if uint(id) == category.Id {
-			for _, c := range categoryModel["data"] {
+			for _, c := range categoryModel {
 				if (reqCategory.Name == c.Name && reqCategory.Slug == c.Slug) && category.Id != c.Id {
-					return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+					return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
 						Message: "Kategori tersebut sudah terdaftar",
 					})
 				}
@@ -147,13 +116,13 @@ func UpdateCategory(c echo.Context) error {
 			category.Name = reqCategory.Name
 			category.Slug = reqCategory.Slug
 			
-			return c.JSON(http.StatusOK, domain.MessageResp{
+			return c.JSON(http.StatusOK, dto.MessageResp{
 				Message: "Kategori berhasil diubah",
 			})
 		}
 	}
 
-	return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+	return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 		Message: "Kategori tidak ditemukan",
 	})
 }
@@ -161,17 +130,17 @@ func UpdateCategory(c echo.Context) error {
 func DeleteCategory(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	for _, category := range categoryModel["data"] {
+	for _, category := range categoryModel {
 		if uint(id) == category.Id {
-			category = entity.Kategori{}
+			category = model.Category{}
 			
-			return c.JSON(http.StatusOK, domain.MessageResp{
+			return c.JSON(http.StatusOK, dto.MessageResp{
 				Message: "Kategori berhasil dihapus",
 			})
 		}
 	}
 
-	return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+	return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 		Message: "Kategori tidak ditemukan",
 	})
 }
@@ -179,13 +148,13 @@ func DeleteCategory(c echo.Context) error {
 func GetCategory(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	for _, category := range categoryModel["data"] {
+	for _, category := range categoryModel {
 		if uint(id) == category.Id {
 			return c.JSON(http.StatusOK, category)
 		}
 	}
 
-	return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+	return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 		Message: "Kategori tidak ditemukan",
 	})
 }

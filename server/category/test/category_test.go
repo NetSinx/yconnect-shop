@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"github.com/NetSinx/yconnect-shop/server/category/model/entity"
+	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,7 +27,7 @@ func TestListCategory(t *testing.T) {
 func TestCreateCategory(t *testing.T) {
 	expectedResp := `{"message":"Kategori berhasil ditambahkan"}`+"\n"
 
-	reqCategory := entity.Kategori{
+	reqCategory := model.Category{
 		Name: "Hats",
 		Slug: "hats",
 	}
@@ -47,7 +47,7 @@ func TestCreateCategory(t *testing.T) {
 }
 
 func TestUpdateCategory(t *testing.T) {
-	reqCategory := entity.Kategori{
+	reqCategory := model.Category{
 		Name: "Shoes",
 		Slug: "shoes",
 	}
@@ -97,7 +97,7 @@ func TestGetCategory(t *testing.T) {
 	ctx.SetParamNames("id")
 	ctx.SetParamValues("1")
 
-	respData, _ := json.Marshal(categoryModel["data"][0])
+	respData, _ := json.Marshal(categoryModel[0])
 
 	if assert.NoError(t, GetCategory(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
