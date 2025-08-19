@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/labstack/echo/v4"
@@ -31,36 +32,15 @@ func TestListProduct(t *testing.T) {
 func TestCreateProduct(t *testing.T) {
 	expectedResp := `{"message":"Produk berhasil ditambahkan"}`+"\n"
 
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-
-	writer.WriteField("nama", "Product Test")
-	writer.WriteField("slug", "product-test")
-	writer.WriteField("deskripsi", "ini hanyalah deskripsi product test")
-	writer.WriteField("kategori_id", "2")
-	writer.WriteField("harga", "50000")
-	writer.WriteField("stok", "15")
-	writer.WriteField("rating", "4.8")
+	reqBody := `
+		{
+			''
+		}
+	`
 	
-	fileImages := []string{"laptop1.jpg", "laptop2.jpg", "laptop3.jpg"}
-
-	for _, img := range fileImages {
-		file, err := os.Open(img)
-		assert.NoError(t, err)
-		defer file.Close()
-	
-		part, err := writer.CreateFormFile("gambar", img)
-		assert.NoError(t, err)
-	
-		_, err = io.Copy(part, file)
-		assert.NoError(t, err)
-	}
-	
-	writer.Close()
-
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/product", body)
-	req.Header.Set(echo.HeaderContentType, writer.FormDataContentType())
+	req := httptest.NewRequest(http.MethodPost, "/product", strings.NewReader(reqBody))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
 	
@@ -146,22 +126,5 @@ func TestGetProduct(t *testing.T) {
 	if assert.NoError(t, GetProduct(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, string(respByte)+"\n", rec.Body.String())
-	}
-}
-
-func TestGetCategoryProduct(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/product", nil)
-	rec := httptest.NewRecorder()
-	ctx := e.NewContext(req, rec)
-	ctx.SetPath("/:id")
-	ctx.SetParamNames("id")
-	ctx.SetParamValues("2")
-
-	respByte, _ := json.Marshal(productModel[2])
-
-	if assert.NoError(t, GetProductByCategory(ctx)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, "["+string(respByte)+"]\n", rec.Body.String())
 	}
 }

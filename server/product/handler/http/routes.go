@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func ApiRoutes(e *echo.Echo, productHandler ProductHandl) {
+func ApiRoutes(e *echo.Echo, productHandler productHandler) {
 	apiGroup := e.Group("/api")
 	apiGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:4200"},

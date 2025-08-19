@@ -34,7 +34,7 @@ func main() {
 
 	productRepository := repository.ProductRepository(db)
 	productService := service.ProductService(productRepository)
-	productHandler := http.ProductController(productService)
+	productHandler := http.ProductHandler(productService)
 	
 	e := echo.New()
 	http.ApiRoutes(e, productHandler)
