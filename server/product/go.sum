@@ -1,9 +1,9 @@
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=
 filippo.io/edwards25519 v1.1.0/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4VDT4=
-github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250817030534-11e18ebbc762 h1:+B9FzmrKxGjQVPnHqrTvVIydggTo79jFq1NWRswZmC0=
-github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250817030534-11e18ebbc762/go.mod h1:Mo6PUk070CTzweb/69+b+o8R70D8YzUZ1FZtbSdD5gg=
-github.com/NetSinx/yconnect-shop/server/category v0.0.0-20250817030534-11e18ebbc762 h1:pJDRyeWFG8DHqslwyUYl2ojvHsyr1ZaokHIXrouqjRQ=
-github.com/NetSinx/yconnect-shop/server/category v0.0.0-20250817030534-11e18ebbc762/go.mod h1:xtGA/eNr1TU9C3Tly3uneJTAy0VXjQorZQwNnKvVgb0=
+github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250819101704-9bfb0cf00046 h1:uhFitIf8vN+TnELn3myZC1qUSH4H0TbJrMaEOtgzbTk=
+github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250819101704-9bfb0cf00046/go.mod h1:Mo6PUk070CTzweb/69+b+o8R70D8YzUZ1FZtbSdD5gg=
+github.com/NetSinx/yconnect-shop/server/category v0.0.0-20250819060646-e404114cbcfb h1:TKawTA6dg405lsZfSBrYzp8Qd40/7T6cXYoWugNJ6Hc=
+github.com/NetSinx/yconnect-shop/server/category v0.0.0-20250819060646-e404114cbcfb/go.mod h1:hAQ5am7vqagqqmn6WNAwaZPZghqpHS/djzFBDzhAKPk=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/gabriel-vasile/mimetype v1.4.9 h1:5k+WDwEsD9eTLL8Tz3L0VnmVh9QxGjRmjBvAG7U/oYY=

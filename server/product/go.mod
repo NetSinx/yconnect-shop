@@ -3,6 +3,8 @@ module github.com/NetSinx/yconnect-shop/server/product
 go 1.23.0
 
 require (
+	github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250819101704-9bfb0cf00046
+	github.com/NetSinx/yconnect-shop/server/category v0.0.0-20250819060646-e404114cbcfb
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/joho/godotenv v1.5.1
