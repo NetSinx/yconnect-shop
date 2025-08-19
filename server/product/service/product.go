@@ -9,7 +9,7 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/product/helpers"
 	"github.com/NetSinx/yconnect-shop/server/product/model"
 	"github.com/NetSinx/yconnect-shop/server/product/repository"
-	categoryEntity "github.com/NetSinx/yconnect-shop/server/category/model/entity"
+	categoryEntity "github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )

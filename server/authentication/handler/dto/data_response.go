@@ -1,4 +1,4 @@
-package domain
+package dto
 
 import "github.com/NetSinx/yconnect-shop/server/user/model/entity"
 

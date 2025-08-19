@@ -1,4 +1,4 @@
-package domain
+package dto
 
 type UserLogin struct {
 	UsernameorEmail string `json:"UsernameorEmail" validate:"required,email"`
