@@ -9,8 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
+	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
@@ -95,19 +94,19 @@ func CreateProduct(c echo.Context) error {
 
 	images, err := c.MultipartForm()
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
 	if err := c.Bind(&reqProduct); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
 	if err := os.MkdirAll("../assets/images", 0750); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
@@ -115,7 +114,7 @@ func CreateProduct(c echo.Context) error {
 	for _, image := range images.File["gambar"] {
 		src, err := image.Open()
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
 				Message: err.Error(),
 			})
 		}
@@ -133,7 +132,7 @@ func CreateProduct(c echo.Context) error {
 		defer dst.Close()
 
 		if _, err := io.Copy(dst, src); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+			return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
 				Message: err.Error(),
 			})
 		}
@@ -144,14 +143,14 @@ func CreateProduct(c echo.Context) error {
 	reqProduct.Gambar = reqImg
 
 	if err := validator.New().Struct(reqProduct); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
 	productModel = append(productModel, reqProduct)
 
-	return c.JSON(http.StatusOK, domain.MessageResp{
+	return c.JSON(http.StatusOK, dto.MessageResp{
 		Message: "Produk berhasil ditambahkan",
 	})
 }
@@ -162,14 +161,14 @@ func UpdateProduct(c echo.Context) error {
 	slug := c.Param("slug")
 
 	if err := c.Bind(&reqProduct); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.MessageResp{
+		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
 	imageProduct, err := c.MultipartForm()
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
@@ -180,7 +179,7 @@ func UpdateProduct(c echo.Context) error {
 		if prod.Slug == slug {
 			for _, p := range productModel {
 				if (reqProduct.Nama == p.Nama && reqProduct.Slug == p.Slug) && p.Slug != slug {
-					return echo.NewHTTPError(http.StatusConflict, domain.MessageResp{
+					return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
 						Message: "Produk sudah terdaftar",
 					})
 				}
@@ -193,7 +192,7 @@ func UpdateProduct(c echo.Context) error {
 			for _, image := range images {
 				src, err := image.Open()
 				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+					return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
 						Message: err.Error(),
 					})
 				}
@@ -204,14 +203,14 @@ func UpdateProduct(c echo.Context) error {
 		
 				dst, err := os.Create(fmt.Sprintf("../assets/images/%x.%v", hashedFileName, fileExt))
 				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+					return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
 						Message: err.Error(),
 					})
 				}
 				defer dst.Close()
 
 				if _, err := io.Copy(dst, src); err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, domain.MessageResp{
+					return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
 						Message: err.Error(),
 					})
 				}
@@ -221,13 +220,13 @@ func UpdateProduct(c echo.Context) error {
 			
 			productModel[i] = reqProduct
 
-			return c.JSON(http.StatusOK, domain.MessageResp{
+			return c.JSON(http.StatusOK, dto.MessageResp{
 				Message: "Produk berhasil diubah",
 			})
 		}
 	}
 	
-	return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+	return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 		Message: "Produk tidak ditemukan",
 	})
 }
@@ -243,13 +242,13 @@ func DeleteProduct(c echo.Context) error {
 
 			product = entityProduct{}
 
-			return c.JSON(http.StatusOK, domain.MessageResp{
+			return c.JSON(http.StatusOK, dto.MessageResp{
 				Message: "Produk berhasil dihapus",
 			})
 		}
 	}
 
-	return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+	return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 		Message: "Produk tidak ditemukan",
 	})
 }
@@ -263,7 +262,7 @@ func GetProduct(c echo.Context) error {
 		}
 	}
 
-	return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+	return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 		Message: "Produk tidak ditemukan",
 	})
 }
@@ -283,7 +282,7 @@ func GetProductByCategory(c echo.Context) error {
 		}
 	}
 
-	return echo.NewHTTPError(http.StatusNotFound, domain.MessageResp{
+	return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 		Message: "Produk tidak ditemukan",
 	})
 }

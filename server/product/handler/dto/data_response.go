@@ -1,7 +1,7 @@
-package domain
+package dto
 
 type RespData struct {
-	Data   interface{} `json:"data"`
+	Data   any `json:"data"`
 }
 
 type MessageResp struct {

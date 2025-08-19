@@ -1,10 +1,19 @@
 package repository
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/product/model/domain"
-	"github.com/NetSinx/yconnect-shop/server/product/model/entity"
+	"github.com/NetSinx/yconnect-shop/server/product/model"
 	"gorm.io/gorm"
 )
+
+type ProductRepo interface {
+	ListProduct(products []model.Product) ([]model.Product, error)
+	CreateProduct(product model.Product) error
+	UpdateProduct(product model.Product, slug string) error
+	DeleteProduct(product model.Product, slug string) error
+	GetProductByID(product model.Product, id string) (model.Product, error)
+	GetProductBySlug(product model.Product, slug string) (model.Product, error)
+	GetCategoryProduct(product model.Product, slug string) error
+}
 
 type productRepository struct {
 	DB *gorm.DB
@@ -16,7 +25,7 @@ func ProductRepository(db *gorm.DB) productRepository {
 	}
 }
 
-func (p productRepository) ListProduct(products []entity.Product) ([]entity.Product, error) {
+func (p productRepository) ListProduct(products []model.Product) ([]model.Product, error) {
 	if err := p.DB.Preload("Gambar").Find(&products).Error; err != nil {
 		return nil, err
 	}
@@ -24,7 +33,7 @@ func (p productRepository) ListProduct(products []entity.Product) ([]entity.Prod
 	return products, nil
 }
 
-func (p productRepository) CreateProduct(product entity.Product) error {
+func (p productRepository) CreateProduct(product model.Product) error {
 	if err := p.DB.Create(&product).Error; err != nil {
 		return err
 	}
@@ -32,19 +41,15 @@ func (p productRepository) CreateProduct(product entity.Product) error {
 	return nil
 }
 
-func (p productRepository) UpdateProduct(product domain.ProductRequest, slug string) error {
-	if err := p.DB.First(&product, "slug = ?", slug).Error; err != nil {
-		return err
-	}
-	
-	if err := p.DB.Save(&product).Error; err != nil {
+func (p productRepository) UpdateProduct(product model.Product, slug string) error {
+	if err := p.DB.Where("slug = ?", slug).Updates(&product).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (p productRepository) DeleteProduct(product entity.Product, slug string) error {
+func (p productRepository) DeleteProduct(product model.Product, slug string) error {
 	if err := p.DB.Where("slug = ?", slug).Delete(&product).Error; err != nil {
 		return err
 	}
@@ -52,7 +57,7 @@ func (p productRepository) DeleteProduct(product entity.Product, slug string) er
 	return nil
 }
 
-func (p productRepository) GetProductByID(product entity.Product, id string) (entity.Product, error) {
+func (p productRepository) GetProductByID(product model.Product, id string) (model.Product, error) {
 	if err := p.DB.Where("id = ?", id).Preload("Gambar").First(&product).Error; err != nil {
 		return product, err
 	}
@@ -60,7 +65,7 @@ func (p productRepository) GetProductByID(product entity.Product, id string) (en
 	return product, nil
 }
 
-func (p productRepository) GetProductBySlug(product entity.Product, slug string) (entity.Product, error) {
+func (p productRepository) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
 	if err := p.DB.Where("slug = ?", slug).Preload("Gambar").First(&product).Error; err != nil {
 		return product, err
 	}
@@ -68,7 +73,7 @@ func (p productRepository) GetProductBySlug(product entity.Product, slug string)
 	return product, nil
 }
 
-func (p productRepository) GetCategoryProduct(product entity.Product, slug string) error {
+func (p productRepository) GetCategoryProduct(product model.Product, slug string) error {
 	if err := p.DB.Where("slug = ?", slug).First(&product).Error; err != nil {
 		return err
 	}
