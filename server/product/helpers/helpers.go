@@ -4,27 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"strings"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/labstack/echo/v4"
-	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/authentication/helpers"
-	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
 )
-
-func CheckAdminRole(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		user := c.Get("user").(*jwt.Token)
-		claims := user.Claims.(*helpers.CustomClaims)
-
-		if claims.Role != "admin" {
-			return echo.NewHTTPError(http.StatusForbidden, dto.MessageResp{
-				Message: "Forbidden Access.",
-			})
-		}
-
-		return next(c)
-	}
-}
 
 func GenerateSlugByName(name string) (string, error) {
 	trimmed := strings.TrimSpace(name)
@@ -39,8 +19,9 @@ func GenerateSlugByName(name string) (string, error) {
 	}
 
 	uniqueId := base64.URLEncoding.EncodeToString(b)
+	slug := name + "-" + uniqueId
 
-	return name + "-" + uniqueId, nil
+	return slug, nil
 }
 
 func ReplaceProductSlug(slug string, namaProduct string) string {
