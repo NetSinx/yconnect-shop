@@ -42,7 +42,9 @@ func (p productRepository) CreateProduct(product model.Product) error {
 	return nil
 }
 
-func (p productRepository) UpdateProduct(product model.Product, gambar []model.Gambar, slug string) error {
+func (p productRepository) UpdateProduct(productReq model.Product, gambar []model.Gambar, slug string) error {
+	var product model.Product
+
 	if err := p.DB.Where("slug = ?", slug).First(&product).Error; err != nil {
 		return err
 	}
@@ -51,11 +53,11 @@ func (p productRepository) UpdateProduct(product model.Product, gambar []model.G
 		return err
 	}
 
-	if err := p.DB.Updates(&product).Error; err != nil {
+	if err := p.DB.Where("slug = ?", slug).Updates(&productReq).Error; err != nil {
 		return err
 	}
 
-	if err := p.DB.Model(&product).Association("Gambar").Replace(product.Gambar, gambar); err != nil {
+	if err := p.DB.Model(&product).Association("Gambar").Replace(gambar); err != nil {
 		return err
 	}
 
@@ -103,7 +105,7 @@ func (p productRepository) GetCategoryProduct(product model.Product, slug string
 }
 
 func (p productRepository) GetProductName(product model.Product, slug string) (model.Product, error) {
-	if err := p.DB.Select("nama").Where("slug = ?", slug).First(&product).Error; err != nil {
+	if err := p.DB.Select("nama", "slug").Where("slug = ?", slug).First(&product).Error; err != nil {
 		return product, err
 	}
 
