@@ -10,7 +10,7 @@ type CategoryRepo interface {
 	CreateCategory(categories model.Category) (model.Category, error)
 	UpdateCategory(categories model.Category, id string) (model.Category, error)
 	DeleteCategory(category model.Category, id string) error
-	GetCategory(categories model.Category, id string) (model.Category, error)
+	GetCategoryById(categories model.Category, id string) (model.Category, error)
 }
 
 type categoryRepository struct {
@@ -24,8 +24,8 @@ func CategoryRepository(db *gorm.DB) categoryRepository {
 }
 
 func (c categoryRepository) ListCategory(categories []model.Category) ([]model.Category, error) {
-	if err := c.DB.Select("id", "name", "slug").Find(&categories).Error; err != nil {
-		return nil, err
+	if err := c.DB.Find(&categories).Error; err != nil {
+		return categories, err
 	}
 	
 	return categories, nil
@@ -61,7 +61,7 @@ func(c categoryRepository) DeleteCategory(category model.Category, id string) er
 	return nil
 }
 
-func(c categoryRepository) GetCategory(categories model.Category, id string) (model.Category, error) {
+func(c categoryRepository) GetCategoryById(categories model.Category, id string) (model.Category, error) {
 	if err := c.DB.First(&categories, "id = ?", id).Error; err != nil {
 		return categories, err
 	}

@@ -15,7 +15,7 @@ func ApiRoutes(e *echo.Echo, categoryHandler categoryHandler) {
 		},
 	}))
 	apiGroup.GET("/category", categoryHandler.ListCategory)
-	apiGroup.GET("/category/:id", categoryHandler.GetCategory)
+	apiGroup.GET("/category/id/:id", categoryHandler.GetCategoryById)
 	adminGroup := apiGroup.Group("/admin")
 	adminGroup.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey: []byte("yasinnetsinx15"),

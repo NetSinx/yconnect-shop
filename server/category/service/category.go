@@ -12,7 +12,7 @@ type CategoryServ interface {
 	CreateCategory(category model.Category) (model.Category, error)
 	UpdateCategory(category model.Category, id string) (model.Category, error)
 	DeleteCategory(category model.Category, id string) error
-	GetCategory(category model.Category, id string) (model.Category, error)
+	GetCategoryById(category model.Category, id string) (model.Category, error)
 }
 
 type categoryService struct {
@@ -74,8 +74,8 @@ func (c categoryService) DeleteCategory(category model.Category, id string) erro
 	return nil
 }
 
-func (c categoryService) GetCategory(category model.Category, id string) (model.Category, error) {
-	getCategory, err := c.categoryRepo.GetCategory(category, id)
+func (c categoryService) GetCategoryById(category model.Category, id string) (model.Category, error) {
+	getCategory, err := c.categoryRepo.GetCategoryById(category, id)
 	if err != nil {
 		return getCategory, err
 	}

@@ -1,10 +1,12 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
-	"github.com/NetSinx/yconnect-shop/server/category/model"
+
 	"github.com/NetSinx/yconnect-shop/server/category/handler/dto"
+	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/NetSinx/yconnect-shop/server/category/service"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -15,7 +17,7 @@ type CategoryHandl interface {
 	CreateCategory(c echo.Context) error
 	UpdateCategory(c echo.Context) error
 	DeleteCategory(c echo.Context) error
-	GetCategory(c echo.Context) error
+	GetCategoryById(c echo.Context) error
 }
 
 type categoryHandler struct {
@@ -120,13 +122,13 @@ func (cc categoryHandler) DeleteCategory(c echo.Context) error {
 	})
 }
 
-func (cc categoryHandler) GetCategory(c echo.Context) error {
+func (cc categoryHandler) GetCategoryById(c echo.Context) error {
 	var categories model.Category
 
 	id := c.Param("id")
 
-	getCategory, err := cc.categoryService.GetCategory(categories, id)
-	if err != nil && err == gorm.ErrRecordNotFound {
+	getCategory, err := cc.categoryService.GetCategoryById(categories, id)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 			Message: "Kategori tidak bisa ditemukan.",
 		})

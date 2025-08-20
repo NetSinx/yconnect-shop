@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
-
+	"github.com/NetSinx/yconnect-shop/server/category/errs"
 	"github.com/NetSinx/yconnect-shop/server/category/handler/http"
 	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/NetSinx/yconnect-shop/server/category/repository"
@@ -27,10 +26,7 @@ func main() {
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
-	if err != nil {
-		log.Panic(err)
-	}
+	errs.PanicError(err)
 
 	db.AutoMigrate(&model.Category{})
 
