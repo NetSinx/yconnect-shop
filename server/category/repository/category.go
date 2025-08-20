@@ -7,10 +7,11 @@ import (
 
 type CategoryRepo interface {
 	ListCategory(categories []model.Category) ([]model.Category, error)
-	CreateCategory(categories model.Category) (model.Category, error)
-	UpdateCategory(categories model.Category, id string) (model.Category, error)
-	DeleteCategory(category model.Category, id string) error
-	GetCategoryById(categories model.Category, id string) (model.Category, error)
+	CreateCategory(category model.Category) error
+	UpdateCategory(category model.Category, slug string) error
+	DeleteCategory(category model.Category, slug string) error
+	GetCategoryById(category model.Category, id string) (model.Category, error)
+	GetCategoryBySlug(category model.Category, slug string) (model.Category, error)
 }
 
 type categoryRepository struct {
@@ -31,40 +32,50 @@ func (c categoryRepository) ListCategory(categories []model.Category) ([]model.C
 	return categories, nil
 }
 
-func (c categoryRepository) CreateCategory(categories model.Category) (model.Category, error) {
-	if err := c.DB.Create(&categories).Error; err != nil {
-		return categories, err
-	}
-
-	return categories, nil
-}
-
-func (c categoryRepository) UpdateCategory(categories model.Category, id string) (model.Category, error) {
-	if err := c.DB.First(&categories, "id = ?", id).Error; err != nil {
-		return categories, err
-	}
-	
-	if err := c.DB.Updates(&categories).Error; err != nil {
-		return categories, err
-	}
-	
-	return categories, nil
-}
-
-func(c categoryRepository) DeleteCategory(category model.Category, id string) error {
-	if err := c.DB.First(&category, "id = ?", id).Error; err != nil {
+func (c categoryRepository) CreateCategory(category model.Category) error {
+	if err := c.DB.Create(&category).Error; err != nil {
 		return err
 	}
-
-	c.DB.Delete(&category)
 
 	return nil
 }
 
-func(c categoryRepository) GetCategoryById(categories model.Category, id string) (model.Category, error) {
-	if err := c.DB.First(&categories, "id = ?", id).Error; err != nil {
-		return categories, err
+func (c categoryRepository) UpdateCategory(category model.Category, slug string) error {
+	if err := c.DB.First(&category, "slug = ?", slug).Error; err != nil {
+		return err
+	}
+	
+	if err := c.DB.Updates(&category).Error; err != nil {
+		return err
+	}
+	
+	return nil
+}
+
+func(c categoryRepository) DeleteCategory(category model.Category, slug string) error {
+	if err := c.DB.First(&category, "slug = ?", slug).Error; err != nil {
+		return err
 	}
 
-	return categories, nil
+	if err := c.DB.Delete(&category).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func(c categoryRepository) GetCategoryById(category model.Category, id string) (model.Category, error) {
+	if err := c.DB.First(&category, "id = ?", id).Error; err != nil {
+		return category, err
+	}
+
+	return category, nil
+}
+
+func(c categoryRepository) GetCategoryBySlug(category model.Category, slug string) (model.Category, error) {
+	if err := c.DB.First(&category, "slug = ?", slug).Error; err != nil {
+		return category, err
+	}
+
+	return category, nil
 }

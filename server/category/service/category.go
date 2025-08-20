@@ -2,6 +2,7 @@ package service
 
 import (
 	"strings"
+	"github.com/NetSinx/yconnect-shop/server/category/handler/dto"
 	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/NetSinx/yconnect-shop/server/category/repository"
 	"github.com/go-playground/validator/v10"
@@ -9,10 +10,11 @@ import (
 
 type CategoryServ interface {
 	ListCategory(categories []model.Category) ([]model.Category, error)
-	CreateCategory(category model.Category) (model.Category, error)
-	UpdateCategory(category model.Category, id string) (model.Category, error)
-	DeleteCategory(category model.Category, id string) error
+	CreateCategory(categoryReq dto.CategoryRequest) error
+	UpdateCategory(categoryReq dto.CategoryRequest, slug string) error
+	DeleteCategory(category model.Category, slug string) error
 	GetCategoryById(category model.Category, id string) (model.Category, error)
+	GetCategoryBySlug(category model.Category, slug string) (model.Category, error)
 }
 
 type categoryService struct {
@@ -26,48 +28,56 @@ func CategoryService(categoryrepo repository.CategoryRepo) categoryService {
 }
 
 func (c categoryService) ListCategory(categories []model.Category) ([]model.Category, error) {
-	categories, err := c.categoryRepo.ListCategory(categories)
+	listCategories, err := c.categoryRepo.ListCategory(categories)
 	if err != nil {
 		return nil, err
 	}
 
-	return categories, nil
+	return listCategories, nil
 }
 
-func (c categoryService) CreateCategory(category model.Category) (model.Category, error) {
-	category.Name = strings.ToTitle(category.Name)
-	category.Slug = strings.ToLower(category.Slug)
+func (c categoryService) CreateCategory(categoryReq dto.CategoryRequest) error {
+	categoryReq.Name = strings.ToTitle(categoryReq.Name)
 
-	if err := validator.New().Struct(category); err != nil {
-		return category, err
+	if err := validator.New().Struct(categoryReq); err != nil {
+		return err
 	}
 
-	createCategory, err := c.categoryRepo.CreateCategory(category)
-	if err != nil {
-		return category, err
+	slug := strings.ToLower(categoryReq.Name)
+	category := model.Category{
+		Name: categoryReq.Name,
+		Slug: slug,
 	}
 
-	return createCategory, nil
+	if err := c.categoryRepo.CreateCategory(category); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (c categoryService) UpdateCategory(category model.Category, id string) (model.Category, error) {
-	category.Name = strings.Title(category.Name)
-	category.Slug = strings.ToLower(category.Slug)
+func (c categoryService) UpdateCategory(categoryReq dto.CategoryRequest, slug string) error {
+	categoryReq.Name = strings.ToTitle(categoryReq.Name)
 	
-	if err := validator.New().Struct(category); err != nil {
-		return category, err
+	if err := validator.New().Struct(categoryReq); err != nil {
+		return err
+	}
+	
+	newSlug := strings.ToLower(categoryReq.Name)
+	category := model.Category{
+		Name: categoryReq.Name,
+		Slug: newSlug,
 	}
 
-	updCategory, err := c.categoryRepo.UpdateCategory(category, id)
-	if err != nil {
-		return category, err
+	if err := c.categoryRepo.UpdateCategory(category, slug); err != nil {
+		return err
 	}
 
-	return updCategory, nil
+	return nil
 }
 
-func (c categoryService) DeleteCategory(category model.Category, id string) error {
-	if err := c.categoryRepo.DeleteCategory(category, id); err != nil {
+func (c categoryService) DeleteCategory(category model.Category, slug string) error {
+	if err := c.categoryRepo.DeleteCategory(category, slug); err != nil {
 		return err
 	}
 
@@ -76,6 +86,15 @@ func (c categoryService) DeleteCategory(category model.Category, id string) erro
 
 func (c categoryService) GetCategoryById(category model.Category, id string) (model.Category, error) {
 	getCategory, err := c.categoryRepo.GetCategoryById(category, id)
+	if err != nil {
+		return getCategory, err
+	}
+
+	return getCategory, nil
+}
+
+func (c categoryService) GetCategoryBySlug(category model.Category, slug string) (model.Category, error) {
+	getCategory, err := c.categoryRepo.GetCategoryBySlug(category, slug)
 	if err != nil {
 		return getCategory, err
 	}

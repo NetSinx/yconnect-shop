@@ -22,7 +22,7 @@ func main() {
 						os.Getenv("DB_PASS"),
 						os.Getenv("DB_HOST"),
 						os.Getenv("DB_PORT"),
-						os.Getenv("DB_DBNAME"),
+						os.Getenv("DB_NAME"),
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})

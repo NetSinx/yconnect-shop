@@ -3,8 +3,7 @@ package http
 import (
 	"errors"
 	"net/http"
-	"strconv"
-
+	"github.com/NetSinx/yconnect-shop/server/category/errs"
 	"github.com/NetSinx/yconnect-shop/server/category/handler/dto"
 	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/NetSinx/yconnect-shop/server/category/service"
@@ -18,6 +17,7 @@ type CategoryHandl interface {
 	UpdateCategory(c echo.Context) error
 	DeleteCategory(c echo.Context) error
 	GetCategoryById(c echo.Context) error
+	GetCategoryBySlug(c echo.Context) error
 }
 
 type categoryHandler struct {
@@ -46,18 +46,18 @@ func (cc categoryHandler) ListCategory(c echo.Context) error {
 }
 
 func (cc categoryHandler) CreateCategory(c echo.Context) error {
-	var categories model.Category
+	var categoryReq dto.CategoryRequest
 
-	if err := c.Bind(&categories); err != nil {
+	if err := c.Bind(&categoryReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
 
-	category, err := cc.categoryService.CreateCategory(categories)
-	if err != nil && err == gorm.ErrDuplicatedKey {
+	err := cc.categoryService.CreateCategory(categoryReq)
+	if err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
 		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
-			Message: "Kategori sudah tersedia.",
+			Message: errs.ErrDuplicatedKey,
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
@@ -65,72 +65,85 @@ func (cc categoryHandler) CreateCategory(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, dto.RespData{
-		Data: category,
+	return c.JSON(http.StatusOK, dto.MessageResp{
+		Message: dto.CreateResponse,
 	})
 }
 
 func (cc categoryHandler) UpdateCategory(c echo.Context) error {
-	var categories model.Category
+	var categoryReq dto.CategoryRequest
 
-	id := c.Param("id")
+	slug := c.Param("slug")
 
-	if err := c.Bind(&categories); err != nil {
+	if err := c.Bind(&categoryReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
 	
-	category, err := cc.categoryService.UpdateCategory(categories, id)
-	if err != nil && err == gorm.ErrRecordNotFound {
+	err := cc.categoryService.UpdateCategory(categoryReq, slug)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: "Kategori tidak bisa ditemukan.",
+			Message: errs.ErrNotFound,
 		})
-	} else if err != nil && err == gorm.ErrDuplicatedKey {
+	} else if err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
 		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
-			Message: "Kategori sudah tersedia.",
+			Message: errs.ErrDuplicatedKey,
 		})
 	} else if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	}
-
-	getId, _ := strconv.ParseUint(id, 32, 10)
-
-	category.Id = uint(getId)
 	
-	return c.JSON(http.StatusOK, dto.RespData{
-		Data: category,
+	return c.JSON(http.StatusOK, dto.MessageResp{
+		Message: dto.UpdateResponse,
 	})
 }
 
 func (cc categoryHandler) DeleteCategory(c echo.Context) error {
 	var category model.Category
 
-	id := c.Param("id")
+	slug := c.Param("slug")
 
-	err := cc.categoryService.DeleteCategory(category, id)
-	if err != nil && err == gorm.ErrRecordNotFound {
+	err := cc.categoryService.DeleteCategory(category, slug)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: "Kategori tidak bisa ditemukan.",
+			Message: errs.ErrNotFound,
 		})
 	}
 
 	return c.JSON(http.StatusOK, dto.MessageResp{
-		Message: "Kategori berhasil dihapus.",
+		Message: dto.DeleteResponse,
 	})
 }
 
 func (cc categoryHandler) GetCategoryById(c echo.Context) error {
-	var categories model.Category
+	var category model.Category
 
 	id := c.Param("id")
 
-	getCategory, err := cc.categoryService.GetCategoryById(categories, id)
+	getCategory, err := cc.categoryService.GetCategoryById(category, id)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: "Kategori tidak bisa ditemukan.",
+			Message: errs.ErrNotFound,
+		})
+	}
+
+	return c.JSON(http.StatusOK, dto.RespData{
+		Data: getCategory,
+	})
+}
+
+func (cc categoryHandler) GetCategoryBySlug(c echo.Context) error {
+	var category model.Category
+
+	slug := c.Param("slug")
+
+	getCategory, err := cc.categoryService.GetCategoryBySlug(category, slug)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
+			Message: errs.ErrNotFound,
 		})
 	}
 

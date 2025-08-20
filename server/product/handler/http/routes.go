@@ -9,10 +9,6 @@ import (
 
 func ApiRoutes(e *echo.Echo, productHandler productHandler) {
 	apiGroup := e.Group("/api")
-	apiGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:4200"},
-		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
-	}))
 	apiGroup.GET("/product", productHandler.ListProduct)
 	apiGroup.GET("/product/id/:id", productHandler.GetProductByID)
 	apiGroup.GET("/product/slug/:slug", productHandler.GetProductBySlug)
