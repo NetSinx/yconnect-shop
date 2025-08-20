@@ -29,10 +29,8 @@ func main() {
 		SkipDefaultTransaction: true,
 		PrepareStmt: true,
 	})
-	if err != nil {
-		errs.PanicError(err)
-	}
-
+	errs.PanicError(err)
+	
 	db.AutoMigrate(&model.Product{}, &model.Gambar{})
 
 	productRepository := repository.ProductRepository(db)
