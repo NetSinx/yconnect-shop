@@ -11,7 +11,7 @@ func ApiRoutes(e *echo.Echo, categoryHandler categoryHandler) {
 	apiGroup := e.Group("/api")
 	apiGroup.GET("/category", categoryHandler.ListCategory)
 	apiGroup.GET("/category/id/:id", categoryHandler.GetCategoryById)
-	apiGroup.GET("/category/id/:id", categoryHandler.GetCategoryById)
+	apiGroup.GET("/category/slug/:slug", categoryHandler.GetCategoryBySlug)
 
 	adminGroup := apiGroup.Group("/admin")
 	adminGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
@@ -28,6 +28,6 @@ func ApiRoutes(e *echo.Echo, categoryHandler categoryHandler) {
 		},
 	}))
 	adminGroup.POST("/category", categoryHandler.CreateCategory)
-	adminGroup.PUT("/category/:id", categoryHandler.UpdateCategory)
-	adminGroup.DELETE("/category/:id", categoryHandler.DeleteCategory)
+	adminGroup.PUT("/category/:slug", categoryHandler.UpdateCategory)
+	adminGroup.DELETE("/category/:slug", categoryHandler.DeleteCategory)
 }
