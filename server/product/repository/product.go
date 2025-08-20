@@ -13,6 +13,7 @@ type ProductRepo interface {
 	GetProductByID(product model.Product, id string) (model.Product, error)
 	GetProductBySlug(product model.Product, slug string) (model.Product, error)
 	GetCategoryProduct(product model.Product, slug string) error
+	GetProductName(product model.Product, slug string) (model.Product, error)
 }
 
 type productRepository struct {
@@ -99,4 +100,12 @@ func (p productRepository) GetCategoryProduct(product model.Product, slug string
 	}
 
 	return nil
+}
+
+func (p productRepository) GetProductName(product model.Product, slug string) (model.Product, error) {
+	if err := p.DB.Select("nama").Where("slug = ?", slug).First(&product).Error; err != nil {
+		return product, err
+	}
+
+	return product, nil
 }

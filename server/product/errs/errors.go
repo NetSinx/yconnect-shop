@@ -3,7 +3,9 @@ package errs
 import "log"
 
 var (
-	ErrDuplicatedKey = ""
+	ErrDuplicatedKey = "Produk sudah tersedia."
+	ErrNotFound = "Produk tidak ditemukan."
+	ErrInternalServer = "Terjadi masalah pada server."
 )
 
 func PanicError(err error) {

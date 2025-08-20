@@ -1,11 +1,15 @@
 package http
 
 import (
+	"errors"
 	"net/http"
+	"github.com/NetSinx/yconnect-shop/server/product/errs"
+	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
 	"github.com/NetSinx/yconnect-shop/server/product/model"
 	"github.com/NetSinx/yconnect-shop/server/product/service"
-	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 type ProductHandl interface {
@@ -34,7 +38,7 @@ func (p productHandler) ListProduct(c echo.Context) error {
 	listProducts, err := p.productService.ListProduct(products)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
-			Message: err.Error(),
+			Message: errs.ErrInternalServer,
 		})
 	}
 
@@ -53,18 +57,22 @@ func (p productHandler) CreateProduct(c echo.Context) error {
 	}
 
 	err := p.productService.CreateProduct(productReq)
-	if err != nil && err.Error() == "produk sudah tersedia" {
+	if err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
 		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
-			Message: "Produk sudah tersedia.",
+			Message: errs.ErrDuplicatedKey,
 		})
-	} else if err != nil {
+	} else if err != nil && errors.Is(err, err.(validator.ValidationErrors)) {
 		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
-	} 
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
+			Message: err.Error(),
+		})
+	}
 
 	return c.JSON(http.StatusOK, dto.MessageResp{
-		Message: "Produk berhasil ditambahkan.",
+		Message: dto.CreateResponse,
 	})
 }
 
@@ -80,22 +88,26 @@ func (p productHandler) UpdateProduct(c echo.Context) error {
 	}
 
 	err := p.productService.UpdateProduct(productReq, slug)
-	if err != nil && err.Error() == "produk tidak ditemukan" {
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 			Message: "Produk tidak ditemukan.",
 		})
-	} else if err != nil && err.Error() == "produk sudah tersedia" {
+	} else if err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
 		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
 			Message: "Produk sudah tersedia.",
 		})
-	} else if err != nil {
+	} else if err != nil && errors.Is(err, gorm.ErrForeignKeyViolated) {
+		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
+			Message: err.Error(),
+		})
+	} else if err != nil && errors.Is(err, err.(validator.ValidationErrors)) {
 		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
 	} 
 
 	return c.JSON(http.StatusOK, dto.MessageResp{
-		Message: "Produk berhasil diubah.",
+		Message: dto.UpdateResponse,
 	})
 }
 
@@ -105,14 +117,18 @@ func (p productHandler) DeleteProduct(c echo.Context) error {
 	slug := c.Param("slug")
 
 	err := p.productService.DeleteProduct(product, slug)
-	if err != nil {
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: err.Error(),
+			Message: errs.ErrNotFound,
+		})
+	} else if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
+			Message: errs.ErrInternalServer,
 		})
 	}
 
 	return c.JSON(http.StatusOK, dto.MessageResp{
-		Message: "Produk berhasil dihapus.",
+		Message: dto.DeleteResponse,
 	})
 }
 
@@ -124,7 +140,7 @@ func (p productHandler) GetProductByID(c echo.Context) error {
 	getProduct, err := p.productService.GetProductByID(product, id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: "Produk tidak ditemukan",
+			Message: errs.ErrNotFound,
 		})
 	}
 	
@@ -141,7 +157,7 @@ func (p productHandler) GetProductBySlug(c echo.Context) error {
 	getProduct, err := p.productService.GetProductBySlug(product, slug)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: "Produk tidak ditemukan.",
+			Message: errs.ErrNotFound,
 		})
 	}
 	

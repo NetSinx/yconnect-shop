@@ -26,13 +26,33 @@ func CheckAdminRole(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func GenerateSlugByName(name string) string {
+func GenerateSlugByName(name string) (string, error) {
+	trimmed := strings.TrimSpace(name)
+	words := strings.Fields(trimmed)
+	name = strings.Join(words, " ")
 	name = strings.ToLower(name)
 	name = strings.ReplaceAll(name, " ", "-")
 
 	b := make([]byte, 8)
-	rand.Read(b)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+
 	uniqueId := base64.URLEncoding.EncodeToString(b)
 
-	return name + "-" + uniqueId
+	return name + "-" + uniqueId, nil
+}
+
+func ReplaceProductSlug(slug string, namaProduct string) string {
+	splitSlug := strings.Split(slug, "-")
+	uid := splitSlug[len(splitSlug) - 1]
+
+	trimmed := strings.TrimSpace(namaProduct)
+	words := strings.Fields(trimmed)
+	namaProduct = strings.Join(words, " ")
+	namaProduct = strings.ToLower(namaProduct)
+	namaProduct = strings.ReplaceAll(namaProduct, " ", "-")
+	newSlug := namaProduct + "-" + uid
+
+	return newSlug
 }

@@ -67,7 +67,11 @@ func CreateProduct(c echo.Context) error {
 		return err
 	}
 
-	slug := helpers.GenerateSlugByName(productReq.Nama)
+	slug, err := helpers.GenerateSlugByName(productReq.Nama)
+	if err != nil {
+		return err
+	}
+
 	product := model.Product{
 		Nama: productReq.Nama,
 		Deskripsi: productReq.Deskripsi,
@@ -100,7 +104,11 @@ func UpdateProduct(c echo.Context) error {
 		return err
 	}
 
-	slugGenerator := helpers.GenerateSlugByName(productReq.Nama)
+	slugGenerator, err := helpers.GenerateSlugByName(productReq.Nama)
+	if err != nil {
+		return err
+	}
+	
 	product := model.Product{
 		Nama: productReq.Nama,
 		Deskripsi: productReq.Deskripsi,
