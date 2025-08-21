@@ -13,7 +13,7 @@ func APIRoutes(e *echo.Echo, authHandler authHandler) {
 		TokenLookup: "cookie:csrf_token",
 		CookieName: "csrf_token",
 		CookiePath: "/",
-		CookieMaxAge: 30,
+		CookieMaxAge: 60,
 		CookieHTTPOnly: true,
 		CookieSecure: true,
 		ErrorHandler: func(err error, c echo.Context) error {
@@ -22,9 +22,9 @@ func APIRoutes(e *echo.Echo, authHandler authHandler) {
 			})
 		},
 	}))
-	apiGroup.GET("/gencsrf", func(c echo.Context) error {
-		return c.JSON(200, map[string]any{
-			"message": "CSRF token berhasil di-generate",
+	apiGroup.GET("/csrf-token", func(c echo.Context) error {
+		return c.JSON(200, dto.MessageResp{
+			Message: "CSRF token berhasil di-generate",
 		})
 	})
 	apiGroup.POST("/login", authHandler.LoginUser)
