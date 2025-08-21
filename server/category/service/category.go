@@ -1,7 +1,6 @@
 package service
 
 import (
-	"strings"
 	"github.com/NetSinx/yconnect-shop/server/category/handler/dto"
 	"github.com/NetSinx/yconnect-shop/server/category/helpers"
 	"github.com/NetSinx/yconnect-shop/server/category/model"
@@ -44,7 +43,7 @@ func (c categoryService) CreateCategory(categoryReq dto.CategoryRequest) error {
 		return err
 	}
 
-	slug := strings.ToLower(categoryReq.Name)
+	slug := helpers.ToSlug(categoryReq.Name)
 	category := model.Category{
 		Name: categoryReq.Name,
 		Slug: slug,
@@ -64,7 +63,7 @@ func (c categoryService) UpdateCategory(categoryReq dto.CategoryRequest, slug st
 		return err
 	}
 	
-	newSlug := strings.ToLower(categoryReq.Name)
+	newSlug := helpers.ToSlug(categoryReq.Name)
 	category := model.Category{
 		Name: categoryReq.Name,
 		Slug: newSlug,

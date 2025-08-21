@@ -3,6 +3,7 @@ package http
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"github.com/NetSinx/yconnect-shop/server/category/errs"
 	"github.com/NetSinx/yconnect-shop/server/category/handler/dto"
 	"github.com/NetSinx/yconnect-shop/server/category/model"
@@ -55,7 +56,7 @@ func (cc categoryHandler) CreateCategory(c echo.Context) error {
 	}
 
 	err := cc.categoryService.CreateCategory(categoryReq)
-	if err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
+	if err != nil && strings.Contains(err.Error(), "Error 1062") {
 		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
 			Message: errs.ErrDuplicatedKey,
 		})
@@ -86,7 +87,7 @@ func (cc categoryHandler) UpdateCategory(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 			Message: errs.ErrNotFound,
 		})
-	} else if err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
+	} else if err != nil && strings.Contains(err.Error(), "Error 1062") {
 		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
 			Message: errs.ErrDuplicatedKey,
 		})

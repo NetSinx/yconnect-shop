@@ -41,11 +41,7 @@ func (c categoryRepository) CreateCategory(category model.Category) error {
 }
 
 func (c categoryRepository) UpdateCategory(category model.Category, slug string) error {
-	if err := c.DB.First(&category, "slug = ?", slug).Error; err != nil {
-		return err
-	}
-	
-	if err := c.DB.Updates(&category).Error; err != nil {
+	if err := c.DB.Where("slug = ?", slug).Updates(&category).Error; err != nil {
 		return err
 	}
 	
