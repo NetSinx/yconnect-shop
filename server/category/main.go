@@ -25,7 +25,10 @@ func main() {
 						os.Getenv("DB_NAME"),
 	)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt: true,
+	})
 	errs.PanicError(err)
 
 	db.AutoMigrate(&model.Category{})

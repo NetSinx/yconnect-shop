@@ -3,6 +3,7 @@ package service
 import (
 	"strings"
 	"github.com/NetSinx/yconnect-shop/server/category/handler/dto"
+	"github.com/NetSinx/yconnect-shop/server/category/helpers"
 	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/NetSinx/yconnect-shop/server/category/repository"
 	"github.com/go-playground/validator/v10"
@@ -37,7 +38,7 @@ func (c categoryService) ListCategory(categories []model.Category) ([]model.Cate
 }
 
 func (c categoryService) CreateCategory(categoryReq dto.CategoryRequest) error {
-	categoryReq.Name = strings.ToTitle(categoryReq.Name)
+	categoryReq.Name = helpers.ToTitle(categoryReq.Name)
 
 	if err := validator.New().Struct(categoryReq); err != nil {
 		return err
@@ -57,7 +58,7 @@ func (c categoryService) CreateCategory(categoryReq dto.CategoryRequest) error {
 }
 
 func (c categoryService) UpdateCategory(categoryReq dto.CategoryRequest, slug string) error {
-	categoryReq.Name = strings.ToTitle(categoryReq.Name)
+	categoryReq.Name = helpers.ToTitle(categoryReq.Name)
 	
 	if err := validator.New().Struct(categoryReq); err != nil {
 		return err
