@@ -9,11 +9,11 @@ func ApiRoutes(e *echo.Echo, categoryHandler categoryHandler) {
 	apiGroup := e.Group("/api")
 	apiGroup.GET("/category", categoryHandler.ListCategory)
 	apiGroup.GET("/category/id/:id", categoryHandler.GetCategoryById)
-	apiGroup.GET("/category/slug/:slug", categoryHandler.GetCategoryBySlug)
+	apiGroup.GET("/category/id/:id", categoryHandler.GetCategoryById)
 
 	adminGroup := apiGroup.Group("/admin")
 	adminGroup.Use(middleware.CSRFMiddleware)
 	adminGroup.POST("/category", categoryHandler.CreateCategory)
-	adminGroup.PUT("/category/:slug", categoryHandler.UpdateCategory)
-	adminGroup.DELETE("/category/:slug", categoryHandler.DeleteCategory)
+	adminGroup.PUT("/category/:id", categoryHandler.UpdateCategory)
+	adminGroup.DELETE("/category/:id", categoryHandler.DeleteCategory)
 }
