@@ -3,6 +3,7 @@ package middleware
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -37,6 +38,8 @@ func CSRFMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			exp, ok := tokenStore[getToken.Value]
 			if !ok || time.Now().After(exp) {
 				mu.Unlock()
+				log.Printf("Expired: %v", exp)
+				log.Printf("CSRF Token: %v", getToken.Value)
 				return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid or expired CSRF token"})
 			}
 
@@ -49,6 +52,9 @@ func CSRFMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			mu.Lock()
 			tokenStore[token] = time.Now().Add(1 * time.Minute)
 			mu.Unlock()
+
+			log.Printf("Expired: %v", tokenStore[token])
+			log.Printf("CSRF Token: %v", token)
 
 			csrfTokenCookie := http.Cookie{
 				Name: "csrf_token",
