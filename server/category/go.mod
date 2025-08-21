@@ -3,7 +3,7 @@ module github.com/NetSinx/yconnect-shop/server/category
 go 1.23.0
 
 require (
-	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20250821030104-530355a7a90a
+	github.com/NetSinx/yconnect-shop/server/product v0.0.0-20250821032113-b34056ac795b
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.13.4
@@ -14,7 +14,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821031850-b1c42b2c2465
+	github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821032113-b34056ac795b
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect

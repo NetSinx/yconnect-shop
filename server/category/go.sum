@@ -4,10 +4,14 @@ github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821024458-b03
 github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821024458-b03efb61c387/go.mod h1:Tlin/rdur9ehhxD2rH73djyxptoZDbSqgEkTc7qGsQo=
 github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821031850-b1c42b2c2465 h1:wrYxoMgG5/NeWlX1L4Uu1jpSpNcfIWTf9ibjm0aDJ2A=
 github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821031850-b1c42b2c2465/go.mod h1:XbHYsdQhskVQNAKxVlIS1iXAIy1igX9/FUjrzTkB2HQ=
+github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821032113-b34056ac795b h1:tS8q/JI86TjbmuUIrXlbAbYI5wAuMXPupjQNdS5Hoxo=
+github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821032113-b34056ac795b/go.mod h1:XbHYsdQhskVQNAKxVlIS1iXAIy1igX9/FUjrzTkB2HQ=
 github.com/NetSinx/yconnect-shop/server/product v0.0.0-20250820141958-5dd1a1343e81 h1:MlnMkT0Vhvw6d0fmvPYdOOVLpFPVYP5XDmyBeZkeF2A=
 github.com/NetSinx/yconnect-shop/server/product v0.0.0-20250820141958-5dd1a1343e81/go.mod h1:FTpKxrsW9jcLoiz5R38RtOQENJvbkmn/nTnNB3/hIW4=
 github.com/NetSinx/yconnect-shop/server/product v0.0.0-20250821030104-530355a7a90a h1:DQwsBHDZ3EI2KbXEKJbakn9wwzEfL/rIoJ0U7e3WGxw=
 github.com/NetSinx/yconnect-shop/server/product v0.0.0-20250821030104-530355a7a90a/go.mod h1:FTpKxrsW9jcLoiz5R38RtOQENJvbkmn/nTnNB3/hIW4=
+github.com/NetSinx/yconnect-shop/server/product v0.0.0-20250821032113-b34056ac795b h1:vOG0QQClytDZyYc0BXcHUNxD2AEaPgA6o2fgwY4J5Ck=
+github.com/NetSinx/yconnect-shop/server/product v0.0.0-20250821032113-b34056ac795b/go.mod h1:FTpKxrsW9jcLoiz5R38RtOQENJvbkmn/nTnNB3/hIW4=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/gabriel-vasile/mimetype v1.4.9 h1:5k+WDwEsD9eTLL8Tz3L0VnmVh9QxGjRmjBvAG7U/oYY=
