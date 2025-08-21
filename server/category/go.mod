@@ -14,7 +14,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821024458-b03efb61c387
+	github.com/NetSinx/yconnect-shop/server/authentication v0.0.0-20250821031850-b1c42b2c2465
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
