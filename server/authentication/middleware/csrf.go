@@ -37,7 +37,7 @@ func CSRFMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			exp, ok := tokenStore[getToken.Value]
 			if !ok || time.Now().After(exp) {
 				mu.Unlock()
-				return c.JSON(http.StatusForbidden, map[string]string{"error": "Invalid or expired CSRF token"})
+				return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid or expired CSRF token"})
 			}
 
 			delete(tokenStore, getToken.Value)
@@ -55,7 +55,6 @@ func CSRFMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 				Path: "/",
 				Value: token,
 				HttpOnly: true,
-				SameSite: http.SameSiteLaxMode,
 				Secure: true,
 			}
 
