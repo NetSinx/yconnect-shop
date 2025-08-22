@@ -5,6 +5,7 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/category/helpers"
 	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/NetSinx/yconnect-shop/server/category/repository"
+	"github.com/NetSinx/yconnect-shop/server/category/service/rabbitmq"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -53,6 +54,8 @@ func (c categoryService) CreateCategory(categoryReq dto.CategoryRequest) error {
 		return err
 	}
 
+	rabbitmq.Publisher(rabbitmq.RoutingCKCreated, category)
+
 	return nil
 }
 
@@ -73,6 +76,8 @@ func (c categoryService) UpdateCategory(categoryReq dto.CategoryRequest, slug st
 		return err
 	}
 
+	rabbitmq.Publisher(rabbitmq.RoutingCKUpdated, category)
+
 	return nil
 }
 
@@ -80,6 +85,8 @@ func (c categoryService) DeleteCategory(category model.Category, slug string) er
 	if err := c.categoryRepo.DeleteCategory(category, slug); err != nil {
 		return err
 	}
+
+	rabbitmq.Publisher(rabbitmq.RoutingCKDeleted, category)
 
 	return nil
 }

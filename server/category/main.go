@@ -3,13 +3,11 @@ package main
 import (
 	"fmt"
 	"os"
-
 	"github.com/NetSinx/yconnect-shop/server/category/errs"
 	"github.com/NetSinx/yconnect-shop/server/category/handler/http"
 	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/NetSinx/yconnect-shop/server/category/repository"
 	"github.com/NetSinx/yconnect-shop/server/category/service"
-	"github.com/NetSinx/yconnect-shop/server/category/service/rabbitmq"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/mysql"
@@ -34,12 +32,6 @@ func main() {
 	errs.PanicError(err)
 
 	db.AutoMigrate(&model.Category{})
-
-	conn, ch, exchange := rabbitmq.Connect()
-	var amqpApp rabbitmq.AMQPApp
-	amqpApp.AMQPConn = conn
-	amqpApp.AMQPChan = ch
-	amqpApp.Exchange = exchange
 
 	categoryRepository := repository.CategoryRepository(db)
 	categoryService := service.CategoryService(categoryRepository)

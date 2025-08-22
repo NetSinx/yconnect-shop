@@ -16,7 +16,7 @@ var (
 	RoutingCKDeleted = "category.deleted"
 )
 
-func Publisher(routingKey string, message string) error {
+func Publisher(routingKey string, message any) {
 	amqpURL := fmt.Sprintf("amqp://%s:%s@%s:%s", 
 		os.Getenv("RABBITMQ_USER"),
 		os.Getenv("RABBITMQ_PASSWORD"),
@@ -47,13 +47,14 @@ func Publisher(routingKey string, message string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()
 
-	return ch.PublishWithContext(ctx,
+	err = ch.PublishWithContext(ctx,
 		exchange,
 		routingKey,
 		false,
 		false,
 		amqp.Publishing{
 		ContentType: "application/json",
-		Body:        body,
+		Body: body,
 	})
+	errs.LogOnError(err, "Failed to publish a message")
 }
