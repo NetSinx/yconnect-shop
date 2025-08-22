@@ -3,7 +3,6 @@ package http
 import (
 	"errors"
 	"net/http"
-	"net/url"
 	"strings"
 	"github.com/NetSinx/yconnect-shop/server/product/errs"
 	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
@@ -63,6 +62,10 @@ func (p productHandler) CreateProduct(c echo.Context) error {
 	if err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
 		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
 			Message: errs.ErrDuplicatedKey,
+		})
+	} else if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
+			Message: errs.ErrNotFound,
 		})
 	} else if err != nil && strings.Contains(err.Error(), validator.ValidationErrors{}.Error()) {
 		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
@@ -179,10 +182,6 @@ func (p productHandler) GetCategoryProduct(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 			Message: errs.ErrNotFound,
 		})
-	} else if err != nil && errors.Is(err, err.(*url.Error)) {
-		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
-			Message: "Service kategori sedang bermasalah.",
-		})
 	}
 
 	return c.JSON(http.StatusOK, dto.RespData{
@@ -197,7 +196,7 @@ func (p productHandler) GetProductByCategory(c echo.Context) error {
 
 	getProductByCategory, err := p.productService.GetProductByCategory(product, slug)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
+		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 			Message: errs.ErrNotFound,
 		})
 	}

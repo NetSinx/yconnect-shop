@@ -31,7 +31,7 @@ func main() {
 	})
 	errs.PanicError(err)
 	
-	db.AutoMigrate(&model.Product{}, &model.Gambar{})
+	db.AutoMigrate(&model.Product{}, &model.Gambar{}, &model.CategoryMirror{})
 
 	productRepository := repository.ProductRepository(db)
 	productService := service.ProductService(productRepository)

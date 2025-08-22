@@ -1,11 +1,6 @@
 package service
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"os"
-	categoryEntity "github.com/NetSinx/yconnect-shop/server/category/model"
 	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
 	"github.com/NetSinx/yconnect-shop/server/product/helpers"
 	"github.com/NetSinx/yconnect-shop/server/product/model"
@@ -20,7 +15,7 @@ type ProductServ interface {
 	DeleteProduct(product model.Product, slug string) error
 	GetProductByID(product model.Product, id string) (model.Product, error)
 	GetProductBySlug(product model.Product, slug string) (model.Product, error)
-	GetCategoryProduct(product model.Product, slug string) (categoryEntity.Category, error)
+	GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error)
 	GetProductByCategory(products []model.Product, slug string) ([]model.Product, error)
 }
 
@@ -45,6 +40,10 @@ func (p productService) ListProduct(products []model.Product) ([]model.Product, 
 
 func (p productService) CreateProduct(productReq dto.ProductRequest) error {
 	if err := validator.New().Struct(productReq); err != nil {
+		return err
+	}
+
+	if err := p.productRepository.GetMirrorCategory(productReq.KategoriSlug); err != nil {
 		return err
 	}
 
@@ -73,6 +72,10 @@ func (p productService) CreateProduct(productReq dto.ProductRequest) error {
 
 func (p productService) UpdateProduct(productReq dto.ProductRequest, slug string) error {
 	if err := validator.New().Struct(productReq); err != nil {
+		return err
+	}
+
+	if err := p.productRepository.GetMirrorCategory(productReq.KategoriSlug); err != nil {
 		return err
 	}
 
@@ -117,7 +120,7 @@ func (p productService) DeleteProduct(product model.Product, slug string) error 
 func (p productService) GetProductByID(product model.Product, id string) (model.Product, error) {
 	getProduct, err := p.productRepository.GetProductByID(product, id)
 	if err != nil {
-		return product, err
+		return getProduct, err
 	}
 
 	return getProduct, nil
@@ -126,34 +129,25 @@ func (p productService) GetProductByID(product model.Product, id string) (model.
 func (p productService) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
 	getProduct, err := p.productRepository.GetProductBySlug(product, slug)
 	if err != nil {
-		return product, err
+		return getProduct, err
 	}
 
 	return getProduct, nil
 }
 
-func (p productService) GetCategoryProduct(product model.Product, slug string) (categoryEntity.Category, error) {
-	if err := p.productRepository.GetCategoryProduct(product, slug); err != nil {
-		return categoryEntity.Category{}, err
-	}
-	
-	baseUrl := os.Getenv("BASE_URL")
-
-	respCategory, err := http.Get(fmt.Sprintf(baseUrl + ":8080/category/%s", product.KategoriSlug))
+func (p productService) GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error) {
+	categoryProduct, err := p.productRepository.GetCategoryProduct(product, slug)
 	if err != nil {
-		return categoryEntity.Category{}, err
+		return categoryProduct, err
 	}
 
-	var respDataCategory categoryEntity.Category
-	json.NewDecoder(respCategory.Body).Decode(&respDataCategory)
-
-	return respDataCategory, nil
+	return categoryProduct, nil
 }
 
 func (p productService) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
 	getProductByCategory, err := p.productRepository.GetProductByCategory(products, slug)
 	if err != nil {
-		return products, err
+		return getProductByCategory, err
 	}
 
 	return getProductByCategory, nil
