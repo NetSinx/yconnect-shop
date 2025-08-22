@@ -21,6 +21,14 @@ type Product struct {
 	UpdatedAt     time.Time    `json:"updated_at"`
 }
 
+type CategoryMirror struct {
+	Id        uint            `json:"id" gorm:"primaryKey"`
+	Name      string          `json:"name" gorm:"unique" validate:"required,min=3"`
+	Slug      string          `json:"slug" validate:"required,min=3"`
+	CreatedAt time.Time       `json:"created_at"`
+	UpdatedAt time.Time       `json:"updated_at"`
+}
+
 type Tabler interface {
   TableName() string
 }

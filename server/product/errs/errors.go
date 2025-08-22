@@ -13,3 +13,9 @@ func PanicError(err error) {
 		log.Panic(err)
 	}
 }
+
+func LogOnError(err error, msg string) {
+  if err != nil {
+    log.Panicf("%s: %s", msg, err)
+  }
+}
