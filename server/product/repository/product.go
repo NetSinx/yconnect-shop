@@ -14,6 +14,7 @@ type ProductRepo interface {
 	GetProductBySlug(product model.Product, slug string) (model.Product, error)
 	GetCategoryProduct(product model.Product, slug string) error
 	GetProductName(product model.Product, slug string) (model.Product, error)
+	GetProductByCategory(product []model.Product, slug string) ([]model.Product, error)
 }
 
 type productRepository struct {
@@ -110,4 +111,12 @@ func (p productRepository) GetProductName(product model.Product, slug string) (m
 	}
 
 	return product, nil
+}
+
+func (p productRepository) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
+	if err := p.DB.Where("kategori_slug = ?", slug).Preload("Gambar").Find(&products).Error; err != nil {
+		return products, err
+	}
+
+	return products, nil
 }

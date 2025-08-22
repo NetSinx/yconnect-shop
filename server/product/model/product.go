@@ -9,16 +9,16 @@ type Gambar struct {
 }
 
 type Product struct {
-	Id          uint         `json:"id" gorm:"primaryKey"`
-	Nama        string       `json:"nama" validate:"required,max=255"`
-	Slug        string       `json:"slug" gorm:"unique" validate:"required"`
-	Gambar      []Gambar     `json:"gambar" gorm:"foreignKey:ProductID" validate:"required"`
-	Deskripsi   string       `json:"deskripsi" validate:"required"`
-	KategoriID  uint         `json:"kategori_id" validate:"required"`
-	Harga       int          `json:"harga" validate:"required"`
-	Stok        int          `json:"stok" validate:"required"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
+	Id            uint         `json:"id" gorm:"primaryKey"`
+	Nama          string       `json:"nama" validate:"required,max=255"`
+	Slug          string       `json:"slug" gorm:"unique" validate:"required"`
+	Gambar        []Gambar     `json:"gambar" gorm:"foreignKey:ProductID" validate:"required"`
+	Deskripsi     string       `json:"deskripsi" validate:"required"`
+	KategoriSlug  string       `json:"kategori_slug" validate:"required"`
+	Harga         int          `json:"harga" validate:"required"`
+	Stok          int          `json:"stok" validate:"required"`
+	CreatedAt     time.Time    `json:"created_at"`
+	UpdatedAt     time.Time    `json:"updated_at"`
 }
 
 type Tabler interface {

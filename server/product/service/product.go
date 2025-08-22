@@ -21,6 +21,7 @@ type ProductServ interface {
 	GetProductByID(product model.Product, id string) (model.Product, error)
 	GetProductBySlug(product model.Product, slug string) (model.Product, error)
 	GetCategoryProduct(product model.Product, slug string) (categoryEntity.Category, error)
+	GetProductByCategory(products []model.Product, slug string) ([]model.Product, error)
 }
 
 type productService struct {
@@ -57,7 +58,7 @@ func (p productService) CreateProduct(productReq dto.ProductRequest) error {
 		Deskripsi: productReq.Deskripsi,
 		Slug: slug,
 		Gambar: productReq.Gambar,
-		KategoriID: productReq.KategoriID,
+		KategoriSlug: productReq.KategoriSlug,
 		Harga: productReq.Harga,
 		Stok: productReq.Stok,
 	}
@@ -79,7 +80,7 @@ func (p productService) UpdateProduct(productReq dto.ProductRequest, slug string
 		Nama: productReq.Nama,
 		Deskripsi: productReq.Deskripsi,
 		Slug: slug,
-		KategoriID: productReq.KategoriID,
+		KategoriSlug: productReq.KategoriSlug,
 		Harga: productReq.Harga,
 		Stok: productReq.Stok,
 	}
@@ -138,7 +139,7 @@ func (p productService) GetCategoryProduct(product model.Product, slug string) (
 	
 	baseUrl := os.Getenv("BASE_URL")
 
-	respCategory, err := http.Get(fmt.Sprintf(baseUrl + ":8080/category/%d", product.KategoriID))
+	respCategory, err := http.Get(fmt.Sprintf(baseUrl + ":8080/category/%s", product.KategoriSlug))
 	if err != nil {
 		return categoryEntity.Category{}, err
 	}
@@ -147,4 +148,13 @@ func (p productService) GetCategoryProduct(product model.Product, slug string) (
 	json.NewDecoder(respCategory.Body).Decode(&respDataCategory)
 
 	return respDataCategory, nil
+}
+
+func (p productService) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
+	getProductByCategory, err := p.productRepository.GetProductByCategory(products, slug)
+	if err != nil {
+		return products, err
+	}
+
+	return getProductByCategory, nil
 }

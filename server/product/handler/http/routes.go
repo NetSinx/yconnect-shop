@@ -9,10 +9,11 @@ import (
 
 func ApiRoutes(e *echo.Echo, productHandler productHandler) {
 	apiGroup := e.Group("/api")
-	apiGroup.GET("/product", productHandler.ListProduct)
-	apiGroup.GET("/product/id/:id", productHandler.GetProductByID)
-	apiGroup.GET("/product/slug/:slug", productHandler.GetProductBySlug)
-	apiGroup.GET("/product/:slug/category", productHandler.GetCategoryProduct)
+	apiGroup.GET("/products", productHandler.ListProduct)
+	apiGroup.GET("/products/id/:id", productHandler.GetProductByID)
+	apiGroup.GET("/products/slug/:slug", productHandler.GetProductBySlug)
+	apiGroup.GET("/products/:slug/category", productHandler.GetCategoryProduct)
+	apiGroup.GET("/products/category/:slug", productHandler.GetProductByCategory)
 
 	adminGroup := apiGroup.Group("/admin")
 	adminGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
@@ -28,7 +29,7 @@ func ApiRoutes(e *echo.Echo, productHandler productHandler) {
 			})
 		},
 	}))
-	adminGroup.POST("/product", productHandler.CreateProduct)
-	adminGroup.PUT("/product/:slug", productHandler.UpdateProduct)
-	adminGroup.DELETE("/product/:slug", productHandler.DeleteProduct)
+	adminGroup.POST("/products", productHandler.CreateProduct)
+	adminGroup.PUT("/products/:slug", productHandler.UpdateProduct)
+	adminGroup.DELETE("/products/:slug", productHandler.DeleteProduct)
 }
