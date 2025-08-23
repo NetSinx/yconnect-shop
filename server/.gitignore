@@ -1,6 +1,1 @@
 .env
-docker-compose.yaml
-/mail/credentials.json
-/mail/token.json
-nginx.conf
-Dockerfile_jenkins
