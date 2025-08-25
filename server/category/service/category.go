@@ -39,12 +39,12 @@ func (c categoryService) ListCategory(categories []model.Category) ([]model.Cate
 
 func (c categoryService) CreateCategory(categoryReq dto.CategoryRequest) error {
 	categoryReq.Name = helpers.ToTitle(categoryReq.Name)
+	slug := helpers.ToSlug(categoryReq.Name)
 
 	if err := validator.New().Struct(categoryReq); err != nil {
 		return err
 	}
 
-	slug := helpers.ToSlug(categoryReq.Name)
 	category := model.Category{
 		Name: categoryReq.Name,
 		Slug: slug,
@@ -61,12 +61,12 @@ func (c categoryService) CreateCategory(categoryReq dto.CategoryRequest) error {
 
 func (c categoryService) UpdateCategory(categoryReq dto.CategoryRequest, slug string) error {
 	categoryReq.Name = helpers.ToTitle(categoryReq.Name)
+	newSlug := helpers.ToSlug(categoryReq.Name)
 	
 	if err := validator.New().Struct(categoryReq); err != nil {
 		return err
 	}
 	
-	newSlug := helpers.ToSlug(categoryReq.Name)
 	category := model.Category{
 		Name: categoryReq.Name,
 		Slug: newSlug,
@@ -76,6 +76,10 @@ func (c categoryService) UpdateCategory(categoryReq dto.CategoryRequest, slug st
 		return err
 	}
 
+	category = model.Category{
+		Slug: slug,
+	}
+	
 	rabbitmq.Publisher(rabbitmq.RoutingCKUpdated, category)
 
 	return nil
@@ -86,6 +90,9 @@ func (c categoryService) DeleteCategory(category model.Category, slug string) er
 		return err
 	}
 
+	category = model.Category{
+		Slug: slug,
+	}
 	rabbitmq.Publisher(rabbitmq.RoutingCKDeleted, category)
 
 	return nil

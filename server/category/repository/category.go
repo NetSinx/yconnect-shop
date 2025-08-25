@@ -41,20 +41,20 @@ func (c categoryRepository) CreateCategory(category model.Category) error {
 }
 
 func (c categoryRepository) UpdateCategory(category model.Category, slug string) error {
-	if err := c.DB.Where("slug = ?", slug).Updates(&category).Error; err != nil {
-		return err
+	result := c.DB.Where("slug = ?", slug).Updates(&category)
+	if result.Error != nil {
+		return result.Error
+	} else if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
 	}
 	
 	return nil
 }
 
 func(c categoryRepository) DeleteCategory(category model.Category, slug string) error {
-	if err := c.DB.First(&category, "slug = ?", slug).Error; err != nil {
-		return err
-	}
-
-	if err := c.DB.Delete(&category).Error; err != nil {
-		return err
+	result := c.DB.Delete(&category, "slug = ?", slug)
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
 	}
 
 	return nil
