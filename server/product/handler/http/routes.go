@@ -22,6 +22,7 @@ func ApiRoutes(e *echo.Echo, productHandler *productHandler) {
 		CookiePath: "/",
 		CookieHTTPOnly: true,
 		CookieSecure: true,
+		CookieSameSite: http.SameSiteStrictMode,
 		ErrorHandler: func(err error, c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 				Message: "csrf token not available",
