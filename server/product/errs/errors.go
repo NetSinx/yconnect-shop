@@ -3,8 +3,8 @@ package errs
 import "log"
 
 var (
-	ErrDuplicatedKey = "Produk sudah tersedia."
-	ErrNotFound = "Produk tidak ditemukan."
+	ErrDuplicatedKey = "Data sudah tersedia."
+	ErrNotFound = "Data tidak ditemukan."
 	ErrInternalServer = "Terjadi masalah pada server."
 )
 

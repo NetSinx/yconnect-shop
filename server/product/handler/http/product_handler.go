@@ -28,13 +28,13 @@ type productHandler struct {
 	productService service.ProductServ
 }
 
-func ProductHandler(prodService service.ProductServ) productHandler {
-	return productHandler{
+func NewProductHandler(prodService service.ProductServ) *productHandler {
+	return &productHandler{
 		productService: prodService,
 	}
 }
 
-func (p productHandler) ListProduct(c echo.Context) error {
+func (p *productHandler) ListProduct(c echo.Context) error {
 	var products []model.Product
 
 	listProducts, err := p.productService.ListProduct(products)
@@ -49,7 +49,7 @@ func (p productHandler) ListProduct(c echo.Context) error {
 	})
 }
 
-func (p productHandler) CreateProduct(c echo.Context) error {
+func (p *productHandler) CreateProduct(c echo.Context) error {
 	var productReq dto.ProductRequest
 
 	if err := c.Bind(&productReq); err != nil {
@@ -82,7 +82,7 @@ func (p productHandler) CreateProduct(c echo.Context) error {
 	})
 }
 
-func (p productHandler) UpdateProduct(c echo.Context) error {
+func (p *productHandler) UpdateProduct(c echo.Context) error {
 	var productReq dto.ProductRequest
 
 	slug := c.Param("slug")
@@ -117,7 +117,7 @@ func (p productHandler) UpdateProduct(c echo.Context) error {
 	})
 }
 
-func (p productHandler) DeleteProduct(c echo.Context) error {
+func (p *productHandler) DeleteProduct(c echo.Context) error {
 	var product model.Product
 
 	slug := c.Param("slug")
@@ -138,7 +138,7 @@ func (p productHandler) DeleteProduct(c echo.Context) error {
 	})
 }
 
-func (p productHandler) GetProductByID(c echo.Context) error {
+func (p *productHandler) GetProductByID(c echo.Context) error {
 	var product model.Product
 
 	id := c.Param("id")
@@ -155,7 +155,7 @@ func (p productHandler) GetProductByID(c echo.Context) error {
 	})
 }
 
-func (p productHandler) GetProductBySlug(c echo.Context) error {
+func (p *productHandler) GetProductBySlug(c echo.Context) error {
 	var product model.Product
 
 	slug := c.Param("slug")
@@ -172,7 +172,7 @@ func (p productHandler) GetProductBySlug(c echo.Context) error {
 	})
 }
 
-func (p productHandler) GetCategoryProduct(c echo.Context) error {
+func (p *productHandler) GetCategoryProduct(c echo.Context) error {
 	var product model.Product
 
 	slug := c.Param("slug")
@@ -189,7 +189,7 @@ func (p productHandler) GetCategoryProduct(c echo.Context) error {
 	})
 }
 
-func (p productHandler) GetProductByCategory(c echo.Context) error {
+func (p *productHandler) GetProductByCategory(c echo.Context) error {
 	var product []model.Product
 
 	slug := c.Param("slug")

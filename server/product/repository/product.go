@@ -22,13 +22,13 @@ type productRepository struct {
 	DB *gorm.DB
 }
 
-func ProductRepository(db *gorm.DB) productRepository {
-	return productRepository{
+func NewProductRepository(db *gorm.DB) *productRepository {
+	return &productRepository{
 		DB: db,
 	}
 }
 
-func (p productRepository) ListProduct(products []model.Product) ([]model.Product, error) {
+func (p *productRepository) ListProduct(products []model.Product) ([]model.Product, error) {
 	if err := p.DB.Preload("Gambar").Find(&products).Error; err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (p productRepository) ListProduct(products []model.Product) ([]model.Produc
 	return products, nil
 }
 
-func (p productRepository) CreateProduct(product model.Product) error {
+func (p *productRepository) CreateProduct(product model.Product) error {
 	if err := p.DB.Create(&product).Error; err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func (p productRepository) CreateProduct(product model.Product) error {
 	return nil
 }
 
-func (p productRepository) UpdateProduct(productReq model.Product, gambar []model.Gambar, slug string) error {
+func (p *productRepository) UpdateProduct(productReq model.Product, gambar []model.Gambar, slug string) error {
 	var product model.Product
 
 	if err := p.DB.Where("slug = ?", slug).First(&product).Error; err != nil {
@@ -66,7 +66,7 @@ func (p productRepository) UpdateProduct(productReq model.Product, gambar []mode
 	return nil
 }
 
-func (p productRepository) DeleteProduct(product model.Product, slug string) error {
+func (p *productRepository) DeleteProduct(product model.Product, slug string) error {
 	if err := p.DB.Where("slug = ?", slug).First(&product).Error; err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (p productRepository) DeleteProduct(product model.Product, slug string) err
 	return nil
 }
 
-func (p productRepository) GetProductByID(product model.Product, id string) (model.Product, error) {
+func (p *productRepository) GetProductByID(product model.Product, id string) (model.Product, error) {
 	if err := p.DB.Preload("Gambar").First(&product, "id = ?", id).Error; err != nil {
 		return product, err
 	}
@@ -90,7 +90,7 @@ func (p productRepository) GetProductByID(product model.Product, id string) (mod
 	return product, nil
 }
 
-func (p productRepository) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
+func (p *productRepository) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
 	if err := p.DB.Preload("Gambar").First(&product, "slug = ?", slug).Error; err != nil {
 		return product, err
 	}
@@ -98,7 +98,7 @@ func (p productRepository) GetProductBySlug(product model.Product, slug string) 
 	return product, nil
 }
 
-func (p productRepository) GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error) {
+func (p *productRepository) GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error) {
 	if err := p.DB.First(&product, "slug = ?", slug).Error; err != nil {
 		return model.CategoryMirror{}, err
 	}
@@ -112,7 +112,7 @@ func (p productRepository) GetCategoryProduct(product model.Product, slug string
 	return categoryMirror, nil
 }
 
-func (p productRepository) GetProductName(product model.Product, slug string) (model.Product, error) {
+func (p *productRepository) GetProductName(product model.Product, slug string) (model.Product, error) {
 	if err := p.DB.Select("nama", "slug").First(&product, "slug = ?", slug).Error; err != nil {
 		return product, err
 	}
@@ -120,7 +120,7 @@ func (p productRepository) GetProductName(product model.Product, slug string) (m
 	return product, nil
 }
 
-func (p productRepository) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
+func (p *productRepository) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
 	if err := p.DB.Preload("Gambar").Find(&products, "kategori_slug = ?", slug).Error; err != nil {
 		return products, err
 	}
@@ -128,7 +128,7 @@ func (p productRepository) GetProductByCategory(products []model.Product, slug s
 	return products, nil
 }
 
-func (p productRepository) GetMirrorCategory(slug string) error {
+func (p *productRepository) GetMirrorCategory(slug string) error {
 	var categoryMirror model.CategoryMirror
 
 	if err := p.DB.First(&categoryMirror, "slug = ?", slug).Error; err != nil {

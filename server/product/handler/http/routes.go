@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func ApiRoutes(e *echo.Echo, productHandler productHandler) {
+func ApiRoutes(e *echo.Echo, productHandler *productHandler) {
 	apiGroup := e.Group("/api")
 	apiGroup.GET("/products", productHandler.ListProduct)
 	apiGroup.GET("/products/id/:id", productHandler.GetProductByID)

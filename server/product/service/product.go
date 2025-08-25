@@ -23,13 +23,13 @@ type productService struct {
 	productRepository repository.ProductRepo
 }
 
-func ProductService(prodRepo repository.ProductRepo) productService {
-	return productService{
+func NewProductService(prodRepo repository.ProductRepo) *productService {
+	return &productService{
 		productRepository: prodRepo,
 	}
 }
 
-func (p productService) ListProduct(products []model.Product) ([]model.Product, error) {
+func (p *productService) ListProduct(products []model.Product) ([]model.Product, error) {
 	listProduct, err := p.productRepository.ListProduct(products)
 	if err != nil {
 		return products, err
@@ -38,7 +38,7 @@ func (p productService) ListProduct(products []model.Product) ([]model.Product, 
 	return listProduct, nil
 }
 
-func (p productService) CreateProduct(productReq dto.ProductRequest) error {
+func (p *productService) CreateProduct(productReq dto.ProductRequest) error {
 	if err := validator.New().Struct(productReq); err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (p productService) CreateProduct(productReq dto.ProductRequest) error {
 	return nil
 }
 
-func (p productService) UpdateProduct(productReq dto.ProductRequest, slug string) error {
+func (p *productService) UpdateProduct(productReq dto.ProductRequest, slug string) error {
 	if err := validator.New().Struct(productReq); err != nil {
 		return err
 	}
@@ -108,7 +108,7 @@ func (p productService) UpdateProduct(productReq dto.ProductRequest, slug string
 	return nil
 }
 
-func (p productService) DeleteProduct(product model.Product, slug string) error {
+func (p *productService) DeleteProduct(product model.Product, slug string) error {
 	err := p.productRepository.DeleteProduct(product, slug)
 	if err != nil {
 		return err
@@ -117,7 +117,7 @@ func (p productService) DeleteProduct(product model.Product, slug string) error 
 	return nil
 }
 
-func (p productService) GetProductByID(product model.Product, id string) (model.Product, error) {
+func (p *productService) GetProductByID(product model.Product, id string) (model.Product, error) {
 	getProduct, err := p.productRepository.GetProductByID(product, id)
 	if err != nil {
 		return getProduct, err
@@ -126,7 +126,7 @@ func (p productService) GetProductByID(product model.Product, id string) (model.
 	return getProduct, nil
 }
 
-func (p productService) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
+func (p *productService) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
 	getProduct, err := p.productRepository.GetProductBySlug(product, slug)
 	if err != nil {
 		return getProduct, err
@@ -135,7 +135,7 @@ func (p productService) GetProductBySlug(product model.Product, slug string) (mo
 	return getProduct, nil
 }
 
-func (p productService) GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error) {
+func (p *productService) GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error) {
 	categoryProduct, err := p.productRepository.GetCategoryProduct(product, slug)
 	if err != nil {
 		return categoryProduct, err
@@ -144,7 +144,7 @@ func (p productService) GetCategoryProduct(product model.Product, slug string) (
 	return categoryProduct, nil
 }
 
-func (p productService) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
+func (p *productService) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
 	getProductByCategory, err := p.productRepository.GetProductByCategory(products, slug)
 	if err != nil {
 		return getProductByCategory, err

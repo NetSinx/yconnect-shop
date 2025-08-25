@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-
+	"github.com/NetSinx/yconnect-shop/server/product/db"
 	"github.com/NetSinx/yconnect-shop/server/product/errs"
-	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
 	"github.com/NetSinx/yconnect-shop/server/product/model"
-	"github.com/NetSinx/yconnect-shop/server/product/repository"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func ConsumeCategoryEvents() {
@@ -48,7 +46,13 @@ func ConsumeCategoryEvents() {
 
 	bindings := []string{"category.created", "category.updated", "category.deleted"}
 	for _, rk := range bindings {
-		err := ch.QueueBind(q.Name, rk, exchange, false, nil)
+		err := ch.QueueBind(
+			q.Name,
+			rk,
+			exchange,
+			false,
+			nil,
+		)
 		errs.LogOnError(err, "Failed to binding a queue")
 	}
 
@@ -58,24 +62,23 @@ func ConsumeCategoryEvents() {
 	errs.LogOnError(err, "Failed to consume messages")
 	log.Println("Consuming category events...")
 
+	db := db.ConnectDB()
+
 	for d := range msgs {
 		rk := d.RoutingKey
-		var categoryEvent dto.CategoryEvent
-		if err := json.Unmarshal(d.Body, &categoryEvent); err != nil {
+		var categoryMirror model.CategoryMirror
+		if err := json.Unmarshal(d.Body, &categoryMirror); err != nil {
 			log.Println("Invalid message:", err)
 			continue
 		}
 
 		switch rk {
 		case "category.created":
-			productRepo := repository.ProductRepository(&gorm.DB{})
-			productRepo.DB.Clauses().Save(&categoryEvent)
+			db.Clauses(clause.OnConflict{DoNothing: true}).Create(&categoryMirror)
 		case "category.updated":
-			productRepo := repository.ProductRepository(&gorm.DB{})
-			productRepo.DB.Model(&model.CategoryMirror{}).Where("slug = ?", categoryEvent.Slug).Updates(&categoryEvent)
+			db.Where("id = ?", categoryMirror.Id).Updates(&categoryMirror)
 		case "category.deleted":
-			productRepo := repository.ProductRepository(&gorm.DB{})
-			productRepo.DB.Delete(&model.CategoryMirror{}, "slug = ?", categoryEvent.Slug)
+			db.Delete(&categoryMirror, "slug = ?", categoryMirror.Slug)
 		default:
 		}
 	}
