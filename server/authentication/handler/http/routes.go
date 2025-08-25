@@ -13,7 +13,6 @@ func APIRoutes(e *echo.Echo, authHandler authHandler) {
 		TokenLookup: "cookie:csrf_token",
 		CookieName: "csrf_token",
 		CookiePath: "/",
-		CookieMaxAge: 60,
 		CookieHTTPOnly: true,
 		CookieSecure: true,
 		ErrorHandler: func(err error, c echo.Context) error {
