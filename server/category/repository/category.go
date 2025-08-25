@@ -3,7 +3,6 @@ package repository
 import (
 	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type CategoryRepo interface {
@@ -42,13 +41,14 @@ func (c categoryRepository) CreateCategory(category model.Category) error {
 }
 
 func (c categoryRepository) UpdateCategory(category model.Category, slug string) (uint, error) {
-	result := c.DB.Clauses(clause.Returning{Columns: []clause.Column{{Name: "id"}}}).Where("slug = ?", slug).Updates(&category)
+	result := c.DB.Where("slug = ?", slug).Updates(&category)
 	if result.Error != nil {
 		return category.Id, result.Error
 	} else if result.RowsAffected == 0 {
 		return category.Id, gorm.ErrRecordNotFound
 	}
-	
+	c.DB.First(&category, "slug = ?", category.Slug)
+
 	return category.Id, nil
 }
 
