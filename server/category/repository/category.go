@@ -3,12 +3,13 @@ package repository
 import (
 	"github.com/NetSinx/yconnect-shop/server/category/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type CategoryRepo interface {
 	ListCategory(categories []model.Category) ([]model.Category, error)
 	CreateCategory(category model.Category) error
-	UpdateCategory(category model.Category, slug string) error
+	UpdateCategory(category model.Category, slug string) (uint, error)
 	DeleteCategory(category model.Category, slug string) error
 	GetCategoryById(category model.Category, id string) (model.Category, error)
 	GetCategoryBySlug(category model.Category, slug string) (model.Category, error)
@@ -40,15 +41,15 @@ func (c categoryRepository) CreateCategory(category model.Category) error {
 	return nil
 }
 
-func (c categoryRepository) UpdateCategory(category model.Category, slug string) error {
-	result := c.DB.Where("slug = ?", slug).Updates(&category)
+func (c categoryRepository) UpdateCategory(category model.Category, slug string) (uint, error) {
+	result := c.DB.Clauses(clause.Returning{Columns: []clause.Column{{Name: "id"}}}).Where("slug = ?", slug).Updates(&category)
 	if result.Error != nil {
-		return result.Error
+		return category.Id, result.Error
 	} else if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+		return category.Id, gorm.ErrRecordNotFound
 	}
 	
-	return nil
+	return category.Id, nil
 }
 
 func(c categoryRepository) DeleteCategory(category model.Category, slug string) error {

@@ -72,13 +72,12 @@ func (c categoryService) UpdateCategory(categoryReq dto.CategoryRequest, slug st
 		Slug: newSlug,
 	}
 
-	if err := c.categoryRepo.UpdateCategory(category, slug); err != nil {
+	id, err := c.categoryRepo.UpdateCategory(category, slug)
+	if err != nil {
 		return err
 	}
 
-	category = model.Category{
-		Slug: slug,
-	}
+	category.Id = id
 	
 	rabbitmq.Publisher(rabbitmq.RoutingCKUpdated, category)
 
