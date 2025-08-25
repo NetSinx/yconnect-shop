@@ -21,7 +21,6 @@ func ApiRoutes(e *echo.Echo, productHandler productHandler) {
 		CookieName: "csrf_token",
 		CookiePath: "/",
 		CookieHTTPOnly: true,
-		CookieMaxAge: 30,
 		CookieSecure: true,
 		ErrorHandler: func(err error, c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
