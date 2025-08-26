@@ -1,0 +1,28 @@
+{
+    "app": {
+        "name": "yconnect_shop_category_service",
+        "host": "localhost",
+        "port": 8080
+    },
+    "database": {
+        "host": "localhost",
+        "port": 3306,
+        "username": "root",
+        "password": "",
+        "name": "yconnect_shop_category",
+        "pool": {
+            "idle": 10,
+            "max": 100,
+            "lifetime": 500
+        }
+    },
+    "rabbitmq": {
+        "host": "localhost",
+        "port": 5672,
+        "username": "guest",
+        "password": "guest"
+    },
+    "log": {
+        "level": 6
+    }
+}
