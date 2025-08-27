@@ -27,7 +27,7 @@ func ConsumeCategoryEvents() {
 	errs.LogOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-	exchange := "category.events"
+	exchange := "category_events"
 	err = ch.ExchangeDeclare(
 		exchange,
 		"topic",

@@ -35,7 +35,7 @@ func NewCategoryUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Va
 	}
 }
 
-func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) ([]model.CategoryResponse, int64, error) {
+func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) ([]model.GetCategoryResponse, int64, error) {
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -55,7 +55,7 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 		return nil, 0, echo.ErrInternalServerError
 	}
 
-	responses := make([]model.CategoryResponse, len(listCategories))
+	responses := make([]model.GetCategoryResponse, len(listCategories))
 	for i, category := range listCategories {
 		responses[i] = *converter.CategoryToResponse(&category)
 	}
@@ -63,18 +63,18 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 	return responses, total, nil
 }
 
-func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryReq *model.CreateCategoryRequest) error {
+func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryRequest *model.CreateCategoryRequest) error {
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
-	if err := validator.New().Struct(categoryReq); err != nil {
+	if err := validator.New().Struct(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")
 		return echo.ErrBadRequest
 	}
 
 	category := &entity.Category{
-		Nama: c.Helpers.ToTitle(categoryReq.Nama),
-		Slug: c.Helpers.ToSlug(categoryReq.Nama),
+		Nama: c.Helpers.ToTitle(categoryRequest.Nama),
+		Slug: c.Helpers.ToSlug(categoryRequest.Nama),
 	}
 
 	categoryID, err := c.CategoryRepository.CreateCategory(tx, category)

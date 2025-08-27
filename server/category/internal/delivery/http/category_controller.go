@@ -2,10 +2,10 @@ package http
 
 import (
 	"errors"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
-
 	"github.com/NetSinx/yconnect-shop/server/category/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/usecase"
 	"github.com/labstack/echo/v4"
@@ -39,7 +39,7 @@ func (c *CategoryController) ListCategory(ctx echo.Context) error {
 		Size: pageSize,
 	}
 
-	listCategories, total, err := c.CategoryUseCase.ListCategory(ctx, categoryRequest)
+	listCategories, total, err := c.CategoryUseCase.ListCategory(ctx.Request().Context(), categoryRequest)
 	if err != nil {
 		c.Log.WithError(err).Error("error listing categories")
 		return err
@@ -47,35 +47,30 @@ func (c *CategoryController) ListCategory(ctx echo.Context) error {
 
 	listCategoriesResponse := model.ListCategoryResponse{
 		Data: listCategories,
+		Page: categoryRequest.Page,
+		Size: categoryRequest.Size,
+		TotalItem: total,
+		TotalPage: int64(math.Ceil(float64(total) / float64(categoryRequest.Size))),
 	}
 
-	return c.JSON(http.StatusOK, dto.RespData{
-		Data: listCategories,
-	})
+	return ctx.JSON(http.StatusOK, listCategoriesResponse)
 }
 
 func (c *CategoryController) CreateCategory(ctx echo.Context) error {
-	var categoryReq dto.CategoryRequest
+	var categoryRequest *model.CreateCategoryRequest
 
-	if err := c.Bind(&categoryReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
-			Message: err.Error(),
-		})
+	if err := ctx.Bind(categoryRequest); err != nil {
+		c.Log.WithError(err).Error("error validating request body")
+		return err
 	}
 
-	err := c.categoryService.CreateCategory(categoryReq)
-	if err != nil && strings.Contains(err.Error(), "Error 1062") {
-		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
-			Message: errs.ErrDuplicatedKey,
-		})
-	} else if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
-			Message: err.Error(),
-		})
+	if err := c.CategoryUseCase.CreateCategory(ctx.Request().Context(), categoryRequest); err != nil {
+		c.Log.WithError(err).Error("error creating category")
+		return err
 	}
 
-	return c.JSON(http.StatusOK, dto.MessageResp{
-		Message: dto.CreateResponse,
+	return ctx.JSON(http.StatusOK, model.CategoryResponseMessage{
+		Message: "",
 	})
 }
 
