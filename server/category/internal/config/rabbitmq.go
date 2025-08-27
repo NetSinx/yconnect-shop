@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func NewRabbitMQ(config *viper.Viper, log *logrus.Logger) *amqp.Connection {
+func NewRabbitMQ(config *viper.Viper, log *logrus.Logger, helpers *helpers.Helpers) *amqp.Connection {
 	username := config.GetString("rabbitmq.username")
 	password := config.GetString("rabbitmq.password")
 	port := config.GetInt("rabbitmq.port")
@@ -17,7 +17,7 @@ func NewRabbitMQ(config *viper.Viper, log *logrus.Logger) *amqp.Connection {
 	url := fmt.Sprintf("amqp://%s:%s@%s:%d/", username, password, host, port)
 
 	connection, err := amqp.Dial(url)
-	helpers.PanicError(log, err, "failed to connect rabbitmq")
+	helpers.PanicError(err, "failed to connect rabbitmq")
 	defer connection.Close()
 
 	return connection

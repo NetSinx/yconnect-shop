@@ -17,11 +17,11 @@ type DeleteCategoryRequest struct {
 
 type ListCategoryRequest struct {
 	Page int `json:"page" validate:"min=1"`
-	Size int `json:"size" validate:"min=1,max=20"`
+	Size int `json:"size" validate:"min=1,max=100"`
 }
 
-type GetCategoryByIdRequest struct {
-	ID int `json:"id" validate:"required"`
+type GetCategoryIDRequest struct {
+	Slug string `json:"slug" validate:"required,max=50"`
 }
 
 type GetCategoryBySlugRequest struct {
@@ -34,4 +34,12 @@ type CategoryResponse struct {
 	Slug      string    `json:"slug"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type ListCategoryResponse struct {
+	Data      *[]CategoryResponse `json:"data"`
+	Page      int                 `json:"page"`
+	Size      int                 `json:"size"`
+	TotalItem int                 `json:"total_item"`
+	TotalPage int                 `json:"total_page"`
 }

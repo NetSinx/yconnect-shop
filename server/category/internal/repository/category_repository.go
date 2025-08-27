@@ -32,24 +32,28 @@ func (r *CategoryRepository) ListCategory(db *gorm.DB, request *model.ListCatego
 	return categories, total, nil
 }
 
-func (r *CategoryRepository) CreateCategory(db *gorm.DB, categoryRequest *model.CreateCategoryRequest) error {
-	return db.Create(categoryRequest).Error
-}
-
-func (r *CategoryRepository) UpdateCategory(db *gorm.DB, categoryRequest *model.UpdateCategoryRequest) error {
-	return db.Save(categoryRequest).Error
-}
-
-func (r *CategoryRepository) DeleteCategory(db *gorm.DB, category *entity.Category) error {
-	return db.Delete(category).Error
-}
-
-func(c *CategoryRepository) GetCategoryById(db *gorm.DB, category *entity.Category, id string) (*entity.Category, error) {
-	if err := db.First(category, "id = ?", id).Error; err != nil {
-		return nil, err
+func (r *CategoryRepository) CreateCategory(db *gorm.DB, category *entity.Category) (uint, error) {
+	if err := db.Create(category).Error; err != nil {
+		return 0, err
 	}
 
-	return category, nil
+	return category.ID, nil
+}
+
+func (r *CategoryRepository) UpdateCategory(db *gorm.DB, category *entity.Category) error {
+	return db.Save(category).Error
+}
+
+func (r *CategoryRepository) DeleteCategory(db *gorm.DB, category *entity.Category, slug string) error {
+	return db.Delete(category, "slug = ?", slug).Error
+}
+
+func(c *CategoryRepository) GetCategoryID(db *gorm.DB, category *entity.Category) (uint, error) {
+	if err := db.Select("id").First(category, "slug = ?", category.Slug).Error; err != nil {
+		return 0, err
+	}
+
+	return category.ID, nil
 }
 
 func(c *CategoryRepository) GetCategoryBySlug(db *gorm.DB, category *entity.Category, slug string) (*entity.Category, error) {

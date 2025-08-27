@@ -3,42 +3,50 @@ package http
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
-	"github.com/NetSinx/yconnect-shop/server/category/errs"
-	"github.com/NetSinx/yconnect-shop/server/category/handler/dto"
-	"github.com/NetSinx/yconnect-shop/server/category/model"
-	"github.com/NetSinx/yconnect-shop/server/category/service"
+
+	"github.com/NetSinx/yconnect-shop/server/category/internal/model"
+	"github.com/NetSinx/yconnect-shop/server/category/internal/usecase"
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
-type CategoryHandl interface {
-	ListCategory(c echo.Context) error
-	CreateCategory(c echo.Context) error
-	UpdateCategory(c echo.Context) error
-	DeleteCategory(c echo.Context) error
-	GetCategoryById(c echo.Context) error
-	GetCategoryBySlug(c echo.Context) error
+type CategoryController struct {
+	CategoryUseCase *usecase.CategoryUseCase
+	Log             *logrus.Logger
 }
 
-type categoryHandler struct {
-	categoryService service.CategoryServ
-}
-
-func CategoryHandler(categoryservice service.CategoryServ) categoryHandler {
-	return categoryHandler{
-		categoryService: categoryservice,
+func NewCategoryController(categoryUseCase *usecase.CategoryUseCase, log *logrus.Logger) *CategoryController {
+	return &CategoryController{
+		CategoryUseCase: categoryUseCase,
+		Log: log,
 	}
 }
 
-func (cc categoryHandler) ListCategory(c echo.Context) error {
-	var categories []model.Category
+func (c *CategoryController) ListCategory(ctx echo.Context) error {
+	page, _ := strconv.Atoi(ctx.QueryParam("page"))
+	pageSize, _ := strconv.Atoi(ctx.QueryParam("page_size"))
 
-	listCategories, err := cc.categoryService.ListCategory(categories)
+	if page <= 0 || pageSize <= 0 {
+		page = 1
+		pageSize = 20
+	}
+
+	categoryRequest := &model.ListCategoryRequest{
+		Page: page,
+		Size: pageSize,
+	}
+
+	listCategories, total, err := c.CategoryUseCase.ListCategory(ctx, categoryRequest)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
-			Message: err.Error(),
-		})
+		c.Log.WithError(err).Error("error listing categories")
+		return err
+	}
+
+	listCategoriesResponse := model.ListCategoryResponse{
+		Data: listCategories,
 	}
 
 	return c.JSON(http.StatusOK, dto.RespData{
@@ -46,7 +54,7 @@ func (cc categoryHandler) ListCategory(c echo.Context) error {
 	})
 }
 
-func (cc categoryHandler) CreateCategory(c echo.Context) error {
+func (c *CategoryController) CreateCategory(ctx echo.Context) error {
 	var categoryReq dto.CategoryRequest
 
 	if err := c.Bind(&categoryReq); err != nil {
@@ -55,7 +63,7 @@ func (cc categoryHandler) CreateCategory(c echo.Context) error {
 		})
 	}
 
-	err := cc.categoryService.CreateCategory(categoryReq)
+	err := c.categoryService.CreateCategory(categoryReq)
 	if err != nil && strings.Contains(err.Error(), "Error 1062") {
 		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
 			Message: errs.ErrDuplicatedKey,
@@ -71,7 +79,7 @@ func (cc categoryHandler) CreateCategory(c echo.Context) error {
 	})
 }
 
-func (cc categoryHandler) UpdateCategory(c echo.Context) error {
+func (c *CategoryController) UpdateCategory(ctx echo.Context) error {
 	var categoryReq dto.CategoryRequest
 
 	slug := c.Param("slug")
@@ -81,8 +89,8 @@ func (cc categoryHandler) UpdateCategory(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	
-	err := cc.categoryService.UpdateCategory(categoryReq, slug)
+
+	err := c.categoryService.UpdateCategory(categoryReq, slug)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 			Message: errs.ErrNotFound,
@@ -96,18 +104,18 @@ func (cc categoryHandler) UpdateCategory(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	
+
 	return c.JSON(http.StatusOK, dto.MessageResp{
 		Message: dto.UpdateResponse,
 	})
 }
 
-func (cc categoryHandler) DeleteCategory(c echo.Context) error {
+func (c *CategoryController) DeleteCategory(ctx echo.Context) error {
 	var category model.Category
 
 	slug := c.Param("slug")
 
-	err := cc.categoryService.DeleteCategory(category, slug)
+	err := c.categoryService.DeleteCategory(category, slug)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 			Message: errs.ErrNotFound,
@@ -119,12 +127,12 @@ func (cc categoryHandler) DeleteCategory(c echo.Context) error {
 	})
 }
 
-func (cc categoryHandler) GetCategoryById(c echo.Context) error {
+func (c *CategoryController) GetCategoryById(ctx echo.Context) error {
 	var category model.Category
 
 	id := c.Param("id")
 
-	getCategory, err := cc.categoryService.GetCategoryById(category, id)
+	getCategory, err := c.categoryService.GetCategoryById(category, id)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 			Message: errs.ErrNotFound,
@@ -136,12 +144,12 @@ func (cc categoryHandler) GetCategoryById(c echo.Context) error {
 	})
 }
 
-func (cc categoryHandler) GetCategoryBySlug(c echo.Context) error {
+func (c *CategoryController) GetCategoryBySlug(ctx echo.Context) error {
 	var category model.Category
 
 	slug := c.Param("slug")
 
-	getCategory, err := cc.categoryService.GetCategoryBySlug(category, slug)
+	getCategory, err := c.categoryService.GetCategoryBySlug(category, slug)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
 			Message: errs.ErrNotFound,

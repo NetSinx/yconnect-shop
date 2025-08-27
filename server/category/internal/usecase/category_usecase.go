@@ -3,8 +3,10 @@ package usecase
 import (
 	"context"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/category/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/model"
+	"github.com/NetSinx/yconnect-shop/server/category/internal/model/converter"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/repository"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -16,20 +18,25 @@ type CategoryUseCase struct {
 	DB                 *gorm.DB
 	Log                *logrus.Logger
 	Validator          *validator.Validate
-	categoryRepository *repository.CategoryRepository
+	Helpers            *helpers.Helpers
+	CategoryRepository *repository.CategoryRepository
+	CategoryPublisher  *messaging.Publisher
 }
 
-func NewCategoryUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Validate, categoryRepository *repository.CategoryRepository) *CategoryUseCase {
+func NewCategoryUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Validate, helpers *helpers.Helpers,
+	categoryRepository *repository.CategoryRepository, categoryPublisher *messaging.Publisher) *CategoryUseCase {
 	return &CategoryUseCase{
 		DB:                 db,
 		Log:                log,
 		Validator:          validator,
-		categoryRepository: categoryRepository,
+		Helpers:            helpers,
+		CategoryRepository: categoryRepository,
+		CategoryPublisher: categoryPublisher,
 	}
 }
 
-func (c *CategoryUseCase) ListCategory(ctx context.Context, db *gorm.DB, categoryRequest *model.ListCategoryRequest) ([]entity.Category, int64, error) {
-	tx := db.WithContext(ctx).Begin()
+func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) ([]model.CategoryResponse, int64, error) {
+	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
 	if err := c.Validator.Struct(categoryRequest); err != nil {
@@ -37,7 +44,7 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, db *gorm.DB, categor
 		return nil, 0, echo.ErrBadRequest
 	}
 
-	listCategories, total, err := c.categoryRepository.ListCategory(tx, categoryRequest)
+	listCategories, total, err := c.CategoryRepository.ListCategory(tx, categoryRequest)
 	if err != nil {
 		c.Log.WithError(err).Error("error listing categories")
 		return nil, 0, echo.ErrInternalServerError
@@ -48,82 +55,125 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, db *gorm.DB, categor
 		return nil, 0, echo.ErrInternalServerError
 	}
 
-	return listCategories, total, nil
+	responses := make([]model.CategoryResponse, len(listCategories))
+	for i, category := range listCategories {
+		responses[i] = *converter.CategoryToResponse(&category)
+	}
+
+	return responses, total, nil
 }
 
-func (c *CategoryUseCase) CreateCategory(ctx context.Context, db *gorm.DB, categoryReq *model.CreateCategoryRequest) error {
-	categoryReq.Name = helpers.ToTitle(categoryReq.Name)
-	slug := helpers.ToSlug(categoryReq.Name)
+func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryReq *model.CreateCategoryRequest) error {
+	tx := c.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
 
 	if err := validator.New().Struct(categoryReq); err != nil {
-		return err
+		c.Log.WithError(err).Error("error validating request body")
+		return echo.ErrBadRequest
 	}
 
-	category := model.Category{
-		Name: categoryReq.Name,
-		Slug: slug,
+	category := &entity.Category{
+		Nama: c.Helpers.ToTitle(categoryReq.Nama),
+		Slug: c.Helpers.ToSlug(categoryReq.Nama),
 	}
 
-	if err := c.categoryRepo.CreateCategory(category); err != nil {
-		return err
+	categoryID, err := c.CategoryRepository.CreateCategory(tx, category)
+	if err != nil {
+		c.Log.WithError(err).Error("error creating category")
+		return echo.ErrInternalServerError
 	}
 
-	rabbitmq.Publisher(rabbitmq.RoutingCKCreated, category)
+	if err := tx.Commit().Error; err != nil {
+		c.Log.WithError(err).Error("error creating category")
+		return echo.ErrInternalServerError
+	}
+
+	category.ID = categoryID
+	event := converter.CategoryToEvent(category)
+	c.CategoryPublisher.Send("category.created", event)
 
 	return nil
 }
 
-func (c *CategoryUseCase) UpdateCategory(categoryReq dto.CategoryRequest, slug string) error {
-	categoryReq.Name = helpers.ToTitle(categoryReq.Name)
-	newSlug := helpers.ToSlug(categoryReq.Name)
+func (c *CategoryUseCase) UpdateCategory(ctx context.Context, categoryReq *model.UpdateCategoryRequest) error {
+	tx := c.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
 
 	if err := validator.New().Struct(categoryReq); err != nil {
-		return err
+		c.Log.WithError(err).Error("error validating request body")
+		return echo.ErrBadRequest
 	}
 
-	category := model.Category{
-		Name: categoryReq.Name,
-		Slug: newSlug,
-	}
-
-	id, err := c.categoryRepo.UpdateCategory(category, slug)
+	category := new(entity.Category)
+	resultCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryReq.Slug)
 	if err != nil {
-		return err
+		c.Log.WithError(err).Error("error getting category")
+		return echo.ErrNotFound
+	}
+	
+	category.ID = resultCategory.ID
+	category.Nama = c.Helpers.ToTitle(categoryReq.Nama)
+	category.Slug = c.Helpers.ToSlug(categoryReq.Nama)
+	
+	if err := c.CategoryRepository.UpdateCategory(tx, category); err != nil {
+		c.Log.WithError(err).Error("error updating category")
+		return echo.ErrInternalServerError
 	}
 
-	category.Id = id
+	if err := tx.Commit().Error; err != nil {
+		c.Log.WithError(err).Error("error updating category")
+		return echo.ErrInternalServerError
+	}
 
-	rabbitmq.Publisher(rabbitmq.RoutingCKUpdated, category)
+	event := converter.CategoryToEvent(category)
+	c.CategoryPublisher.Send("category.updated", event)
 
 	return nil
 }
 
-func (c *CategoryUseCase) DeleteCategory(category model.Category, slug string) error {
-	if err := c.categoryRepo.DeleteCategory(category, slug); err != nil {
-		return err
+func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *model.DeleteCategoryRequest) error {
+	tx := c.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	if err := c.Validator.Struct(categoryRequest); err != nil {
+		c.Log.WithError(err).Error("error validating request body")
+		return echo.ErrBadRequest
 	}
 
-	category = model.Category{
-		Slug: slug,
+	var category *entity.Category
+
+	resultCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
+	if err != nil {
+		c.Log.WithError(err).Error("error getting category")
+		return echo.ErrNotFound
 	}
-	rabbitmq.Publisher(rabbitmq.RoutingCKDeleted, category)
+
+	if err := c.CategoryRepository.DeleteCategory(tx, category, categoryRequest.Slug); err != nil {
+		c.Log.WithError(err).Error("error deleting category")
+		return echo.ErrInternalServerError
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Log.WithError(err).Error("error deleting category")
+		return echo.ErrInternalServerError
+	}
+
+	event := converter.CategoryToEvent(resultCategory)
+	c.CategoryPublisher.Send("category.deleted", event)
 
 	return nil
 }
 
-func (c *CategoryUseCase) GetCategoryById(category model.Category, id string) (model.Category, error) {
-	getCategory, err := c.categoryRepo.GetCategoryById(category, id)
-	if err != nil {
-		return getCategory, err
-	}
+func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest *model.GetCategoryBySlugRequest) (*entity.Category, error) {
+	tx := c.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
 
-	return getCategory, nil
-}
+	var category *entity.Category
 
-func (c *CategoryUseCase) GetCategoryBySlug(category model.Category, slug string) (model.Category, error) {
-	getCategory, err := c.categoryRepo.GetCategoryBySlug(category, slug)
+	getCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
 	if err != nil {
-		return getCategory, err
+		c.Log.WithError(err).Error("error getting category")
+		return nil, echo.ErrNotFound
 	}
 
 	return getCategory, nil
