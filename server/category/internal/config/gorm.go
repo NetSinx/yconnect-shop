@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func NewDatabase(viper *viper.Viper, log *logrus.Logger, helpers *helpers.Helpers) *gorm.DB {
+func NewDatabase(viper *viper.Viper, log *logrus.Logger) *gorm.DB {
 	username := viper.GetString("database.username")
 	password := viper.GetString("database.password")
 	host := viper.GetString("database.host")
@@ -34,10 +34,10 @@ func NewDatabase(viper *viper.Viper, log *logrus.Logger, helpers *helpers.Helper
 			Colorful:                  false,
 		}),
 	})
-	helpers.FatalError(err, "failed to initialize database")
+	helpers.FatalError(log, err, "failed to initialize database")
 
 	connection, err := db.DB()
-	helpers.FatalError(err, "failed to connect database")
+	helpers.FatalError(log, err, "failed to connect database")
 
 	connection.SetMaxIdleConns(idleConnection)
 	connection.SetMaxOpenConns(maxConnection)

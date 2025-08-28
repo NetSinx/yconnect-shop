@@ -1,4 +1,4 @@
-package http
+package route
 
 import (
 	"github.com/NetSinx/yconnect-shop/server/category/internal/delivery/http"

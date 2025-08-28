@@ -18,18 +18,16 @@ type CategoryUseCase struct {
 	DB                 *gorm.DB
 	Log                *logrus.Logger
 	Validator          *validator.Validate
-	Helpers            *helpers.Helpers
 	CategoryRepository *repository.CategoryRepository
 	CategoryPublisher  *messaging.Publisher
 }
 
-func NewCategoryUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Validate, helpers *helpers.Helpers,
+func NewCategoryUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Validate,
 	categoryRepository *repository.CategoryRepository, categoryPublisher *messaging.Publisher) *CategoryUseCase {
 	return &CategoryUseCase{
 		DB:                 db,
 		Log:                log,
 		Validator:          validator,
-		Helpers:            helpers,
 		CategoryRepository: categoryRepository,
 		CategoryPublisher: categoryPublisher,
 	}
@@ -73,8 +71,8 @@ func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryRequest *m
 	}
 
 	category := &entity.Category{
-		Nama: c.Helpers.ToTitle(categoryRequest.Nama),
-		Slug: c.Helpers.ToSlug(categoryRequest.Nama),
+		Nama: helpers.ToTitle(categoryRequest.Nama),
+		Slug: helpers.ToSlug(categoryRequest.Nama),
 	}
 
 	categoryID, err := c.CategoryRepository.CreateCategory(tx, category)
@@ -114,8 +112,8 @@ func (c *CategoryUseCase) UpdateCategory(ctx context.Context, categoryRequest *m
 	}
 	
 	category.ID = resultCategory.ID
-	category.Nama = c.Helpers.ToTitle(categoryRequest.Nama)
-	category.Slug = c.Helpers.ToSlug(categoryRequest.Nama)
+	category.Nama = helpers.ToTitle(categoryRequest.Nama)
+	category.Slug = helpers.ToSlug(categoryRequest.Nama)
 	
 	if err := c.CategoryRepository.UpdateCategory(tx, category); err != nil {
 		c.Log.WithError(err).Error("error updating category")

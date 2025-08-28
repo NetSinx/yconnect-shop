@@ -4,25 +4,27 @@ import (
 	"context"
 	"encoding/json"
 	"time"
+
 	"github.com/NetSinx/yconnect-shop/server/category/internal/helpers"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/sirupsen/logrus"
 )
 
 type Publisher struct {
 	Connection *amqp.Connection
-	Helpers    *helpers.Helpers
+	Log *logrus.Logger
 }
 
-func NewPublisher(connection *amqp.Connection, helpers *helpers.Helpers) *Publisher {
+func NewPublisher(connection *amqp.Connection, log *logrus.Logger) *Publisher {
 	return &Publisher{
 		Connection: connection,
-		Helpers:    helpers,
+		Log: log,
 	}
 }
 
 func (p *Publisher) Send(routingKey string, message any) {
 	ch, err := p.Connection.Channel()
-	p.Helpers.PanicError(err, "Failed to open a channel")
+	helpers.PanicError(p.Log, err, "Failed to open a channel")
 	defer ch.Close()
 
 	exchange := "category_events"
@@ -35,7 +37,7 @@ func (p *Publisher) Send(routingKey string, message any) {
 		false,
 		nil,
 	)
-	p.Helpers.FatalError(err, "Failed to declare an exchange")
+	helpers.FatalError(p.Log, err, "Failed to declare an exchange")
 
 	body, _ := json.Marshal(message)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -50,5 +52,5 @@ func (p *Publisher) Send(routingKey string, message any) {
 			ContentType: "application/json",
 			Body:        body,
 		})
-	p.Helpers.FatalError(err, "Failed to publish a message")
+	helpers.FatalError(p.Log, err, "Failed to publish a message")
 }
