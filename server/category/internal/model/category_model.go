@@ -28,7 +28,7 @@ type GetCategoryBySlugRequest struct {
 	Slug string `json:"slug" validate:"required,max=50"`
 }
 
-type GetCategoryResponse struct {
+type CategoryResponse struct {
 	ID        uint      `json:"id"`
 	Nama      string    `json:"nama"`
 	Slug      string    `json:"slug"`
@@ -37,13 +37,14 @@ type GetCategoryResponse struct {
 }
 
 type ListCategoryResponse struct {
-	Data      []GetCategoryResponse `json:"data"`
-	Page      int                   `json:"page"`
-	Size      int                   `json:"size"`
-	TotalItem int64                 `json:"total_item"`
-	TotalPage int64                 `json:"total_page"`
+	Data      []CategoryResponse `json:"data"`
+	Page      int                `json:"page"`
+	Size      int                `json:"size"`
+	TotalItem int64              `json:"total_item"`
+	TotalPage int64              `json:"total_page"`
 }
 
-type CategoryResponseMessage struct {
-	Message string `json:"message"`
+type CategoryResponseWithMessage struct {
+	Message string           `json:"message"`
+	Data    CategoryResponse `json:"data"`
 }

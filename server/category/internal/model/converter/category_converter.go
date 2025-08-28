@@ -13,8 +13,8 @@ func CategoryToEvent(category *entity.Category) *model.CategoryEvent {
 	}
 }
 
-func CategoryToResponse(category *entity.Category) *model.GetCategoryResponse {
-	return &model.GetCategoryResponse{
+func CategoryToResponse(category *entity.Category) *model.CategoryResponse {
+	return &model.CategoryResponse{
 		ID: category.ID,
 		Nama: category.Nama,
 		Slug: category.Slug,

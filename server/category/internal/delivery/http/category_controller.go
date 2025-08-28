@@ -70,38 +70,29 @@ func (c *CategoryController) CreateCategory(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, model.CategoryResponseMessage{
-		Message: "",
+		Message: "Data was created successfully",
 	})
 }
 
 func (c *CategoryController) UpdateCategory(ctx echo.Context) error {
-	var categoryReq dto.CategoryRequest
+	var categoryRequest *model.UpdateCategoryRequest
 
-	slug := c.Param("slug")
+	slug := ctx.Param("slug")
 
-	if err := c.Bind(&categoryReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
-			Message: err.Error(),
-		})
+	categoryRequest.Slug = slug
+
+	if err := ctx.Bind(categoryRequest); err != nil {
+		c.Log.WithError(err).Error("error validating request body")
+		return err
 	}
 
-	err := c.categoryService.UpdateCategory(categoryReq, slug)
-	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: errs.ErrNotFound,
-		})
-	} else if err != nil && strings.Contains(err.Error(), "Error 1062") {
-		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
-			Message: errs.ErrDuplicatedKey,
-		})
-	} else if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
-			Message: err.Error(),
-		})
+	if err := c.CategoryUseCase.UpdateCategory(ctx.Request().Context(), categoryRequest); err != nil {
+		c.Log.WithError(err).Error("error updating category")
+		return err
 	}
 
-	return c.JSON(http.StatusOK, dto.MessageResp{
-		Message: dto.UpdateResponse,
+	return ctx.JSON(http.StatusOK, model.CategoryResponseMessage{
+		Message: "",
 	})
 }
 

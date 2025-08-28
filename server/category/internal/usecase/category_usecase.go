@@ -35,7 +35,7 @@ func NewCategoryUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Va
 	}
 }
 
-func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) ([]model.GetCategoryResponse, int64, error) {
+func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) ([]model.CategoryResponse, int64, error) {
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -55,7 +55,7 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 		return nil, 0, echo.ErrInternalServerError
 	}
 
-	responses := make([]model.GetCategoryResponse, len(listCategories))
+	responses := make([]model.CategoryResponse, len(listCategories))
 	for i, category := range listCategories {
 		responses[i] = *converter.CategoryToResponse(&category)
 	}
