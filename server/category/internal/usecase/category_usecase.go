@@ -63,13 +63,13 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 	return responses, total, nil
 }
 
-func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryRequest *model.CreateCategoryRequest) error {
+func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryRequest *model.CreateCategoryRequest) (*model.CategoryResponse, error) {
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
 	if err := validator.New().Struct(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")
-		return echo.ErrBadRequest
+		return nil, echo.ErrBadRequest
 	}
 
 	category := &entity.Category{
@@ -80,64 +80,68 @@ func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryRequest *m
 	categoryID, err := c.CategoryRepository.CreateCategory(tx, category)
 	if err != nil {
 		c.Log.WithError(err).Error("error creating category")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		c.Log.WithError(err).Error("error creating category")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	category.ID = categoryID
 	event := converter.CategoryToEvent(category)
 	c.CategoryPublisher.Send("category.created", event)
 
-	return nil
+	response := converter.CategoryToResponse(category)
+	
+	return response, nil
 }
 
-func (c *CategoryUseCase) UpdateCategory(ctx context.Context, categoryReq *model.UpdateCategoryRequest) error {
+func (c *CategoryUseCase) UpdateCategory(ctx context.Context, categoryRequest *model.UpdateCategoryRequest) (*model.CategoryResponse, error) {
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
-	if err := validator.New().Struct(categoryReq); err != nil {
+	if err := validator.New().Struct(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")
-		return echo.ErrBadRequest
+		return nil, echo.ErrBadRequest
 	}
 
 	category := new(entity.Category)
-	resultCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryReq.Slug)
+	resultCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
 	if err != nil {
 		c.Log.WithError(err).Error("error getting category")
-		return echo.ErrNotFound
+		return nil, echo.ErrNotFound
 	}
 	
 	category.ID = resultCategory.ID
-	category.Nama = c.Helpers.ToTitle(categoryReq.Nama)
-	category.Slug = c.Helpers.ToSlug(categoryReq.Nama)
+	category.Nama = c.Helpers.ToTitle(categoryRequest.Nama)
+	category.Slug = c.Helpers.ToSlug(categoryRequest.Nama)
 	
 	if err := c.CategoryRepository.UpdateCategory(tx, category); err != nil {
 		c.Log.WithError(err).Error("error updating category")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		c.Log.WithError(err).Error("error updating category")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	event := converter.CategoryToEvent(category)
 	c.CategoryPublisher.Send("category.updated", event)
 
-	return nil
+	response := converter.CategoryToResponse(category)
+
+	return response, nil
 }
 
-func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *model.DeleteCategoryRequest) error {
+func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *model.DeleteCategoryRequest) (*model.CategoryResponse, error) {
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
 	if err := c.Validator.Struct(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")
-		return echo.ErrBadRequest
+		return nil, echo.ErrBadRequest
 	}
 
 	var category *entity.Category
@@ -145,23 +149,25 @@ func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *m
 	resultCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
 	if err != nil {
 		c.Log.WithError(err).Error("error getting category")
-		return echo.ErrNotFound
+		return nil, echo.ErrNotFound
 	}
 
 	if err := c.CategoryRepository.DeleteCategory(tx, category, categoryRequest.Slug); err != nil {
 		c.Log.WithError(err).Error("error deleting category")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		c.Log.WithError(err).Error("error deleting category")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	event := converter.CategoryToEvent(resultCategory)
 	c.CategoryPublisher.Send("category.deleted", event)
 
-	return nil
+	response := converter.CategoryToResponse(resultCategory)
+
+	return response, nil
 }
 
 func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest *model.GetCategoryBySlugRequest) (*entity.Category, error) {

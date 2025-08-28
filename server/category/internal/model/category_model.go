@@ -36,15 +36,23 @@ type CategoryResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type PageMetadataResponse struct {
+	Page      int   `json:"page"`
+	Size      int   `json:"size"`
+	TotalItem int64 `json:"total_item"`
+	TotalPage int64 `json:"total_page"`
+}
+
 type ListCategoryResponse struct {
-	Data      []CategoryResponse `json:"data"`
-	Page      int                `json:"page"`
-	Size      int                `json:"size"`
-	TotalItem int64              `json:"total_item"`
-	TotalPage int64              `json:"total_page"`
+	Data         []CategoryResponse    `json:"data"`
+	PageMetadata *PageMetadataResponse `json:"paging"`
 }
 
 type CategoryResponseWithMessage struct {
-	Message string           `json:"message"`
-	Data    CategoryResponse `json:"data"`
+	Message string            `json:"message"`
+	Data    *CategoryResponse `json:"data"`
+}
+
+type GetCategoryResponse struct {
+	Data *CategoryResponse `json:"data"`
 }

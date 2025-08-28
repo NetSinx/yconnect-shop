@@ -1,34 +1,33 @@
 package http
 
 import (
-	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/category/handler/dto"
+	"github.com/NetSinx/yconnect-shop/server/category/internal/delivery/http"
+	"github.com/NetSinx/yconnect-shop/server/category/internal/delivery/http/middleware"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
-func ApiRoutes(e *echo.Echo, categoryHandler categoryHandler) {
-	apiGroup := e.Group("/api")
-	apiGroup.GET("/category", categoryHandler.ListCategory)
-	apiGroup.GET("/category/id/:id", categoryHandler.GetCategoryById)
-	apiGroup.GET("/category/slug/:slug", categoryHandler.GetCategoryBySlug)
+type APIRoutes struct {
+	App                *echo.Echo
+	AppGroup           *echo.Group
+	CSRFMiddleware     *middleware.CSRFMiddleware
+	CategoryController *http.CategoryController
+}
 
-	adminGroup := apiGroup.Group("/admin")
-	adminGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "cookie:csrf_token",
-		CookieName: "csrf_token",
-		CookiePath: "/",
-		CookieHTTPOnly: true,
-		CookieMaxAge: 60,
-		CookieSecure: true,
-		CookieSameSite: http.SameSiteStrictMode,
-		ErrorHandler: func(err error, c echo.Context) error {
-			return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
-				Message: "csrf token not available",
-			})
-		},
-	}))
-	adminGroup.POST("/category", categoryHandler.CreateCategory)
-	adminGroup.PUT("/category/:slug", categoryHandler.UpdateCategory)
-	adminGroup.DELETE("/category/:slug", categoryHandler.DeleteCategory)
+func (a *APIRoutes) NewAPIRoutes() {
+	a.GuestAPIRoutes()
+	a.AuthAdminAPIRoutes()
+}
+
+func (a *APIRoutes) GuestAPIRoutes() {
+	a.AppGroup = a.App.Group("/api")
+	a.AppGroup.GET("/category", a.CategoryController.ListCategory)
+	a.AppGroup.GET("/category/:slug", a.CategoryController.GetCategoryBySlug)
+}
+
+func (a *APIRoutes) AuthAdminAPIRoutes() {
+	a.AppGroup = a.App.Group("/admin")
+	a.AppGroup.Use(a.CSRFMiddleware.NewCSRFMiddleware)
+	a.AppGroup.POST("/category", a.CategoryController.CreateCategory)
+	a.AppGroup.PUT("/category/:slug", a.CategoryController.UpdateCategory)
+	a.AppGroup.DELETE("/category/:slug", a.CategoryController.DeleteCategory)
 }
