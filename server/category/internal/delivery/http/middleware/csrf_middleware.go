@@ -7,39 +7,35 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type CSRFMiddleware struct {
-	Base64Encoding *base64.Encoding
-	Token        string
-}
-
-func (cm *CSRFMiddleware) generateCSRFToken() string {
+func generateCSRFToken() string {
 	b := make([]byte, 32)
 	if _, err := rand.Read(b); err != nil {
 		panic(err)
 	}
-	return cm.Base64Encoding.EncodeToString(b)
+	return base64.RawURLEncoding.EncodeToString(b)
 }
 
-func (cm *CSRFMiddleware) NewCSRFMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func CSRFMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := c.Request()
 		res := c.Response()
 
+		var token string
 		cookie, err := c.Cookie("csrf_token")
 		if err != nil {
-			cm.Token = cm.generateCSRFToken()
+			token = generateCSRFToken()
 		} else {
-			cm.Token = cookie.Value
+			token = cookie.Value
 		}
 
 		if req.Method == http.MethodPost || req.Method == http.MethodPut || req.Method == http.MethodDelete {
 			clientToken := req.Header.Get("X-CSRF-Token")
-			if clientToken == "" || clientToken != cm.Token {
+			if clientToken == "" || clientToken != token {
 				return echo.NewHTTPError(http.StatusForbidden, "invalid csrf token")
 			}
 		}
 
-		newToken := cm.generateCSRFToken()
+		newToken := generateCSRFToken()
 		http.SetCookie(res, &http.Cookie{
 			Name:     "csrf_token",
 			Value:    newToken,

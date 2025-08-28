@@ -8,26 +8,24 @@ import (
 
 type APIRoutes struct {
 	App                *echo.Echo
-	AppGroup           *echo.Group
-	CSRFMiddleware     *middleware.CSRFMiddleware
 	CategoryController *http.CategoryController
 }
 
-func (a *APIRoutes) NewAPIRoutes() {
-	a.GuestAPIRoutes()
-	a.AuthAdminAPIRoutes()
+func NewAPIRoutes(apiRoutes *APIRoutes) {
+	apiRoutes.guestAPIRoutes()
+	apiRoutes.authAdminAPIRoutes()
 }
 
-func (a *APIRoutes) GuestAPIRoutes() {
-	a.AppGroup = a.App.Group("/api")
-	a.AppGroup.GET("/category", a.CategoryController.ListCategory)
-	a.AppGroup.GET("/category/:slug", a.CategoryController.GetCategoryBySlug)
+func (a *APIRoutes) guestAPIRoutes() {
+	guestGroup := a.App.Group("/api")
+	guestGroup.GET("/category", a.CategoryController.ListCategory)
+	guestGroup.GET("/category/:slug", a.CategoryController.GetCategoryBySlug)
 }
 
-func (a *APIRoutes) AuthAdminAPIRoutes() {
-	a.AppGroup = a.App.Group("/admin")
-	a.AppGroup.Use(a.CSRFMiddleware.NewCSRFMiddleware)
-	a.AppGroup.POST("/category", a.CategoryController.CreateCategory)
-	a.AppGroup.PUT("/category/:slug", a.CategoryController.UpdateCategory)
-	a.AppGroup.DELETE("/category/:slug", a.CategoryController.DeleteCategory)
+func (a *APIRoutes) authAdminAPIRoutes() {
+	adminGroup := a.App.Group("/admin")
+	adminGroup.Use(middleware.CSRFMiddleware)
+	adminGroup.POST("/category", a.CategoryController.CreateCategory)
+	adminGroup.PUT("/category/:slug", a.CategoryController.UpdateCategory)
+	adminGroup.DELETE("/category/:slug", a.CategoryController.DeleteCategory)
 }
