@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"time"
+	"github.com/NetSinx/yconnect-shop/server/category/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/helpers"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -42,6 +43,8 @@ func NewDatabase(viper *viper.Viper, log *logrus.Logger) *gorm.DB {
 	connection.SetMaxIdleConns(idleConnection)
 	connection.SetMaxOpenConns(maxConnection)
 	connection.SetConnMaxLifetime(time.Duration(lifetimeConnection) * time.Second)
+
+	db.AutoMigrate(&entity.Category{})
 
 	return db
 }
