@@ -7,7 +7,7 @@ import (
 )
 
 type APIRoutes struct {
-	App                *echo.Echo
+	AppGroup           *echo.Group
 	CategoryController *http.CategoryController
 }
 
@@ -17,13 +17,13 @@ func NewAPIRoutes(apiRoutes *APIRoutes) {
 }
 
 func (a *APIRoutes) guestAPIRoutes() {
-	guestGroup := a.App.Group("/api")
+	guestGroup := a.AppGroup
 	guestGroup.GET("/category", a.CategoryController.ListCategory)
 	guestGroup.GET("/category/:slug", a.CategoryController.GetCategoryBySlug)
 }
 
 func (a *APIRoutes) authAdminAPIRoutes() {
-	adminGroup := a.App.Group("/admin")
+	adminGroup := a.AppGroup.Group("/admin")
 	adminGroup.Use(middleware.CSRFMiddleware)
 	adminGroup.POST("/category", a.CategoryController.CreateCategory)
 	adminGroup.PUT("/category/:slug", a.CategoryController.UpdateCategory)

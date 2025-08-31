@@ -31,7 +31,7 @@ func NewAppBootstrap(appBootstrap *AppBootstrap) {
 	controller := http.NewCategoryController(useCase, appBootstrap.Log)
 
 	route.NewAPIRoutes(&route.APIRoutes{
-		App: appBootstrap.App,
+		AppGroup: appBootstrap.App.Group("/api"),
 		CategoryController: controller,
 	})
 }

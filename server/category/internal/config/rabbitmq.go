@@ -9,6 +9,11 @@ import (
 )
 
 func NewRabbitMQ(config *viper.Viper, log *logrus.Logger) *amqp.Connection {
+	if !config.GetBool("rabbitmq.enabled") {
+		log.Info("RabbitMQ service is disabled")
+		return nil
+	}
+
 	username := config.GetString("rabbitmq.username")
 	password := config.GetString("rabbitmq.password")
 	port := config.GetInt("rabbitmq.port")
