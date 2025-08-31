@@ -1,0 +1,17 @@
+{
+    "app": {
+        "name": "yconnect_shop_authentication_service",
+        "host": "localhost",
+        "port": 8086
+    },
+    "rabbitmq": {
+        "enabled": false,
+        "host": "localhost",
+        "port": 5672,
+        "username": "guest",
+        "password": "guest"
+    },
+    "log": {
+        "level": 6
+    }
+}
