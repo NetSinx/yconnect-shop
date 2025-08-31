@@ -24,7 +24,7 @@ func main() {
 
 	host := viperConfig.GetString("app.host")
 	port := viperConfig.GetInt("app.port")
-	
+
 	if err := app.Start(fmt.Sprintf("%s:%d", host, port)); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
