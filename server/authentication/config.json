@@ -13,5 +13,12 @@
     },
     "log": {
         "level": 6
+    },
+    "redis": {
+        "host": "localhost",
+        "port": 5672,
+        "password": "",
+        "database": 0,
+        "protocol": 2
     }
 }
