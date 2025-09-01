@@ -40,8 +40,8 @@ func (a *AuthRepository) Delete(db *gorm.DB, entity *entity.Authentication) erro
 	return nil
 }
 
-func (a *AuthRepository) GetByEmail(db *gorm.DB, entity *entity.Authentication) (*entity.Authentication, error) {
-	if err := db.First(entity, "email = ?", entity.Email).Error; err != nil {
+func (a *AuthRepository) GetByEmail(db *gorm.DB, entity *entity.Authentication, email string) (*entity.Authentication, error) {
+	if err := db.First(entity, "email = ?", email).Error; err != nil {
 		return nil, err
 	}
 
