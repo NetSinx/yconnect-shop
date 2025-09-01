@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"time"
-
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/repository"
@@ -43,7 +42,7 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		return nil, echo.ErrBadRequest
 	}
 
-	var resultAuth *entity.Authentication
+	resultAuth := new(entity.Authentication)
 	if err := a.RedisClient.HGetAll(ctx, "email:"+loginRequest.Email).Scan(resultAuth); err != nil {
 		authEntity := new(entity.Authentication)
 		result, err := a.AuthRepository.GetByEmail(tx, authEntity, loginRequest.Email)
@@ -57,17 +56,13 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 			return nil, echo.ErrForbidden
 		}
 
-		signingKey := []byte("test123")
-
-		type CustomClaims struct {
-			Username string `json:"username"`
-			Email    string `json:"email"`
-			jwt.RegisteredClaims
+		response := &model.AuthTokenResponse{
+			AuthToken: jwt,
 		}
 
-		claims := CustomClaims{}
-
-		a.RedisClient.Set(ctx, "email:"+loginRequest.Email, result.Password, time.Minute)
+		a.RedisClient.HSet(ctx, "email:"+loginRequest.Email, result, time.Minute)
+		
+		return response, nil
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(resultAuth.Password), []byte(loginRequest.Password)); err != nil {
@@ -87,7 +82,7 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		resultAuth.Username,
 		resultAuth.Email,
 		jwt.RegisteredClaims{
-			IssuedAt: jwt.NewNumericDate(time.Now()),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 		},
 	}
