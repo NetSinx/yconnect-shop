@@ -4,17 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/authentication/handler/dto"
-	"github.com/NetSinx/yconnect-shop/server/authentication/helpers"
 	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type AuthService interface {
-	LoginUser(userLogin dto.UserLogin) (string, string, error)
-}
 
 type authService struct {
 	authServ  AuthService	

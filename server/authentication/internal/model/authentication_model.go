@@ -4,3 +4,7 @@ type LoginRequest struct {
 	Email    string `json:"email" validate:"required,max=100"`
 	Password string `json:"password" validate:"required,max=100"`
 }
+
+type LoginResponse struct {
+	AuthToken string `json:"auth_token"`
+}
