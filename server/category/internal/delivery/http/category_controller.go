@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/model"
-	"github.com/NetSinx/yconnect-shop/server/category/internal/model/converter"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/usecase"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
@@ -120,13 +119,11 @@ func (c *CategoryController) GetCategoryBySlug(ctx echo.Context) error {
 	slug := ctx.Param("slug")
 
 	categoryRequest.Slug = slug
-	resultCategory, err := c.CategoryUseCase.GetCategoryBySlug(ctx.Request().Context(), categoryRequest)
+	response, err := c.CategoryUseCase.GetCategoryBySlug(ctx.Request().Context(), categoryRequest)
 	if err != nil {
 		c.Log.WithError(err).Error("error getting category")
 		return err
 	}
-
-	response := converter.CategoryToResponse(resultCategory)
 
 	return ctx.JSON(http.StatusOK, model.GetCategoryResponse{
 		Data: response,
