@@ -32,5 +32,6 @@ func BootstrapApp(config *AppConfig) {
 	route.NewAPIRoutes(&route.APIRoutes{
 		AppGroup: config.App.Group("/api"),
 		AuthController: controller,
+		RedisClient: config.RedisClient,
 	})
 }
