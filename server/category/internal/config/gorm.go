@@ -44,7 +44,9 @@ func NewDatabase(viper *viper.Viper, log *logrus.Logger) *gorm.DB {
 	connection.SetMaxOpenConns(maxConnection)
 	connection.SetConnMaxLifetime(time.Duration(lifetimeConnection) * time.Second)
 
-	db.AutoMigrate(&entity.Category{})
+	if !db.Migrator().HasTable(&entity.Category{}) {
+		db.AutoMigrate(&entity.Category{})
+	}
 
 	return db
 }
