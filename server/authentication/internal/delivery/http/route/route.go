@@ -1,34 +1,21 @@
 package route
 
 import (
-	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/authentication/handler/dto"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/delivery/http"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/delivery/http/middleware"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
-func APIRoutes(e *echo.Echo, authHandler authHandler) {
-	apiGroup := e.Group("/api")
-	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "cookie:csrf_token",
-		CookieName: "csrf_token",
-		CookiePath: "/",
-		CookieHTTPOnly: true,
-		CookieMaxAge: 60,
-		CookieSecure: true,
-		CookieSameSite: http.SameSiteStrictMode,
-		ErrorHandler: func(err error, c echo.Context) error {
-			return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
-				Message: "csrf token not available",
-			})
-		},
-	}))
-	apiGroup.GET("/csrf-token", func(c echo.Context) error {
-		return c.JSON(200, dto.MessageResp{
-			Message: "CSRF token berhasil di-generate",
-		})
-	})
-	apiGroup.POST("/login", authHandler.LoginUser)
-	apiGroup.POST("/logout", authHandler.UserLogout)
-	apiGroup.GET("/refresh_token", authHandler.RefreshToken)
+type APIRoutes struct {
+	AppGroup       *echo.Group
+	AuthController *http.AuthController
+}
+
+func NewAPIRoutes(apiRoutes *APIRoutes) {
+	apiGroup := apiRoutes.AppGroup
+	apiGroup.Use(middleware.CSRFMiddleware)
+	apiGroup.GET("/auth/csrf-token", apiRoutes.AuthController.GetCSRFToken)
+	apiGroup.POST("/auth/login", apiRoutes.AuthController.LoginUser)
+	apiGroup.POST("/auth/verify", apiRoutes.AuthController.Verify)
+	apiGroup.POST("/auth/logout", apiRoutes.AuthController.LogoutUser)
 }

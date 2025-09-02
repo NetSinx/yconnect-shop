@@ -168,7 +168,7 @@ func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *m
 	return response, nil
 }
 
-func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest *model.GetCategoryBySlugRequest) (*entity.Category, error) {
+func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest *model.GetCategoryBySlugRequest) (*model.CategoryResponse, error) {
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -180,5 +180,7 @@ func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest
 		return nil, echo.ErrNotFound
 	}
 
-	return getCategory, nil
+	response := converter.CategoryToResponse(getCategory)
+
+	return response, nil
 }

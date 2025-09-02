@@ -1,26 +1,105 @@
 package usecase
 
 import (
+	"context"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/repository"
 	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type AuthUseCase struct {
-	Log *logrus.Logger
-	Validator *validator.Validate
+	DB             *gorm.DB
+	Log            *logrus.Logger
+	Validator      *validator.Validate
+	RedisClient    *redis.Client
+	AuthRepository *repository.AuthRepository
+	TokenUtil      *helpers.TokenUtil
 }
 
-func NewAuthUseCase(log *logrus.Logger, validator *validator.Validate) *AuthUseCase {
+func NewAuthUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Validate, redisClient *redis.Client, authRepository *repository.AuthRepository, tokenUtil *helpers.TokenUtil) *AuthUseCase {
 	return &AuthUseCase{
-		Log: log,
-		Validator: validator,
+		DB:             db,
+		Log:            log,
+		Validator:      validator,
+		RedisClient:    redisClient,
+		AuthRepository: authRepository,
+		TokenUtil:      tokenUtil,
 	}
 }
 
-func (a *AuthUseCase) LoginUser(loginRequest *model.LoginRequest) string {
-	if err := a.Validator.Struct(loginRequest); err != nil {
+func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRequest) (*model.AuthTokenResponse, error) {
+	tx := a.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	if err := validator.New().Struct(loginRequest); err != nil {
 		a.Log.WithError(err).Error("error validating request body")
-		return ""
+		return nil, echo.ErrBadRequest
 	}
+
+	authEntity := new(entity.Authentication)
+	result, err := a.AuthRepository.GetByEmail(tx, authEntity, loginRequest.Email)
+	if err != nil {
+		a.Log.WithError(err).Error("error getting user")
+		return nil, echo.ErrUnauthorized
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(loginRequest.Password)); err != nil {
+		a.Log.WithError(err).Error("error to compare hash and password")
+		return nil, echo.ErrUnauthorized
+	}
+
+	jwtToken, err := a.TokenUtil.CreateToken(ctx, result.Role, result.ID)
+	if err != nil {
+		a.Log.WithError(err).Error("error generating jwt token")
+		return nil, echo.ErrInternalServerError
+	}
+
+	response := &model.AuthTokenResponse{
+		AuthToken: jwtToken,
+	}
+
+	return response, nil
+}
+
+func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (*model.MessageResponse, error) {
+	if err := a.Validator.Struct(authTokenRequest); err != nil {
+		a.Log.WithError(err).Error("error validating request")
+		return nil, echo.ErrBadRequest
+	}
+
+	if err := a.RedisClient.Exists(ctx, authTokenRequest.AuthToken).Err(); err != nil {
+		a.Log.WithError(err).Error("error getting token")
+		return nil, echo.ErrUnauthorized
+	}
+
+	response := &model.MessageResponse{
+		Message: "User verified successfully",
+	}
+
+	return response, nil
+}
+
+func (a *AuthUseCase) LogoutUser(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (*model.MessageResponse, error) {
+	if err := a.Validator.Struct(authTokenRequest); err != nil {
+		a.Log.WithError(err).Error("error validating request")
+		return nil, echo.ErrBadRequest
+	}
+
+	if err := a.RedisClient.Del(ctx, "token").Err(); err != nil {
+		a.Log.WithError(err).Error("error deleting token")
+		return nil, echo.ErrInternalServerError
+	}
+
+	response := &model.MessageResponse{
+		Message: "User logout successfully",
+	}
+
+	return response, nil
 }

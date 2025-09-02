@@ -4,6 +4,18 @@
         "host": "localhost",
         "port": 8086
     },
+    "database": {
+        "host": "localhost",
+        "port": 3306,
+        "username": "root",
+        "password": "",
+        "name": "yconnect_shop_authentication",
+        "pool": {
+            "idle": 10,
+            "max": 100,
+            "lifetime": 500
+        }
+    },
     "rabbitmq": {
         "enabled": false,
         "host": "localhost",
@@ -13,5 +25,12 @@
     },
     "log": {
         "level": 6
+    },
+    "redis": {
+        "host": "localhost",
+        "port": 5672,
+        "password": "",
+        "database": 0,
+        "protocol": 2
     }
 }
