@@ -9,6 +9,11 @@ import (
 )
 
 func NewRedis(config *viper.Viper, log *logrus.Logger) *redis.Client {
+	if !config.GetBool("redis.enabled") {
+		log.Info("Redis client is disabled")
+		return nil
+	}
+
 	username := config.GetString("redis.username")
 	password := config.GetString("redis.password")
 	host := config.GetString("redis.host")

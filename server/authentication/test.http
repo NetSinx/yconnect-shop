@@ -2,8 +2,7 @@ GET http://localhost:8086/api/auth/csrf-token
 ###
 POST http://localhost:8086/api/auth/login
 Content-Type: application/json
-Cookie: csrf_token=mQgOO5zXG2JttC7dRElXwMQRNf5kcQATecgaom8SoIo; Path=/; HttpOnly; Secure; SameSite=Lax
-X-CSRF-Token: Uv4yy8vqtZzI8YtQP-C9VeVBgwFEzRyXR2YbxFOy-dA
+CSRF-Token: INFOuAlpAt0JlFgOChjrsyo5bBzUsHndKzJXk7nbvDU
 
 {
     "email": "yasin@gmail.com",

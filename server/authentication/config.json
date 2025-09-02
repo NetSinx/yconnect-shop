@@ -27,8 +27,9 @@
         "level": 6
     },
     "redis": {
+        "enabled": true,
         "host": "localhost",
-        "port": 5672,
+        "port": 6379,
         "password": "",
         "database": 0,
         "protocol": 2
