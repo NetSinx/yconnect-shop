@@ -2,6 +2,10 @@ package usecase
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
+	"time"
+
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
@@ -102,4 +106,21 @@ func (a *AuthUseCase) LogoutUser(ctx context.Context, authTokenRequest *model.Au
 	}
 
 	return response, nil
+}
+
+func (a *AuthUseCase) GetCSRFToken(ctx context.Context) (string, error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		a.Log.WithError(err).Error("error generating random bytes")
+		return "", echo.ErrInternalServerError
+	}
+
+	csrfToken := base64.RawURLEncoding.EncodeToString(b)
+
+	if err := a.RedisClient.Set(ctx, "csrf:"+csrfToken, "valid", 5*time.Minute).Err(); err != nil {
+		a.Log.WithError(err).Error("error set csrf token in redis")
+		return "", echo.ErrInternalServerError
+	}
+
+	return csrfToken, nil
 }

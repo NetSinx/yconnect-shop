@@ -65,7 +65,11 @@ func (a *AuthController) LogoutUser(ctx echo.Context) error {
 }
 
 func (a *AuthController) GetCSRFToken(ctx echo.Context) error {
-	csrfToken := ctx.Get("csrf_token")
+	csrfToken, err := a.AuthUseCase.GetCSRFToken(ctx.Request().Context())
+	if err != nil {
+		a.Log.WithError(err).Error("error generating csrf token")
+		return err
+	}
 
 	return ctx.JSON(http.StatusOK, map[string]any{
 		"csrf_token": csrfToken,
