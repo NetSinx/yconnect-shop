@@ -21,8 +21,7 @@ func NewAuthController(log *logrus.Logger, authUseCase *usecase.AuthUseCase) *Au
 }
 
 func (a *AuthController) LoginUser(ctx echo.Context) error {
-	var loginRequest *model.LoginRequest
-
+	loginRequest := new(model.LoginRequest)
 	if err := ctx.Bind(loginRequest); err != nil {
 		a.Log.WithError(err).Error("error binding request to json")
 		return err
