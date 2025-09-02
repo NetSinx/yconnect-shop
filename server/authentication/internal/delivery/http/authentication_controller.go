@@ -36,3 +36,39 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, response)
 }
+
+func (a *AuthController) Verify(ctx echo.Context) error {
+	authTokenRequest := &model.AuthTokenRequest{
+		AuthToken: ctx.Request().Header.Get("Authorization"),
+	}
+
+	response, err := a.AuthUseCase.Verify(ctx.Request().Context(), authTokenRequest)
+	if err != nil {
+		a.Log.WithError(err).Error("error verify user")
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, response)
+}
+
+func (a *AuthController) LogoutUser(ctx echo.Context) error {
+	authTokenRequest := &model.AuthTokenRequest{
+		AuthToken: ctx.Request().Header.Get("Authorization"),
+	}
+
+	response, err := a.AuthUseCase.LogoutUser(ctx.Request().Context(), authTokenRequest)
+	if err != nil {
+		a.Log.WithError(err).Error("error logout user")
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, response)
+}
+
+func (a *AuthController) GetCSRFToken(ctx echo.Context) error {
+	csrfToken := ctx.Get("csrf_token")
+
+	return ctx.JSON(http.StatusOK, map[string]any{
+		"csrf_token": csrfToken,
+	})
+}

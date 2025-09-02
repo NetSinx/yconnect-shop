@@ -5,9 +5,12 @@ type LoginRequest struct {
 	Password string `json:"password" validate:"required,max=100"`
 }
 
-type LoginResponse struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type AuthTokenRequest struct {
+	AuthToken string `json:"auth_token" validate:"required"`
+}
+
+type MessageResponse struct {
+	Message string `json:"message"`
 }
 
 type AuthTokenResponse struct {
