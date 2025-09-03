@@ -41,11 +41,17 @@ func (a *AuthController) Verify(ctx echo.Context) error {
 		AuthToken: ctx.Request().Header.Get("Authorization"),
 	}
 
-	response, err := a.AuthUseCase.Verify(ctx.Request().Context(), authTokenRequest)
+	result, err := a.AuthUseCase.Verify(ctx.Request().Context(), authTokenRequest)
 	if err != nil {
 		a.Log.WithError(err).Error("error verify user")
 		return err
 	}
+
+	ctx.SetCookie(&http.Cookie{
+		Name: "id",
+		Path: "/",
+		Value: result["id"],
+	})
 
 	return ctx.JSON(http.StatusOK, response)
 }

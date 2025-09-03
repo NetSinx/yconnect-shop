@@ -13,6 +13,11 @@ type MessageResponse struct {
 	Message string `json:"message"`
 }
 
+type VerifyResponse struct {
+	ID   uint   `json:"id"`
+	Role string `json:"role"`
+}
+
 type AuthTokenResponse struct {
 	AuthToken string `json:"auth_token"`
 }

@@ -38,7 +38,7 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string, id uint) (stri
 		return "", err
 	}
 
-	t.RedisClient.Set(ctx, "authToken:"+jwt, id, 30*time.Minute)
+	t.RedisClient.HSet(ctx, "authToken:"+jwt, map[string]any{"id": id, "role": role}, 30*time.Minute)
 
 	return jwt, nil
 }
@@ -48,11 +48,17 @@ func (t *TokenUtil) ParseToken(authToken string) error {
 		return []byte(t.SecretKey), nil
 	})
 	if err != nil {
-		return err
+		return echo.ErrInternalServerError
+	}
+
+	if !token.Valid {
+		return echo.ErrUnauthorized
 	}
 
 	claims := token.Claims.(*model.CustomClaims)
 	if claims.ExpiresAt.UnixMilli() < time.Now().UnixMilli() {
 		return echo.ErrUnauthorized
 	}
+
+	return nil
 }
