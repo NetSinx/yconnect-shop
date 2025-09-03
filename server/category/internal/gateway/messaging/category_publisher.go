@@ -12,13 +12,13 @@ import (
 
 type Publisher struct {
 	Connection *amqp.Connection
-	Log *logrus.Logger
+	Log        *logrus.Logger
 }
 
 func NewPublisher(connection *amqp.Connection, log *logrus.Logger) *Publisher {
 	return &Publisher{
 		Connection: connection,
-		Log: log,
+		Log:        log,
 	}
 }
 

@@ -10,8 +10,9 @@ func main() {
 	log := config.NewLogger(viperConfig)
 	db := config.NewDatabase(viperConfig, log)
 	validator := config.NewValidator()
-	rabbitmq := config.NewRabbitMQ(viperConfig, log)
 	app := config.NewEcho()
+	rabbitmq := config.NewRabbitMQ(viperConfig, log)
+	defer rabbitmq.Close()
 
 	config.NewAppBootstrap(&config.AppBootstrap{
 		DB:        db,

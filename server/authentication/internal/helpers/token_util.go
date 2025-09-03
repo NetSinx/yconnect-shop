@@ -41,7 +41,7 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string, id uint) (stri
 		return "", err
 	}
 
-	t.RedisClient.Set(ctx, jwt, id, 30*time.Minute)
+	t.RedisClient.Set(ctx, "authToken:"+jwt, id, 30*time.Minute)
 
 	return jwt, nil
 }

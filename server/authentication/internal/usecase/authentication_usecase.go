@@ -53,6 +53,11 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		return nil, echo.ErrUnauthorized
 	}
 
+	if err := tx.Commit().Error; err != nil {
+		a.Log.WithError(err).Error("error commit the changes in a transaction")
+		return nil, echo.ErrInternalServerError
+	}
+
 	if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(loginRequest.Password)); err != nil {
 		a.Log.WithError(err).Error("error to compare hash and password")
 		return nil, echo.ErrUnauthorized
@@ -77,7 +82,7 @@ func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTo
 		return nil, echo.ErrBadRequest
 	}
 
-	if err := a.RedisClient.Exists(ctx, authTokenRequest.AuthToken).Err(); err != nil {
+	if err := a.RedisClient.Exists(ctx, "authToken:"+authTokenRequest.AuthToken).Err(); err != nil {
 		a.Log.WithError(err).Error("error getting token")
 		return nil, echo.ErrUnauthorized
 	}
