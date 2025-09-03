@@ -2,7 +2,7 @@ GET http://localhost:8086/api/auth/csrf-token
 ###
 POST http://localhost:8086/api/auth/login
 Content-Type: application/json
-CSRF-Token: INFOuAlpAt0JlFgOChjrsyo5bBzUsHndKzJXk7nbvDU
+Cookie: csrf_token=xKTKYvRsNhhjamFgljylMEZYEgEMbHkT; Path=/; Expires=Thu, 04 Sep 2025 14:24:13 GMT; HttpOnly; Secure; SameSite=Strict,csrf_token=xKTKYvRsNhhjamFgljylMEZYEgEMbHkT; Path=/; HttpOnly; Secure; SameSite=Strict
 
 {
     "email": "yasin@gmail.com",
