@@ -1,7 +1,9 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
+
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/usecase"
 	"github.com/labstack/echo/v4"
@@ -65,22 +67,18 @@ func (a *AuthController) LogoutUser(ctx echo.Context) error {
 }
 
 func (a *AuthController) GetCSRFToken(ctx echo.Context) error {
-	csrfToken, err := a.AuthUseCase.GetCSRFToken(ctx.Request().Context())
-	if err != nil {
-		a.Log.WithError(err).Error("error generating csrf token")
-		return err
-	}
-	
+	csrfToken := fmt.Sprintf("%v", ctx.Get("csrf_token"))
+
 	ctx.SetCookie(&http.Cookie{
-		Name: "csrf_token",
-		Path: "/",
-		Value: csrfToken,
+		Name:     "csrf_token",
+		Path:     "/",
+		Value:    csrfToken,
 		HttpOnly: true,
-		Secure: true,
+		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
 	})
 
-	return ctx.JSON(http.StatusOK, map[string]any{
-		"csrf_token": csrfToken,
+	return ctx.JSON(http.StatusOK, &model.MessageResponse{
+		Message: "CSRF Token generated successfully",
 	})
 }

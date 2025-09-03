@@ -18,6 +18,8 @@ func NewAPIRoutes(apiRoutes *APIRoutes) {
 	apiGroup := apiRoutes.AppGroup
 	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookieName: "csrf_token",
+		TokenLookup: "cookie:csrf_token",
+		ContextKey: "csrf_token",
 		CookiePath: "/",
 		CookieHTTPOnly: true,
 		CookieSecure: true,
