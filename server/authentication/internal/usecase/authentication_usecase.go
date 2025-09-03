@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
-	"time"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
@@ -76,7 +75,7 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 	return response, nil
 }
 
-func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (map[string]string, error) {
+func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (*model.MessageResponse, error) {
 	if err := a.Validator.Struct(authTokenRequest); err != nil {
 		a.Log.WithError(err).Error("error validating request")
 		return nil, echo.ErrBadRequest
@@ -87,13 +86,16 @@ func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTo
 		return nil, err
 	}
 
-	result, err := a.RedisClient.HGetAll(ctx, "authToken:"+authTokenRequest.AuthToken).Result()
-	if err != nil {
+	if err := a.RedisClient.Exists(ctx, "authToken:"+authTokenRequest.AuthToken).Err(); err != nil {
 		a.Log.WithError(err).Error("error getting token")
 		return nil, echo.ErrUnauthorized
 	}
+
+	response := &model.MessageResponse{
+		Message: "User verified successfully",
+	}
 	
-	return result, nil
+	return response, nil
 }
 
 func (a *AuthUseCase) LogoutUser(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (*model.MessageResponse, error) {
@@ -102,7 +104,7 @@ func (a *AuthUseCase) LogoutUser(ctx context.Context, authTokenRequest *model.Au
 		return nil, echo.ErrBadRequest
 	}
 
-	if err := a.RedisClient.Del(ctx, "token").Err(); err != nil {
+	if err := a.RedisClient.Del(ctx, "authToken:"+authTokenRequest.AuthToken).Err(); err != nil {
 		a.Log.WithError(err).Error("error deleting token")
 		return nil, echo.ErrInternalServerError
 	}
@@ -121,12 +123,5 @@ func (a *AuthUseCase) GetCSRFToken(ctx context.Context) (string, error) {
 		return "", echo.ErrInternalServerError
 	}
 
-	csrfToken := base64.RawURLEncoding.EncodeToString(b)
-
-	if err := a.RedisClient.Set(ctx, "csrf:"+csrfToken, "valid", 5*time.Minute).Err(); err != nil {
-		a.Log.WithError(err).Error("error set csrf token in redis")
-		return "", echo.ErrInternalServerError
-	}
-
-	return csrfToken, nil
+	return base64.RawURLEncoding.EncodeToString(b), nil
 }

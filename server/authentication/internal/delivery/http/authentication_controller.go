@@ -41,17 +41,11 @@ func (a *AuthController) Verify(ctx echo.Context) error {
 		AuthToken: ctx.Request().Header.Get("Authorization"),
 	}
 
-	result, err := a.AuthUseCase.Verify(ctx.Request().Context(), authTokenRequest)
+	response, err := a.AuthUseCase.Verify(ctx.Request().Context(), authTokenRequest)
 	if err != nil {
 		a.Log.WithError(err).Error("error verify user")
 		return err
 	}
-
-	ctx.SetCookie(&http.Cookie{
-		Name: "id",
-		Path: "/",
-		Value: result["id"],
-	})
 
 	return ctx.JSON(http.StatusOK, response)
 }
@@ -76,6 +70,15 @@ func (a *AuthController) GetCSRFToken(ctx echo.Context) error {
 		a.Log.WithError(err).Error("error generating csrf token")
 		return err
 	}
+	
+	ctx.SetCookie(&http.Cookie{
+		Name: "csrf_token",
+		Path: "/",
+		Value: csrfToken,
+		HttpOnly: true,
+		Secure: true,
+		SameSite: http.SameSiteStrictMode,
+	})
 
 	return ctx.JSON(http.StatusOK, map[string]any{
 		"csrf_token": csrfToken,

@@ -28,7 +28,7 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string, id uint) (stri
 		Role: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
 		},
 	}
 
@@ -38,7 +38,7 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string, id uint) (stri
 		return "", err
 	}
 
-	t.RedisClient.HSet(ctx, "authToken:"+jwt, map[string]any{"id": id, "role": role}, 30*time.Minute)
+	t.RedisClient.HSet(ctx, "authToken:"+jwt, map[string]any{"id": id, "role": role}, time.Hour)
 
 	return jwt, nil
 }
