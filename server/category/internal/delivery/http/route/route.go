@@ -1,14 +1,15 @@
 package route
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/category/internal/delivery/http"
-	"github.com/NetSinx/yconnect-shop/server/category/internal/delivery/http/middleware"
+	httpController "github.com/NetSinx/yconnect-shop/server/category/internal/delivery/http"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 type APIRoutes struct {
 	AppGroup           *echo.Group
-	CategoryController *http.CategoryController
+	CategoryController *httpController.CategoryController
 }
 
 func NewAPIRoutes(apiRoutes *APIRoutes) {
@@ -24,7 +25,15 @@ func (a *APIRoutes) guestAPIRoutes() {
 
 func (a *APIRoutes) authAdminAPIRoutes() {
 	adminGroup := a.AppGroup.Group("/admin")
-	adminGroup.Use(middleware.CSRFMiddleware)
+	adminGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		CookieName: "csrf_token",
+		TokenLookup: "cookie:csrf_token",
+		ContextKey: "csrf_token",
+		CookiePath: "/",
+		CookieHTTPOnly: true,
+		CookieSecure: true,
+		CookieSameSite: http.SameSiteStrictMode,
+	}))
 	adminGroup.POST("/category", a.CategoryController.CreateCategory)
 	adminGroup.PUT("/category/:slug", a.CategoryController.UpdateCategory)
 	adminGroup.DELETE("/category/:slug", a.CategoryController.DeleteCategory)

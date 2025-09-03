@@ -56,7 +56,7 @@ func (c *CategoryController) ListCategory(ctx echo.Context) error {
 }
 
 func (c *CategoryController) CreateCategory(ctx echo.Context) error {
-	var categoryRequest *model.CreateCategoryRequest
+	categoryRequest := new(model.CreateCategoryRequest)
 
 	if err := ctx.Bind(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")

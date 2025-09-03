@@ -27,7 +27,7 @@ func NewAppBootstrap(appBootstrap *AppBootstrap) {
 	publisher := messaging.NewPublisher(appBootstrap.RabbitMQ, appBootstrap.Log)
 
 	repository := repository.NewCategoryRepository(appBootstrap.Log)
-	useCase := usecase.NewCategoryUseCase(appBootstrap.DB, appBootstrap.Log, appBootstrap.Validator, repository, publisher)
+	useCase := usecase.NewCategoryUseCase(appBootstrap.Config, appBootstrap.DB, appBootstrap.Log, appBootstrap.Validator, repository, publisher)
 	controller := http.NewCategoryController(useCase, appBootstrap.Log)
 
 	route.NewAPIRoutes(&route.APIRoutes{

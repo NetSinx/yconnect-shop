@@ -10,26 +10,32 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/category/internal/repository"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/redis/go-redis"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
 type CategoryUseCase struct {
+	Config             *viper.Viper
 	DB                 *gorm.DB
 	Log                *logrus.Logger
+	RedisClient        *redis.Client
 	Validator          *validator.Validate
 	CategoryRepository *repository.CategoryRepository
 	CategoryPublisher  *messaging.Publisher
 }
 
-func NewCategoryUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Validate,
+func NewCategoryUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, redisClient *redis.Client, validator *validator.Validate,
 	categoryRepository *repository.CategoryRepository, categoryPublisher *messaging.Publisher) *CategoryUseCase {
 	return &CategoryUseCase{
+		Config:             config,
 		DB:                 db,
 		Log:                log,
+		RedisClient:        redisClient,
 		Validator:          validator,
 		CategoryRepository: categoryRepository,
-		CategoryPublisher: categoryPublisher,
+		CategoryPublisher:  categoryPublisher,
 	}
 }
 
@@ -88,10 +94,13 @@ func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryRequest *m
 
 	category.ID = categoryID
 	event := converter.CategoryToEvent(category)
-	c.CategoryPublisher.Send("category.created", event)
+
+	if c.Config.GetBool("rabbitmq.enabled") {
+		c.CategoryPublisher.Send("category.created", event)
+	}
 
 	response := converter.CategoryToResponse(category)
-	
+
 	return response, nil
 }
 
@@ -110,11 +119,11 @@ func (c *CategoryUseCase) UpdateCategory(ctx context.Context, categoryRequest *m
 		c.Log.WithError(err).Error("error getting category")
 		return nil, echo.ErrNotFound
 	}
-	
+
 	category.ID = resultCategory.ID
 	category.Nama = helpers.ToTitle(categoryRequest.Nama)
 	category.Slug = helpers.ToSlug(categoryRequest.Nama)
-	
+
 	if err := c.CategoryRepository.UpdateCategory(tx, category); err != nil {
 		c.Log.WithError(err).Error("error updating category")
 		return nil, echo.ErrInternalServerError
