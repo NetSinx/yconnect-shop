@@ -18,7 +18,7 @@ type CategoryController struct {
 func NewCategoryController(categoryUseCase *usecase.CategoryUseCase, log *logrus.Logger) *CategoryController {
 	return &CategoryController{
 		CategoryUseCase: categoryUseCase,
-		Log: log,
+		Log:             log,
 	}
 }
 
@@ -45,8 +45,8 @@ func (c *CategoryController) ListCategory(ctx echo.Context) error {
 	listCategoriesResponse := model.ListCategoryResponse{
 		Data: listCategories,
 		PageMetadata: &model.PageMetadataResponse{
-			Page: categoryRequest.Page,
-			Size: categoryRequest.Size,
+			Page:      categoryRequest.Page,
+			Size:      categoryRequest.Size,
 			TotalItem: total,
 			TotalPage: int64(math.Ceil(float64(total) / float64(categoryRequest.Size))),
 		},
@@ -71,7 +71,7 @@ func (c *CategoryController) CreateCategory(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, model.CategoryResponseWithMessage{
 		Message: "Data created successfully",
-		Data: response,
+		Data:    response,
 	})
 }
 
@@ -93,7 +93,7 @@ func (c *CategoryController) UpdateCategory(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, model.CategoryResponseWithMessage{
 		Message: "Data updated successfully",
-		Data: response,
+		Data:    response,
 	})
 }
 
@@ -110,7 +110,7 @@ func (c *CategoryController) DeleteCategory(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, model.CategoryResponseWithMessage{
 		Message: "Data deleted successfully",
-		Data: response,
+		Data:    response,
 	})
 }
 
