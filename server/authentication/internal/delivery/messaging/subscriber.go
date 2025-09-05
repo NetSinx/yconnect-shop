@@ -97,6 +97,7 @@ func (s *Subscriber) Receive() {
 				if err := s.AuthUseCase.Delete(userEvent); err != nil {
 					s.Log.WithError(err).Error("error deleting user data miror")
 				}
+			default:
 			}
 		}
 	}()
