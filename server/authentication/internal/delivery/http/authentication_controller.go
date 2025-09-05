@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/usecase"
@@ -35,35 +36,55 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, response)
+	ctx.SetCookie(&http.Cookie{
+		Name: "auth_token",
+		Path: "/",
+		Value: response.AuthToken,
+		Secure: true,
+		HttpOnly: true,
+		Expires: time.Now().Add(30 * time.Minute),
+		SameSite: http.SameSiteLaxMode,
+	})
+
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 func (a *AuthController) Verify(ctx echo.Context) error {
-	authTokenRequest := &model.AuthTokenRequest{
-		AuthToken: ctx.Request().Header.Get("Authorization"),
+	authTokenRequest, err := ctx.Cookie("auth_token")
+	if err != nil {
+		a.Log.WithError(err).Error("error getting auth token in cookie")
+		return echo.ErrBadRequest
 	}
 
-	response, err := a.AuthUseCase.Verify(ctx.Request().Context(), authTokenRequest)
-	if err != nil {
+	authRequest := &model.AuthTokenRequest{
+		AuthToken: authTokenRequest.Value,
+	}
+
+	if err := a.AuthUseCase.Verify(ctx.Request().Context(), authRequest); err != nil {
 		a.Log.WithError(err).Error("error verify user")
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, response)
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 func (a *AuthController) LogoutUser(ctx echo.Context) error {
-	authTokenRequest := &model.AuthTokenRequest{
-		AuthToken: ctx.Request().Header.Get("Authorization"),
+	authTokenRequest, err := ctx.Cookie("auth_token")
+	if err != nil {
+		a.Log.WithError(err).Error("error getting auth token in cookie")
+		return echo.ErrBadRequest
 	}
 
-	response, err := a.AuthUseCase.LogoutUser(ctx.Request().Context(), authTokenRequest)
-	if err != nil {
+	authRequest := &model.AuthTokenRequest{
+		AuthToken: authTokenRequest.Value,
+	}
+
+	if err := a.AuthUseCase.LogoutUser(ctx.Request().Context(), authRequest); err != nil {
 		a.Log.WithError(err).Error("error logout user")
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, response)
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 func (a *AuthController) GetCSRFToken(ctx echo.Context) error {
@@ -78,7 +99,5 @@ func (a *AuthController) GetCSRFToken(ctx echo.Context) error {
 		SameSite: http.SameSiteStrictMode,
 	})
 
-	return ctx.JSON(http.StatusOK, &model.MessageResponse{
-		Message: "CSRF Token generated successfully",
-	})
+	return ctx.NoContent(http.StatusNoContent)
 }

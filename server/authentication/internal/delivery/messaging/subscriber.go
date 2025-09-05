@@ -12,17 +12,17 @@ import (
 )
 
 type Subscriber struct {
-	Connection *amqp.Connection
-	Log        *logrus.Logger
-	DB *gorm.DB
+	Connection  *amqp.Connection
+	Log         *logrus.Logger
+	DB          *gorm.DB
 	AuthUseCase *usecase.AuthUseCase
 }
 
 func NewSubscriber(connection *amqp.Connection, log *logrus.Logger, db *gorm.DB, authUseCase *usecase.AuthUseCase) *Subscriber {
 	return &Subscriber{
-		Connection: connection,
-		Log:        log,
-		DB: db,
+		Connection:  connection,
+		Log:         log,
+		DB:          db,
 		AuthUseCase: authUseCase,
 	}
 }
@@ -77,7 +77,6 @@ func (s *Subscriber) Receive() {
 	)
 	helpers.FatalError(s.Log, err, "failed to register a consumer")
 
-	var forever chan struct{}
 	go func() {
 		for d := range msgs {
 			var userEvent *model.UserEvent
@@ -88,11 +87,17 @@ func (s *Subscriber) Receive() {
 			switch d.RoutingKey {
 			case "user.created":
 				if err := s.AuthUseCase.Create(userEvent); err != nil {
-					s.Log.WithError(err).Error("error creating user miror")
+					s.Log.WithError(err).Error("error creating user data miror")
+				}
+			case "user.updated":
+				if err := s.AuthUseCase.Update(userEvent); err != nil {
+					s.Log.WithError(err).Error("error updating user data miror")
+				}
+			case "user.deleted":
+				if err := s.AuthUseCase.Delete(userEvent); err != nil {
+					s.Log.WithError(err).Error("error deleting user data miror")
 				}
 			}
 		}
 	}()
-
-	<-forever
 }

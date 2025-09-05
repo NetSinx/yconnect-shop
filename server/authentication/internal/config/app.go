@@ -3,11 +3,13 @@ package config
 import (
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/delivery/http"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/delivery/http/route"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/delivery/messaging"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/repository"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/usecase"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -21,17 +23,21 @@ type AppConfig struct {
 	Validator   *validator.Validate
 	App         *echo.Echo
 	RedisClient *redis.Client
-	TokenUtil   *helpers.TokenUtil
+	RabbitMQ    *amqp.Connection
 }
 
 func BootstrapApp(config *AppConfig) {
+	tokenUtil := helpers.NewTokenUtil("rahasiadeh", config.RedisClient)
+	
 	repository := repository.NewAuthRepository(config.Log)
-	usecase := usecase.NewAuthUseCase(config.DB, config.Log, config.Validator, config.RedisClient, repository, config.TokenUtil)
+	usecase := usecase.NewAuthUseCase(config.DB, config.Log, config.Validator, config.RedisClient, repository, tokenUtil)
 	controller := http.NewAuthController(config.Log, usecase)
 
+	subscriber := messaging.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
+	subscriber.Receive()
+
 	route.NewAPIRoutes(&route.APIRoutes{
-		AppGroup: config.App.Group("/api"),
+		AppGroup:       config.App.Group("/api"),
 		AuthController: controller,
-		RedisClient: config.RedisClient,
 	})
 }

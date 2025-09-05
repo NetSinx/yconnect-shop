@@ -73,43 +73,35 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 	return response, nil
 }
 
-func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (*model.MessageResponse, error) {
+func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTokenRequest) error {
 	if err := a.Validator.Struct(authTokenRequest); err != nil {
 		a.Log.WithError(err).Error("error validating request")
-		return nil, echo.ErrBadRequest
+		return echo.ErrBadRequest
 	}
 
 	if err := a.TokenUtil.ParseToken(authTokenRequest.AuthToken); err != nil {
 		a.Log.WithError(err).Error("error parsing token")
-		return nil, err
+		return err
 	}
 
 	if err := a.RedisClient.Exists(ctx, "authToken:"+authTokenRequest.AuthToken).Err(); err != nil {
 		a.Log.WithError(err).Error("error getting token")
-		return nil, echo.ErrUnauthorized
-	}
-
-	response := &model.MessageResponse{
-		Message: "User verified successfully",
+		return echo.ErrUnauthorized
 	}
 	
-	return response, nil
+	return nil
 }
 
-func (a *AuthUseCase) LogoutUser(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (*model.MessageResponse, error) {
+func (a *AuthUseCase) LogoutUser(ctx context.Context, authTokenRequest *model.AuthTokenRequest) error {
 	if err := a.Validator.Struct(authTokenRequest); err != nil {
 		a.Log.WithError(err).Error("error validating request")
-		return nil, echo.ErrBadRequest
+		return echo.ErrBadRequest
 	}
 
 	if err := a.RedisClient.Del(ctx, "authToken:"+authTokenRequest.AuthToken).Err(); err != nil {
 		a.Log.WithError(err).Error("error deleting token")
-		return nil, echo.ErrInternalServerError
+		return echo.ErrInternalServerError
 	}
 
-	response := &model.MessageResponse{
-		Message: "User logout successfully",
-	}
-
-	return response, nil
+	return nil
 }

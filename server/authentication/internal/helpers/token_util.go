@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
@@ -38,7 +39,9 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string, id uint) (stri
 		return "", err
 	}
 
-	t.RedisClient.HSet(ctx, "authToken:"+jwt, map[string]any{"id": id, "role": role}, time.Hour)
+	valueAuth := map[string]any{"id": id, "role": role}
+	byteValue, _ := json.Marshal(valueAuth)
+	t.RedisClient.Set(ctx, "authToken:"+jwt, byteValue, time.Hour)
 
 	return jwt, nil
 }

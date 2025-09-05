@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/config"
-	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 )
 
 func main() {
@@ -13,7 +12,7 @@ func main() {
 	validator := config.NewValidator()
 	app := config.NewEcho()
 	redis := config.NewRedis(viperConfig, log)
-	tokenUtil := helpers.NewTokenUtil("rahasiadeh", redis)
+	rabbitmq := config.NewRabbitMQ(viperConfig, log)
 
 	config.BootstrapApp(&config.AppConfig{
 		Config:      viperConfig,
@@ -22,7 +21,7 @@ func main() {
 		Validator:   validator,
 		App:         app,
 		RedisClient: redis,
-		TokenUtil:   tokenUtil,
+		RabbitMQ:    rabbitmq,
 	})
 
 	host := viperConfig.GetString("app.host")
