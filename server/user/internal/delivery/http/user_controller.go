@@ -1,4 +1,4 @@
-package controller
+package http
 
 import (
 	"crypto/md5"
@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
-	"github.com/NetSinx/yconnect-shop/server/user/model/entity"
-	"github.com/NetSinx/yconnect-shop/server/user/service"
+	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
+	"github.com/NetSinx/yconnect-shop/server/user/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/user/usecase"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )

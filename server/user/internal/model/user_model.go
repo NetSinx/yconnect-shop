@@ -1,0 +1,35 @@
+package model
+
+type UpdateAlamatRequest struct {
+	NamaJalan string `json:"nama_jalan" validate:"required,max=100"`
+	RT        int    `json:"rt" validate:"required"`
+	RW        int    `json:"rw" validate:"required"`
+	Kelurahan string `json:"kelurahan" validate:"required,max=100"`
+	Kecamatan string `json:"kecamatan" validate:"required,max=100"`
+	Kota      string `json:"kota" validate:"required,max=100"`
+	KodePos   int    `json:"kode_pos" validate:"required"`
+}
+
+type UpdateUserRequest struct {
+	NamaLengkap string              `json:"nama_lengkap" validate:"required,max=100"`
+	Username    string              `json:"username" validate:"required,max=50"`
+	Email       string              `json:"email" validate:"required,max=100,email"`
+	Alamat      UpdateAlamatRequest `json:"alamat"`
+	NoHP        string              `json:"no_hp" validate:"required,max=12"`
+}
+
+type GetUserByUsernameRequest struct {
+	Username string `json:"username" validate:"required,max=50"`
+}
+
+type UserResponse struct {
+	ID          uint   `json:"id"`
+	NamaLengkap string `json:"nama_lengkap" validate:"required,max=100"`
+	Username    string `json:"username" validate:"required,max=50"`
+	Email       string `json:"email" validate:"required,max=100,email"`
+	NoHP        string `json:"no_hp" validate:"required,max=12"`
+}
+
+type MessageResp struct {
+	Message string `json:"message"`
+}
