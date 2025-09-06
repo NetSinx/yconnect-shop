@@ -4,7 +4,6 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http/route"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/delivery/messaging"
-	"github.com/NetSinx/yconnect-shop/server/user/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/usecase"
 	"github.com/go-playground/validator/v10"
@@ -27,17 +26,15 @@ type AppConfig struct {
 }
 
 func BootstrapApp(config *AppConfig) {
-	tokenUtil := helpers.NewTokenUtil("rahasiadeh", config.RedisClient)
-	
-	repository := repository.NewAuthRepository(config.Log)
-	usecase := usecase.NewAuthUseCase(config.DB, config.Log, config.Validator, config.RedisClient, repository, tokenUtil)
-	controller := http.NewAuthController(config.Log, usecase)
+	repository := repository.NewUserRepository(config.Log)
+	usecase := usecase.NewUserUseCase(config.DB, config.Log, config.Validator, config.RedisClient, repository)
+	controller := http.NewUserController(config.Log, usecase)
 
 	subscriber := messaging.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
 	subscriber.Receive()
 
-	route.NewAPIRoutes(&route.APIRoutes{
+	route.NewApiRoutes(&route.APIRoutes{
 		AppGroup:       config.App.Group("/api"),
-		AuthController: controller,
+		UserController: controller,
 	})
 }
