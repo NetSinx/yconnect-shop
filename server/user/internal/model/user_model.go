@@ -18,16 +18,32 @@ type UpdateUserRequest struct {
 	NoHP        string              `json:"no_hp" validate:"required,max=12"`
 }
 
+type DeleteUserRequest struct {
+	Username string `json:"username" validate:"required,max=50"`
+}
+
 type GetUserByUsernameRequest struct {
 	Username string `json:"username" validate:"required,max=50"`
 }
 
+type AlamatResponse struct {
+	ID        uint   `json:"id"`
+	NamaJalan string `json:"nama_jalan"`
+	RT        int    `json:"rt"`
+	RW        int    `json:"rw"`
+	Kelurahan string `json:"kelurahan"`
+	Kecamatan string `json:"kecamatan"`
+	Kota      string `json:"kota"`
+	KodePos   int    `json:"kode_pos"`
+}
+
 type UserResponse struct {
-	ID          uint   `json:"id"`
-	NamaLengkap string `json:"nama_lengkap" validate:"required,max=100"`
-	Username    string `json:"username" validate:"required,max=50"`
-	Email       string `json:"email" validate:"required,max=100,email"`
-	NoHP        string `json:"no_hp" validate:"required,max=12"`
+	ID          uint            `json:"id"`
+	NamaLengkap string          `json:"nama_lengkap"`
+	Username    string          `json:"username"`
+	Email       string          `json:"email"`
+	Alamat      *AlamatResponse `json:"alamat"`
+	NoHP        string          `json:"no_hp"`
 }
 
 type MessageResp struct {

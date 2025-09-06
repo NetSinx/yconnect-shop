@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/NetSinx/yconnect-shop/server/user/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model/converter"
@@ -9,7 +10,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -61,9 +61,10 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UpdateU
 	userEntity.NamaLengkap = userRequest.NamaLengkap
 	userEntity.Username = userRequest.Username
 	userEntity.Email = userRequest.Email
+	userEntity.Alamat = alamatEntity
 	userEntity.NoHP = userRequest.NoHP
 
-	if err := u.UserRepository.UpdateUser(tx, userEntity, alamatEntity); err != nil {
+	if err := u.UserRepository.UpdateUser(tx, userEntity); err != nil {
 		u.Log.WithError(err).Error("error updating user")
 		return nil, echo.ErrInternalServerError
 	}
@@ -73,12 +74,18 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UpdateU
 		return nil, echo.ErrInternalServerError
 	}
 
-	return converter.UserToResponse(entity), nil
+	return converter.UserToResponse(userEntity), nil
 }
 
 func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.GetUserByUsernameRequest) (*model.UserResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
+
+	
+	if err := u.Validator.Struct(userRequest); err != nil {
+		u.Log.WithError(err).Error("error validating request body")
+		return nil, echo.ErrBadRequest
+	}
 
 	entity := new(entity.User)
 	user, err := u.UserRepository.GetUserByUsername(tx, entity, userRequest.Username)
@@ -86,25 +93,33 @@ func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.
 		u.Log.WithError(err).Error("error getting user")
 		return nil, echo.ErrNotFound
 	}
+	
+	if err := tx.Commit().Error; err != nil {
+		u.Log.WithError(err).Error("error getting user")
+		return nil, echo.ErrInternalServerError
+	}
 
 	return converter.UserToResponse(user), nil
 }
 
-func (u *UserUseCase) DeleteUser(user entity.User, username, email string) error {
-	getUser, err := u.userRepository.GetUser(user, username, email)
-	if err != nil {
-		return fmt.Errorf("user tidak ditemukan")
+func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteUserRequest) error {
+	tx := u.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	if err := u.Validator.Struct(userRequest); err != nil {
+		u.Log.WithError(err).Error("error validating request body")
+		return echo.ErrBadRequest
 	}
 
-	if getUser.Avatar != "" {
-		os.Remove("." + getUser.Avatar)
+	entity := new(entity.User)
+	if _, err := u.UserRepository.GetUserByUsername(tx, entity, userRequest.Username); err != nil {
+		u.Log.WithError(err).Error("error getting user")
+		return echo.ErrNotFound
 	}
 
-	err = u.userRepository.DeleteUser(user, username)
-	if err != nil && err == gorm.ErrRecordNotFound {
-		return fmt.Errorf("user tidak ditemukan")
-	} else if err != nil {
-		return err
+	if err := u.UserRepository.DeleteUser(tx, entity, userRequest.Username); err != nil {
+		u.Log.WithError(err).Error("error deleting user")
+		return echo.ErrInternalServerError
 	}
 
 	return nil

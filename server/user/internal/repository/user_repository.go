@@ -16,8 +16,8 @@ func NewUserRepository(log *logrus.Logger) *UserRepository {
 	}
 }
 
-func (u *UserRepository) UpdateUser(db *gorm.DB, userEntity *entity.User, alamatEntity *entity.Alamat) error {
-	if err := db.Save(alamatEntity).Error; err != nil {
+func (u *UserRepository) UpdateUser(db *gorm.DB, userEntity *entity.User) error {
+	if err := db.Save(userEntity.Alamat).Error; err != nil {
 		return err
 	}
 

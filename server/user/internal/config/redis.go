@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
+	"github.com/NetSinx/yconnect-shop/server/user/internal/helpers"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
