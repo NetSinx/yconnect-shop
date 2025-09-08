@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"time"
-
 	"github.com/NetSinx/yconnect-shop/server/user/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model/converter"
@@ -34,7 +33,32 @@ func NewUserUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Valida
 	}
 }
 
-func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UpdateUserRequest, username string) (*model.UserResponse, error) {
+func (u *UserUseCase) RegisterUser(ctx context.Context, userEvent *model.RegisterUserEvent) error {
+	tx := u.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	entity := &entity.User{
+		NamaLengkap: userEvent.NamaLengkap,
+		Username: userEvent.Username,
+		Email: userEvent.Email,
+		Role: userEvent.Role,
+		NoHP: userEvent.NoHP,
+	}
+
+	if err := u.UserRepository.RegisterUser(tx, entity); err != nil {
+		u.Log.WithError(err).Error("error registering user")
+		return echo.ErrInternalServerError
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Log.WithError(err).Error("error registering user")
+		return echo.ErrInternalServerError
+	}
+
+	return nil
+}
+
+func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserRequest, username string) (*model.DataResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -94,10 +118,14 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UpdateU
 		return nil, echo.ErrInternalServerError
 	}
 
-	return converter.UserToResponse(userEntity), nil
+	response := &model.DataResponse{
+		Data: converter.UserToResponse(userEntity),
+	}
+
+	return response, nil
 }
 
-func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.GetUserByUsernameRequest) (*model.UserResponse, error) {
+func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.GetUserByUsernameRequest) (*model.DataResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -108,8 +136,8 @@ func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.
 
 	result, err := u.RedisClient.Get(ctx, "user:"+userRequest.Username).Result()
 	if err == nil {
-		var userResponse *model.UserResponse
-		json.Unmarshal([]byte(result), userResponse)
+		userResponse := new(model.DataResponse)
+		json.Unmarshal([]byte(result), userResponse.Data)
 		return userResponse, nil
 	}
 
@@ -131,7 +159,11 @@ func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.
 		return nil, echo.ErrInternalServerError
 	}
 
-	return converter.UserToResponse(user), nil
+	response := &model.DataResponse{
+		Data: converter.UserToResponse(user),
+	}
+
+	return response, nil
 }
 
 func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteUserRequest) error {
