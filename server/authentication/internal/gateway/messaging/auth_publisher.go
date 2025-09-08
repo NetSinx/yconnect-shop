@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"time"
-
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -40,14 +39,14 @@ func (p *Publisher) Send(ctx context.Context, message *model.RegisterUserEvent) 
 	)
 	helpers.FatalError(p.Log, err, "failed to declare an exchange")
 
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	c, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	msgByte, err := json.Marshal(message)
 	helpers.FatalError(p.Log, err, "failed to marshaling message")
 
 	err = ch.PublishWithContext(
-		ctx,
+		c,
 		exchange,
 		"user_register",
 		false,

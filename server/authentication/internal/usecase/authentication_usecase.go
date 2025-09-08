@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
@@ -11,7 +10,6 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/repository"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -30,7 +28,7 @@ type AuthUseCase struct {
 	TokenUtil      *helpers.TokenUtil
 }
 
-func NewAuthUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, validator *validator.Validate, rabbitmq *amqp.Connection, publisher *messaging.Publisher, redisClient *redis.Client, authRepository *repository.AuthRepository, tokenUtil *helpers.TokenUtil) *AuthUseCase {
+func NewAuthUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, validator *validator.Validate, publisher *messaging.Publisher, redisClient *redis.Client, authRepository *repository.AuthRepository, tokenUtil *helpers.TokenUtil) *AuthUseCase {
 	return &AuthUseCase{
 		Config:         config,
 		DB:             db,
@@ -155,6 +153,30 @@ func (a *AuthUseCase) LogoutUser(ctx context.Context, authTokenRequest *model.Au
 
 	if err := a.RedisClient.Del(ctx, "authToken:"+authTokenRequest.AuthToken).Err(); err != nil {
 		a.Log.WithError(err).Error("error deleting token")
+		return echo.ErrInternalServerError
+	}
+
+	return nil
+}
+
+func (a *AuthUseCase) DeleteUserAuthentication(ctx context.Context, deleteUserEvent *model.DeleteUserEvent) error {
+	tx := a.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	entity := new(entity.Authentication)
+	result, err := a.AuthRepository.GetByEmail(tx, entity, deleteUserEvent.Email)
+	if err != nil {
+		a.Log.WithError(err).Error("error getting user authentication")
+		return echo.ErrNotFound
+	}
+
+	if err := a.AuthRepository.Delete(tx, result); err != nil {
+		a.Log.WithError(err).Error("error deleting user authentication")
+		return echo.ErrInternalServerError
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		a.Log.WithError(err).Error("error deleting user authentication")
 		return echo.ErrInternalServerError
 	}
 

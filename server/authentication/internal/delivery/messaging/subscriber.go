@@ -1,8 +1,8 @@
 package messaging
 
 import (
+	"context"
 	"encoding/json"
-
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/usecase"
@@ -32,10 +32,10 @@ func (s *Subscriber) Receive() {
 	helpers.PanicError(s.Log, err, "failed to open a channel")
 	defer ch.Close()
 
-	exchange := "user_service_events"
+	exchange := "user_deleted_events"
 	err = ch.ExchangeDeclare(
 		exchange,
-		"topic",
+		"direct",
 		true,
 		false,
 		false,
@@ -45,7 +45,7 @@ func (s *Subscriber) Receive() {
 	helpers.FatalError(s.Log, err, "failed to declare an exchange")
 
 	q, err := ch.QueueDeclare(
-		"user_auth_mirror",
+		"user_deleted_queue",
 		true,
 		false,
 		false,
@@ -54,17 +54,14 @@ func (s *Subscriber) Receive() {
 	)
 	helpers.FatalError(s.Log, err, "failed to declare a queue")
 
-	routingKey := []string{"user.created", "user.updated", "user.deleted"}
-	for _, k := range routingKey {
-		err = ch.QueueBind(
-			q.Name,
-			k,
-			exchange,
-			false,
-			nil,
-		)
-		helpers.FatalError(s.Log, err, "failed to bind a queue")
-	}
+	err = ch.QueueBind(
+		q.Name,
+		"user_deleted",
+		exchange,
+		false,
+		nil,
+	)
+	helpers.FatalError(s.Log, err, "failed to bind a queue")
 
 	msgs, err := ch.Consume(
 		q.Name,
@@ -79,26 +76,13 @@ func (s *Subscriber) Receive() {
 
 	go func() {
 		for d := range msgs {
-			var userEvent *model.UserEvent
-			if err := json.Unmarshal(d.Body, userEvent); err != nil {
-				helpers.FatalError(s.Log, err, "error unmarshalling message body")
+			var ctx context.Context
+			var deleteUserEvent *model.DeleteUserEvent
+			if err := json.Unmarshal(d.Body, deleteUserEvent); err != nil {
+				helpers.FatalError(s.Log, err, "error unmarshaling message body")
 			}
 
-			switch d.RoutingKey {
-			case "user.created":
-				if err := s.AuthUseCase.Create(userEvent); err != nil {
-					s.Log.WithError(err).Error("error creating user data miror")
-				}
-			case "user.updated":
-				if err := s.AuthUseCase.Update(userEvent); err != nil {
-					s.Log.WithError(err).Error("error updating user data miror")
-				}
-			case "user.deleted":
-				if err := s.AuthUseCase.Delete(userEvent); err != nil {
-					s.Log.WithError(err).Error("error deleting user data miror")
-				}
-			default:
-			}
+			s.AuthUseCase.DeleteUserAuthentication(ctx, deleteUserEvent)
 		}
 	}()
 }

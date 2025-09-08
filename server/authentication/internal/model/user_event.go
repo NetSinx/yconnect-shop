@@ -7,3 +7,7 @@ type RegisterUserEvent struct {
 	Role        string `json:"role"`
 	NoHP        string `json:"no_hp"`
 }
+
+type DeleteUserEvent struct {
+	Email string `json:"email"`
+}
