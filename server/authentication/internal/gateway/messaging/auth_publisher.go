@@ -28,7 +28,7 @@ func (p *Publisher) Send(ctx context.Context, message *model.RegisterUserEvent) 
 	helpers.PanicError(p.Log, err, "failed to open a channel")
 	defer ch.Close()
 
-	exchange := "user_data"
+	exchange := "user_data_events"
 	err = ch.ExchangeDeclare(
 		exchange,
 		"direct",
