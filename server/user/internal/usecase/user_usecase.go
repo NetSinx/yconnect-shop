@@ -107,14 +107,14 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 		return nil, echo.ErrInternalServerError
 	}
 
-	userByte, _ := json.Marshal(userEntity)
-	if err := u.RedisClient.Set(ctx, "user:"+userRequest.Username, userByte, 20*time.Minute).Err(); err != nil {
-		u.Log.WithError(err).Error("error caching user in redis")
+	if err := tx.Commit().Error; err != nil {
+		u.Log.WithError(err).Error("error updating user")
 		return nil, echo.ErrInternalServerError
 	}
 	
-	if err := tx.Commit().Error; err != nil {
-		u.Log.WithError(err).Error("error updating user")
+	userByte, _ := json.Marshal(userEntity)
+	if err := u.RedisClient.Set(ctx, "user:"+userRequest.Username, userByte, 20*time.Minute).Err(); err != nil {
+		u.Log.WithError(err).Error("error caching user in redis")
 		return nil, echo.ErrInternalServerError
 	}
 
@@ -148,14 +148,14 @@ func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.
 		return nil, echo.ErrNotFound
 	}
 
+	if err := tx.Commit().Error; err != nil {
+		u.Log.WithError(err).Error("error getting user")
+		return nil, echo.ErrInternalServerError
+	}
+	
 	userByte, _ := json.Marshal(user)
 	if err := u.RedisClient.Set(ctx, "user:"+userRequest.Username, userByte, 20*time.Minute).Err(); err != nil {
 		u.Log.WithError(err).Error("error caching user in redis")
-		return nil, echo.ErrInternalServerError
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		u.Log.WithError(err).Error("error getting user")
 		return nil, echo.ErrInternalServerError
 	}
 
@@ -184,6 +184,11 @@ func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteU
 	}
 
 	if err := u.UserRepository.DeleteUser(tx, entity, userRequest.Username); err != nil {
+		u.Log.WithError(err).Error("error deleting user")
+		return echo.ErrInternalServerError
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		u.Log.WithError(err).Error("error deleting user")
 		return echo.ErrInternalServerError
 	}
