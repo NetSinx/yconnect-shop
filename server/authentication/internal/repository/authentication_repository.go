@@ -16,12 +16,12 @@ func NewAuthRepository(log *logrus.Logger) *AuthRepository {
 	}
 }
 
-func (a *AuthRepository) Create(db *gorm.DB, entity *entity.Authentication) error {
+func (a *AuthRepository) Create(db *gorm.DB, entity *entity.Authentication) (uint, error) {
 	if err := db.Create(entity).Error; err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return entity.ID, nil
 }
 
 func (a *AuthRepository) Update(db *gorm.DB, entity *entity.Authentication) error {

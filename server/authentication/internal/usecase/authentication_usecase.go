@@ -2,36 +2,91 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model/converter"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/repository"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type AuthUseCase struct {
+	Config         *viper.Viper
 	DB             *gorm.DB
 	Log            *logrus.Logger
 	Validator      *validator.Validate
+	Publisher      *messaging.Publisher
 	RedisClient    *redis.Client
 	AuthRepository *repository.AuthRepository
 	TokenUtil      *helpers.TokenUtil
 }
 
-func NewAuthUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Validate, redisClient *redis.Client, authRepository *repository.AuthRepository, tokenUtil *helpers.TokenUtil) *AuthUseCase {
+func NewAuthUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, validator *validator.Validate, rabbitmq *amqp.Connection, publisher *messaging.Publisher, redisClient *redis.Client, authRepository *repository.AuthRepository, tokenUtil *helpers.TokenUtil) *AuthUseCase {
 	return &AuthUseCase{
+		Config:         config,
 		DB:             db,
 		Log:            log,
 		Validator:      validator,
+		Publisher:      publisher,
 		RedisClient:    redisClient,
 		AuthRepository: authRepository,
 		TokenUtil:      tokenUtil,
 	}
+}
+
+func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.RegisterRequest) (*model.DataResponse, error) {
+	tx := a.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	if err := a.Validator.Struct(registerRequest); err != nil {
+		a.Log.WithError(err).Error("error validating request body")
+		return nil, echo.ErrBadRequest
+	}
+
+	entity := &entity.Authentication{
+		Email:    registerRequest.Email,
+		Role:     "customer",
+		Password: registerRequest.Password,
+	}
+
+	id, err := a.AuthRepository.Create(tx, entity)
+	if err != nil {
+		a.Log.WithError(err).Error("error registering user")
+		return nil, echo.ErrInternalServerError
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		a.Log.WithError(err).Error("error registering user")
+		return nil, echo.ErrInternalServerError
+	}
+
+	registerUserEvent := &model.RegisterUserEvent{
+		NamaLengkap: registerRequest.NamaLengkap,
+		Username: registerRequest.Username,
+		Email: registerRequest.Email,
+		NoHP: registerRequest.NoHP,
+		Role: "customer",
+	}
+
+	if a.Config.GetBool("rabbitmq.enabled") {
+		a.Publisher.Send(ctx, registerUserEvent)
+	}
+
+	entity.ID = id
+	response := &model.DataResponse{
+		Data: converter.AuthenticationToResponse(entity),
+	}
+
+	return response, nil
 }
 
 func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRequest) (*model.AuthTokenResponse, error) {
@@ -88,7 +143,7 @@ func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTo
 		a.Log.WithError(err).Error("error getting token")
 		return echo.ErrUnauthorized
 	}
-	
+
 	return nil
 }
 

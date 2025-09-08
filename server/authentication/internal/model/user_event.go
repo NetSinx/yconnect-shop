@@ -1,8 +1,9 @@
 package model
 
-type UserEvent struct {
-	ID       uint   `json:"id"`
-	Email    string `json:"email"`
-	Role     string `json:"role"`
-	Password string `json:"password"`
+type RegisterUserEvent struct {
+	NamaLengkap string `json:"nama_lengkap"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	NoHP        string `json:"no_hp"`
+	Role        string `json:"role"`
 }

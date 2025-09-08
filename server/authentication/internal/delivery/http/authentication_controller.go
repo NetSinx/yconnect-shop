@@ -22,6 +22,21 @@ func NewAuthController(log *logrus.Logger, authUseCase *usecase.AuthUseCase) *Au
 	}
 }
 
+func (a *AuthController) RegisterUser(ctx echo.Context) error {
+	registerRequest := new(model.RegisterRequest)
+	if err := ctx.Bind(registerRequest); err != nil {
+		a.Log.WithError(err).Error("error binding request to json")
+		return err
+	}
+
+	response, err := a.AuthUseCase.RegisterUser(ctx.Request().Context(), registerRequest)
+	if err != nil {
+		a.Log.WithError(err).Error("error registering user")
+	}
+
+	return ctx.JSON(http.StatusOK, response)
+}
+
 func (a *AuthController) LoginUser(ctx echo.Context) error {
 	loginRequest := new(model.LoginRequest)
 	if err := ctx.Bind(loginRequest); err != nil {
