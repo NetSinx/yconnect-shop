@@ -35,7 +35,6 @@ func BootstrapApp(config *AppConfig) {
 	usecase := usecase.NewAuthUseCase(config.Config, config.DB, config.Log, config.Validator, publisher, config.RedisClient, repository, tokenUtil)
 	controller := http.NewAuthController(config.Log, usecase)
 
-
 	subscriber := subscribeMsg.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
 	subscriber.Receive()
 
