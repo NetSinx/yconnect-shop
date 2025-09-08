@@ -3,7 +3,8 @@ package config
 import (
 	"github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http/route"
-	"github.com/NetSinx/yconnect-shop/server/user/internal/delivery/messaging"
+	subscribeMsg "github.com/NetSinx/yconnect-shop/server/user/internal/delivery/messaging"
+	publishMsg "github.com/NetSinx/yconnect-shop/server/user/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/usecase"
 	"github.com/go-playground/validator/v10"
@@ -26,11 +27,13 @@ type AppConfig struct {
 }
 
 func BootstrapApp(config *AppConfig) {
+	publisher := publishMsg.NewPublisher(config.RabbitMQ, config.Log)
+
 	repository := repository.NewUserRepository(config.Log)
-	usecase := usecase.NewUserUseCase(config.DB, config.Log, config.Validator, config.RedisClient, repository)
+	usecase := usecase.NewUserUseCase(config.Config, config.DB, config.Log, config.Validator, config.RedisClient, repository, publisher)
 	controller := http.NewUserController(config.Log, usecase)
 
-	subscriber := messaging.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
+	subscriber := subscribeMsg.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
 	subscriber.Receive()
 
 	route.NewApiRoutes(&route.APIRoutes{

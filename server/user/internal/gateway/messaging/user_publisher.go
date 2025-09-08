@@ -2,6 +2,8 @@ package messaging
 
 import (
 	"context"
+	"encoding/json"
+	"time"
 
 	"github.com/NetSinx/yconnect-shop/server/user/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
@@ -17,7 +19,7 @@ type Publisher struct {
 func NewPublisher(rabbitmq *amqp.Connection, log *logrus.Logger) *Publisher {
 	return &Publisher{
 		RabbitMQ: rabbitmq,
-		Log: log,
+		Log:      log,
 	}
 }
 
@@ -25,4 +27,35 @@ func (p *Publisher) Send(ctx context.Context, message *model.DeleteUserEvent) {
 	ch, err := p.RabbitMQ.Channel()
 	helpers.PanicError(p.Log, err, "failed to open a channel")
 	defer ch.Close()
+
+	exchange := "user_deleted_events"
+	err = ch.ExchangeDeclare(
+		exchange,
+		"direct",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	helpers.FatalError(p.Log, err, "failed to declare an exchange")
+
+	c, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	msgByte, err := json.Marshal(message)
+	helpers.FatalError(p.Log, err, "failed to marshaling a message")
+
+	err = ch.PublishWithContext(
+		c,
+		exchange,
+		"user_deleted",
+		false,
+		false,
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body: msgByte,
+		},
+	)
+	helpers.FatalError(p.Log, err, "failed to publish a message")
 }

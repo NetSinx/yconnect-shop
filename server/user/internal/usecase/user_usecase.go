@@ -205,7 +205,8 @@ func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteU
 	}
 
 	if u.Config.GetBool("rabitmq.enabled") {
-		u.Publisher.Send(ctx, )
+		userEvent := converter.UserToDeleteUserEvent(entity)
+		u.Publisher.Send(ctx, userEvent)
 	}
 
 	return nil

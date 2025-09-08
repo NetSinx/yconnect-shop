@@ -26,3 +26,9 @@ func UserToResponse(userEntity *entity.User) *model.UserResponse {
 		NoHP: userEntity.NoHP,
 	}
 }
+
+func UserToDeleteUserEvent(userEntity *entity.User) *model.DeleteUserEvent {
+	return &model.DeleteUserEvent{
+		Email: userEntity.Email,
+	}
+}
