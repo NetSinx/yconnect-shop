@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/user/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model/converter"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/repository"
@@ -12,24 +13,29 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
 type UserUseCase struct {
+	Config *viper.Viper
 	DB             *gorm.DB
 	Log            *logrus.Logger
 	Validator      *validator.Validate
 	RedisClient    *redis.Client
 	UserRepository *repository.UserRepository
+	Publisher *messaging.Publisher
 }
 
-func NewUserUseCase(db *gorm.DB, log *logrus.Logger, validator *validator.Validate, redisClient *redis.Client, userRepository *repository.UserRepository) *UserUseCase {
+func NewUserUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, validator *validator.Validate, redisClient *redis.Client, userRepository *repository.UserRepository, publisher *messaging.Publisher) *UserUseCase {
 	return &UserUseCase{
+		Config: config,
 		DB:             db,
 		Log:            log,
 		Validator:      validator,
 		RedisClient:    redisClient,
 		UserRepository: userRepository,
+		Publisher: publisher,
 	}
 }
 
@@ -176,11 +182,16 @@ func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteU
 	}
 
 	entity := new(entity.User)
-	if err := u.RedisClient.GetDel(ctx, "user:"+userRequest.Username).Err(); err != nil {
-		if _, err := u.UserRepository.GetUserByUsername(tx, entity, userRequest.Username); err != nil {
+	result, err := u.RedisClient.GetDel(ctx, "user:"+userRequest.Username).Result()
+	if err != nil {
+		user, err := u.UserRepository.GetUserByUsername(tx, entity, userRequest.Username)
+		if err != nil {
 			u.Log.WithError(err).Error("error getting user")
 			return echo.ErrNotFound
 		}
+		entity = user
+	} else if result != "" {
+		json.Unmarshal([]byte(result), entity)
 	}
 
 	if err := u.UserRepository.DeleteUser(tx, entity, userRequest.Username); err != nil {
@@ -191,6 +202,10 @@ func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteU
 	if err := tx.Commit().Error; err != nil {
 		u.Log.WithError(err).Error("error deleting user")
 		return echo.ErrInternalServerError
+	}
+
+	if u.Config.GetBool("rabitmq.enabled") {
+		u.Publisher.Send(ctx, )
 	}
 
 	return nil
