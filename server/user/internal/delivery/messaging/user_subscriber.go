@@ -78,12 +78,13 @@ func (s *Subscriber) Receive() {
 		for d := range msgs {
 			var ctx context.Context
 			var userEvent *model.RegisterUserEvent
-			json.Unmarshal(d.Body, userEvent)
+			json.Unmarshal(d.Body, &userEvent)
 			if err := s.UserUseCase.RegisterUser(ctx, userEvent); err != nil {
 				s.Log.WithError(err).Error("error registering user")
+				continue
 			}
 
-			s.Log.Infof("Receive a message from user service: %v", d.Body)
+			s.Log.Infof("Receive a message from user service: %s", d.Body)
 		}
 	}()
 }

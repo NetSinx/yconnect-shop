@@ -12,6 +12,8 @@ func main() {
 	db := config.NewDatabase(viperConfig, log)
 	app := config.NewEcho()
 	rabbitmq := config.NewRabbitMQ(viperConfig, log)
+	defer rabbitmq.Close()
+	
 	redis := config.NewRedis(viperConfig, log)
 	validator := config.NewValidator()
 
