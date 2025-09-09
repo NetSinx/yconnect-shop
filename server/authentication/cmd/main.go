@@ -13,6 +13,7 @@ func main() {
 	app := config.NewEcho()
 	redis := config.NewRedis(viperConfig, log)
 	rabbitmq := config.NewRabbitMQ(viperConfig, log)
+	defer rabbitmq.Close()
 
 	config.BootstrapApp(&config.AppConfig{
 		Config:      viperConfig,

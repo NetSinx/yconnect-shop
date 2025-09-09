@@ -32,6 +32,7 @@ func (a *AuthController) RegisterUser(ctx echo.Context) error {
 	response, err := a.AuthUseCase.RegisterUser(ctx.Request().Context(), registerRequest)
 	if err != nil {
 		a.Log.WithError(err).Error("error registering user")
+		return err
 	}
 
 	return ctx.JSON(http.StatusOK, response)
@@ -104,14 +105,7 @@ func (a *AuthController) LogoutUser(ctx echo.Context) error {
 func (a *AuthController) GetCSRFToken(ctx echo.Context) error {
 	csrfToken := fmt.Sprintf("%v", ctx.Get("csrf_token"))
 
-	ctx.SetCookie(&http.Cookie{
-		Name:     "csrf_token",
-		Path:     "/",
-		Value:    csrfToken,
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+	return ctx.JSON(http.StatusOK, map[string]string{
+		"csrf_token": csrfToken,
 	})
-
-	return ctx.NoContent(http.StatusNoContent)
 }

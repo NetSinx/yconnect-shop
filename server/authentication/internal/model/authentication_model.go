@@ -6,7 +6,7 @@ type RegisterRequest struct {
 	Email              string `json:"email" validate:"required,max=100,email"`
 	NoHP               string `json:"no_hp" validate:"required,max=12"`
 	Password           string `json:"password" validate:"passwd,required,min=5"`
-	KonfirmasiPassword string `json:"konfirmasi_password" validate:"required,eqfield=password"`
+	KonfirmasiPassword string `json:"konfirmasi_password" validate:"required,eqfield=Password"`
 }
 
 type LoginRequest struct {

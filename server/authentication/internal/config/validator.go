@@ -6,10 +6,7 @@ import (
 )
 
 func NewValidator() *validator.Validate {
-	return validator.New()
-}
-
-func init() {
-	validate := NewValidator()
+	validate := validator.New()
 	validate.RegisterValidation("passwd", helpers.PasswordValidation)
+	return validate
 }
