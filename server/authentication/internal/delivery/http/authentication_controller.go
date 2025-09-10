@@ -3,7 +3,9 @@ package http
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/usecase"
 	"github.com/labstack/echo/v4"
@@ -51,15 +53,9 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 		return err
 	}
 
-	ctx.SetCookie(&http.Cookie{
-		Name: "auth_token",
-		Path: "/",
-		Value: response.AuthToken,
-		Secure: true,
-		HttpOnly: true,
-		Expires: time.Now().Add(30 * time.Minute),
-		SameSite: http.SameSiteLaxMode,
-	})
+	helpers.SetCookie(ctx, "id", strconv.Itoa(int(response.ID)), time.Now().Add(30*time.Minute))
+	helpers.SetCookie(ctx, "role", response.Role, time.Now().Add(30*time.Minute))
+	helpers.SetCookie(ctx, "auth_token", response.AuthToken, time.Now().Add(30*time.Minute))
 
 	return ctx.NoContent(http.StatusNoContent)
 }

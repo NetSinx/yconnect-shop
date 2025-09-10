@@ -16,7 +16,7 @@ func NewAuthRepository(log *logrus.Logger) *AuthRepository {
 	}
 }
 
-func (a *AuthRepository) Create(db *gorm.DB, entity *entity.Authentication) (uint, error) {
+func (a *AuthRepository) Create(db *gorm.DB, entity *entity.UserAuthentication) (uint, error) {
 	if err := db.Create(entity).Error; err != nil {
 		return 0, err
 	}
@@ -24,7 +24,7 @@ func (a *AuthRepository) Create(db *gorm.DB, entity *entity.Authentication) (uin
 	return entity.ID, nil
 }
 
-func (a *AuthRepository) Update(db *gorm.DB, entity *entity.Authentication) error {
+func (a *AuthRepository) Update(db *gorm.DB, entity *entity.UserAuthentication) error {
 	if err := db.Save(entity).Error; err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func (a *AuthRepository) Update(db *gorm.DB, entity *entity.Authentication) erro
 	return nil
 }
 
-func (a *AuthRepository) Delete(db *gorm.DB, entity *entity.Authentication) error {
+func (a *AuthRepository) Delete(db *gorm.DB, entity *entity.UserAuthentication) error {
 	if err := db.Delete(entity, "id = ?", entity.ID).Error; err != nil {
 		return err
 	}
@@ -40,7 +40,7 @@ func (a *AuthRepository) Delete(db *gorm.DB, entity *entity.Authentication) erro
 	return nil
 }
 
-func (a *AuthRepository) GetByEmail(db *gorm.DB, entity *entity.Authentication, email string) (*entity.Authentication, error) {
+func (a *AuthRepository) GetByEmail(db *gorm.DB, entity *entity.UserAuthentication, email string) (*entity.UserAuthentication, error) {
 	if err := db.Select("id", "role", "password").First(entity, "email = ?", email).Error; err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (a *AuthRepository) GetByEmail(db *gorm.DB, entity *entity.Authentication, 
 	return entity, nil
 }
 
-func (a *AuthRepository) GetByID(db *gorm.DB, entity *entity.Authentication, id uint) error {
+func (a *AuthRepository) GetByID(db *gorm.DB, entity *entity.UserAuthentication, id uint) error {
 	if err := db.First(entity, "id = ?", id).Error; err != nil {
 		return err
 	}

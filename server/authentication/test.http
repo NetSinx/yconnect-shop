@@ -2,8 +2,8 @@ GET http://localhost:8086/api/auth/csrf-token
 ###
 POST http://localhost:8086/api/auth/login
 Content-Type: application/json
-Cookie: csrf_token=IzXXmquAmoJzrrMVWzCpYVaSoSLOPQJT; Path=/; Expires=Tue, 09 Sep 2025 14:56:03 GMT; HttpOnly; Secure; SameSite=Strict
-X-CSRF-Token: IzXXmquAmoJzrrMVWzCpYVaSoSLOPQJT
+Cookie: csrf_token=WZBpxnoWbvNwiarisBiCijIHeukKAEzY; Path=/; Expires=Tue, 09 Sep 2025 14:56:03 GMT; HttpOnly; Secure; SameSite=Strict
+X-CSRF-Token: WZBpxnoWbvNwiarisBiCijIHeukKAEzY
 
 {
     "email": "yasin@gmail.com",
@@ -12,8 +12,8 @@ X-CSRF-Token: IzXXmquAmoJzrrMVWzCpYVaSoSLOPQJT
 ###
 POST http://localhost:8086/api/auth/register
 Content-Type: application/json
-Cookie: csrf_token=IzXXmquAmoJzrrMVWzCpYVaSoSLOPQJT; Path=/; Expires=Tue, 09 Sep 2025 14:56:03 GMT; HttpOnly; Secure; SameSite=Strict
-X-CSRF-Token: IzXXmquAmoJzrrMVWzCpYVaSoSLOPQJT
+Cookie: csrf_token=WZBpxnoWbvNwiarisBiCijIHeukKAEzY; Path=/; Expires=Tue, 09 Sep 2025 14:56:03 GMT; HttpOnly; Secure; SameSite=Strict
+X-CSRF-Token: WZBpxnoWbvNwiarisBiCijIHeukKAEzY
 
 {
     "nama_lengkap": "Yasin Ayatulloh Hakim",

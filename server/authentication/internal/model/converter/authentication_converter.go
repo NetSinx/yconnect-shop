@@ -5,11 +5,19 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
 )
 
-func AuthenticationToResponse(entity *entity.Authentication) *model.AuthenticationResponse {
+func UserRegisterToResponse(entity *entity.UserAuthentication) *model.RegisterResponse {
+	return &model.RegisterResponse{
+		NamaLengkap: entity.NamaLengkap,
+		Username: entity.Username,
+		Email: entity.Email,
+		NoHP: entity.NoHP,
+	}
+}
+
+func UserAuthenticationToResponse(entity *entity.UserAuthentication) *model.AuthenticationResponse {
 	return &model.AuthenticationResponse{
 		ID: entity.ID,
 		Email: entity.Email,
 		Role: entity.Role,
-		Password: entity.Password,
 	}
 }

@@ -41,7 +41,7 @@ func NewAuthUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, valida
 	}
 }
 
-func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.RegisterRequest) (*model.DataResponse, error) {
+func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.RegisterRequest) (*model.DataResponse[*model.RegisterResponse], error) {
 	tx := a.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -50,10 +50,19 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 		return nil, echo.ErrBadRequest
 	}
 
-	entity := &entity.Authentication{
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerRequest.Password), 12)
+	if err != nil {
+		a.Log.WithError(err).Error("error hashing password")
+		return nil, echo.ErrInternalServerError
+	}
+
+	entity := &entity.UserAuthentication{
+		NamaLengkap: registerRequest.NamaLengkap,
+		Username: registerRequest.Username,
 		Email:    registerRequest.Email,
 		Role:     "customer",
-		Password: registerRequest.Password,
+		NoHP: registerRequest.NoHP,
+		Password: string(hashedPassword),
 	}
 
 	id, err := a.AuthRepository.Create(tx, entity)
@@ -80,14 +89,14 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 	}
 
 	entity.ID = id
-	response := &model.DataResponse{
-		Data: converter.AuthenticationToResponse(entity),
+	response := &model.DataResponse[*model.RegisterResponse]{
+		Data: converter.UserRegisterToResponse(entity),
 	}
 
 	return response, nil
 }
 
-func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRequest) (*model.AuthTokenResponse, error) {
+func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRequest) (*model.LoginResponse, error) {
 	tx := a.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -96,7 +105,7 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		return nil, echo.ErrBadRequest
 	}
 
-	authEntity := new(entity.Authentication)
+	authEntity := new(entity.UserAuthentication)
 	result, err := a.AuthRepository.GetByEmail(tx, authEntity, loginRequest.Email)
 	if err != nil {
 		a.Log.WithError(err).Error("error getting user")
@@ -119,7 +128,9 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		return nil, echo.ErrInternalServerError
 	}
 
-	response := &model.AuthTokenResponse{
+	response := &model.LoginResponse{
+		ID: result.ID,
+		Role: result.Role,
 		AuthToken: jwtToken,
 	}
 
@@ -163,7 +174,7 @@ func (a *AuthUseCase) DeleteUserAuthentication(ctx context.Context, deleteUserEv
 	tx := a.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
-	entity := new(entity.Authentication)
+	entity := new(entity.UserAuthentication)
 	result, err := a.AuthRepository.GetByEmail(tx, entity, deleteUserEvent.Email)
 	if err != nil {
 		a.Log.WithError(err).Error("error getting user authentication")

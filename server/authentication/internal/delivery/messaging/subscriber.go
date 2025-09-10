@@ -85,4 +85,6 @@ func (s *Subscriber) Receive() {
 			s.AuthUseCase.DeleteUserAuthentication(ctx, deleteUserEvent)
 		}
 	}()
+	
+	s.Log.Info("Waiting for messages from user service...")
 }

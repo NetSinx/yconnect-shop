@@ -18,8 +18,10 @@ type AuthTokenRequest struct {
 	AuthToken string `json:"auth_token" validate:"required"`
 }
 
-type MessageResponse struct {
-	Message string `json:"message"`
+type LoginResponse struct {
+	ID        uint   `json:"id"`
+	Role      string `json:"role"`
+	AuthToken string `json:"auth_token"`
 }
 
 type VerifyResponse struct {
@@ -27,17 +29,19 @@ type VerifyResponse struct {
 	Role string `json:"role"`
 }
 
-type AuthTokenResponse struct {
-	AuthToken string `json:"auth_token"`
-}
-
 type AuthenticationResponse struct {
-	ID       uint   `json:"id"`
-	Email    string `json:"email"`
-	Role     string `json:"role"`
-	Password string `json:"password"`
+	ID    uint   `json:"id"`
+	Email string `json:"email"`
+	Role  string `json:"role"`
 }
 
-type DataResponse struct {
-	Data *AuthenticationResponse `json:"data"`
+type RegisterResponse struct {
+	NamaLengkap string `json:"nama_lengkap"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	NoHP        string `json:"no_hp"`
+}
+
+type DataResponse[T any] struct {
+	Data T `json:"data"`
 }
