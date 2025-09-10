@@ -32,7 +32,7 @@ func (s *Subscriber) Receive() {
 	helpers.PanicError(s.Log, err, "failed to open a channel")
 	defer ch.Close()
 
-	exchange := "user_data_events"
+	exchange := "user_auth_events"
 	err = ch.ExchangeDeclare(
 		exchange,
 		"direct",
@@ -45,7 +45,7 @@ func (s *Subscriber) Receive() {
 	helpers.FatalError(s.Log, err, "failed to declare an exchange")
 
 	q, err := ch.QueueDeclare(
-		"user_data_queue",
+		"user_register_queue",
 		true,
 		false,
 		false,
