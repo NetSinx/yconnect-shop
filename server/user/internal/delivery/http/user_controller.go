@@ -21,8 +21,8 @@ func NewUserController(log *logrus.Logger, userUseCase *usecase.UserUseCase) *Us
 }
 
 func (u *UserController) UpdateUser(c echo.Context) error {
-	var userRequest *model.UserRequest
-	if err := c.Bind(&userRequest); err != nil {
+	userRequest := new(model.UserRequest)
+	if err := c.Bind(userRequest); err != nil {
 		u.Log.WithError(err).Error("error binding request to JSON")
 		return err
 	}

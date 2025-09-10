@@ -83,8 +83,8 @@ func (s *Subscriber) Receive() {
 				s.Log.WithError(err).Error("error registering user")
 				continue
 			}
-
-			s.Log.Infof("Receive a message from user service: %s", d.Body)
-		}
+	}
 	}()
+	
+	s.Log.Info("Waiting for messages from authentication service...")
 }
