@@ -76,13 +76,18 @@ func (s *Subscriber) Receive() {
 
 	go func() {
 		for d := range msgs {
+			s.Log.Infof("Receive a message from user service: %s", d.Body)
+
 			var ctx context.Context
 			var deleteUserEvent *model.DeleteUserEvent
 			if err := json.Unmarshal(d.Body, deleteUserEvent); err != nil {
-				helpers.FatalError(s.Log, err, "error unmarshaling message body")
+				s.Log.WithError(err).Error(s.Log, err, "error unmarshaling message body")
+				continue
 			}
 
-			s.AuthUseCase.DeleteUserAuthentication(ctx, deleteUserEvent)
+			if err := s.AuthUseCase.DeleteUserAuthentication(ctx, deleteUserEvent); err != nil {
+				s.Log.WithError(err).Error("error deleting user authentication")
+			}
 		}
 	}()
 	

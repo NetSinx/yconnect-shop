@@ -16,9 +16,9 @@ Cookie: csrf_token=WZBpxnoWbvNwiarisBiCijIHeukKAEzY; Path=/; Expires=Tue, 09 Sep
 X-CSRF-Token: WZBpxnoWbvNwiarisBiCijIHeukKAEzY
 
 {
-    "nama_lengkap": "Yasin Ayatulloh Hakim",
-    "username": "netsinx",
-    "email": "yasin123@gmail.com",
+    "nama_lengkap": "Alif Firman Hakim",
+    "username": "hedlif",
+    "email": "alif@gmail.com",
     "no_hp": "089676798686",
     "password": "@Abyasinah123",
     "konfirmasi_password": "@Abyasinah123"

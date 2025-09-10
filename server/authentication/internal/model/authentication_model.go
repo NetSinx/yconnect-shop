@@ -36,6 +36,7 @@ type AuthenticationResponse struct {
 }
 
 type RegisterResponse struct {
+	ID          uint   `json:"id"`
 	NamaLengkap string `json:"nama_lengkap"`
 	Username    string `json:"username"`
 	Email       string `json:"email"`
