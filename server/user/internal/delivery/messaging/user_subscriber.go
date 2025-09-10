@@ -20,9 +20,9 @@ type Subscriber struct {
 
 func NewSubscriber(rabbitmq *amqp.Connection, Log *logrus.Logger, db *gorm.DB, userUseCase *usecase.UserUseCase) *Subscriber {
 	return &Subscriber{
-		RabbitMQ: rabbitmq,
-		Log:      Log,
-		DB: db,
+		RabbitMQ:    rabbitmq,
+		Log:         Log,
+		DB:          db,
 		UserUseCase: userUseCase,
 	}
 }
@@ -76,15 +76,20 @@ func (s *Subscriber) Receive() {
 
 	go func() {
 		for d := range msgs {
+			s.Log.Infof("Receive a message from authentication service: %s", d.Body)
+
 			var ctx context.Context
 			var userEvent *model.RegisterUserEvent
-			json.Unmarshal(d.Body, &userEvent)
-			if err := s.UserUseCase.RegisterUser(ctx, userEvent); err != nil {
-				s.Log.WithError(err).Error("error registering user")
+			if err := json.Unmarshal(d.Body, &userEvent); err != nil {
+				s.Log.WithError(err).Error("error unmarshaling message body")
 				continue
 			}
-	}
+
+			if err := s.UserUseCase.RegisterUser(ctx, userEvent); err != nil {
+				s.Log.WithError(err).Error("error registering user")
+			}
+		}
 	}()
-	
+
 	s.Log.Info("Waiting for messages from authentication service...")
 }
