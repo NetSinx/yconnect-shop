@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"time"
-
 	"github.com/NetSinx/yconnect-shop/server/user/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -28,7 +27,7 @@ func (p *Publisher) Send(ctx context.Context, message *model.DeleteUserEvent) {
 	helpers.PanicError(p.Log, err, "failed to open a channel")
 	defer ch.Close()
 
-	exchange := "user_deleted_events"
+	exchange := "user_auth_events"
 	err = ch.ExchangeDeclare(
 		exchange,
 		"direct",
@@ -45,6 +44,8 @@ func (p *Publisher) Send(ctx context.Context, message *model.DeleteUserEvent) {
 
 	msgByte, err := json.Marshal(message)
 	helpers.FatalError(p.Log, err, "failed to marshaling a message")
+
+	p.Log.Debugf("User deleted: %s", msgByte)
 
 	err = ch.PublishWithContext(
 		c,

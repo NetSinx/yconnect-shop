@@ -110,9 +110,6 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 	userEntity.Alamat = alamatEntity
 	userEntity.NoHP = userRequest.NoHP
 
-	u.Log.Debugf("Alamat: %v", alamatEntity)
-	u.Log.Debugf("Alamat: %v", userEntity)
-
 	if err := u.UserRepository.UpdateUser(tx, userEntity); err != nil {
 		u.Log.WithError(err).Error("error updating user")
 		return nil, echo.ErrInternalServerError
@@ -202,9 +199,13 @@ func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteU
 			u.Log.WithError(err).Error("error getting user")
 			return echo.ErrNotFound
 		}
+
 		entity = user
-	} else if result != "" {
-		json.Unmarshal([]byte(result), entity)
+	} else {
+		if err := json.Unmarshal([]byte(result), entity); err != nil {
+			u.Log.WithError(err).Error("error unmarshaling data")
+			return echo.ErrInternalServerError
+		}
 	}
 
 	if err := u.UserRepository.DeleteUser(tx, entity, userRequest.Username); err != nil {
@@ -217,7 +218,7 @@ func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteU
 		return echo.ErrInternalServerError
 	}
 
-	if u.Config.GetBool("rabitmq.enabled") {
+	if u.Config.GetBool("rabbitmq.enabled") {
 		userEvent := converter.UserToDeleteUserEvent(entity)
 		u.Publisher.Send(ctx, userEvent)
 	}

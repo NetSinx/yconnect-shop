@@ -67,7 +67,5 @@ func (u *UserController) DeleteUser(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, &model.MessageResp{
-		Message: "user deleted successfully",
-	})
+	return c.NoContent(http.StatusNoContent)
 }
