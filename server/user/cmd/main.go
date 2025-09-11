@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/NetSinx/yconnect-shop/server/user/internal/config"
 )
 

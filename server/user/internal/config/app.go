@@ -34,7 +34,7 @@ func BootstrapApp(config *AppConfig) {
 	controller := http.NewUserController(config.Log, usecase)
 
 	subscriber := subscribeMsg.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
-	go subscriber.Receive()
+	subscriber.Receive()
 
 	route.NewApiRoutes(&route.APIRoutes{
 		AppGroup:       config.App.Group("/api"),

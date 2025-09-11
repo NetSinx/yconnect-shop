@@ -30,7 +30,6 @@ func NewSubscriber(rabbitmq *amqp.Connection, Log *logrus.Logger, db *gorm.DB, u
 func (s *Subscriber) Receive() {
 	ch, err := s.RabbitMQ.Channel()
 	helpers.PanicError(s.Log, err, "failed to open a channel")
-	defer ch.Close()
 
 	exchange := "user_auth_events"
 	err = ch.ExchangeDeclare(
@@ -78,7 +77,7 @@ func (s *Subscriber) Receive() {
 		for d := range msgs {
 			s.Log.Infof("Receive a message from authentication service: %s", d.Body)
 
-			var ctx context.Context
+			ctx := context.Background()
 			var userEvent *model.RegisterUserEvent
 			if err := json.Unmarshal(d.Body, &userEvent); err != nil {
 				s.Log.WithError(err).Error("error unmarshaling message body")

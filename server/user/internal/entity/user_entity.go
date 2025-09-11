@@ -8,8 +8,8 @@ type User struct {
 	Username    string    `json:"username" gorm:"uniqueIndex;type:varchar(50);not null"`
 	Email       string    `json:"email" gorm:"unique;type:varchar(100);not null"`
 	Role        string    `json:"role" gorm:"type:varchar(20);not null"`
-	Alamat      *Alamat    `json:"alamat"`
-	NoHP        string    `json:"no_hp" gorm:"unique;type:varchar(12);not null"`
+	Alamat      *Alamat   `json:"alamat"`
+	NoHP        string    `json:"no_hp" gorm:"unique;type:varchar(16);not null"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
