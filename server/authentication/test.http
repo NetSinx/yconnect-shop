@@ -12,14 +12,14 @@ X-CSRF-Token: WZBpxnoWbvNwiarisBiCijIHeukKAEzY
 ###
 POST http://localhost:8086/api/auth/register
 Content-Type: application/json
-Cookie: csrf_token=EpODiEScbwnTbPHCxQmkLHAfrIfHxhSh; Path=/; Expires=Tue, 09 Sep 2025 14:56:03 GMT; HttpOnly; Secure; SameSite=Strict
-X-CSRF-Token: EpODiEScbwnTbPHCxQmkLHAfrIfHxhSh
+Cookie: csrf_token=dFZdVaqxBfrfPDcPBJUKNRvcxRLdqVfF; Path=/; Expires=Tue, 09 Sep 2025 14:56:03 GMT; HttpOnly; Secure; SameSite=Strict
+X-CSRF-Token: dFZdVaqxBfrfPDcPBJUKNRvcxRLdqVfF
 
 {
-    "nama_lengkap": "Hartono",
-    "username": "hartono",
-    "email": "hartono@gmail.com",
-    "no_hp": "087653467266",
-    "password": "@Abhartono123",
-    "konfirmasi_password": "@Abhartono123"
+    "nama_lengkap": "Alif Firman Hakim",
+    "username": "hedlif",
+    "email": "hedlif@gmail.com",
+    "no_hp": "089675884732",
+    "password": "@Abalif123",
+    "konfirmasi_password": "@Abalif123"
 }

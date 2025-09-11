@@ -4,7 +4,7 @@ type RegisterRequest struct {
 	NamaLengkap        string `json:"nama_lengkap" validate:"required,max=100"`
 	Username           string `json:"username" validate:"required,max=50"`
 	Email              string `json:"email" validate:"required,max=100,email"`
-	NoHP               string `json:"no_hp" validate:"required,max=12"`
+	NoHP               string `json:"no_hp" validate:"required,max=16"`
 	Password           string `json:"password" validate:"passwd,required,min=5"`
 	KonfirmasiPassword string `json:"konfirmasi_password" validate:"required,eqfield=Password"`
 }

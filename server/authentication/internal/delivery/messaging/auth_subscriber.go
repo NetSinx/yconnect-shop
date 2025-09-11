@@ -30,7 +30,6 @@ func NewSubscriber(connection *amqp.Connection, log *logrus.Logger, db *gorm.DB,
 func (s *Subscriber) Receive() {
 	ch, err := s.Connection.Channel()
 	helpers.PanicError(s.Log, err, "failed to open a channel")
-	defer ch.Close()
 
 	exchange := "user_deleted_events"
 	err = ch.ExchangeDeclare(
@@ -78,7 +77,7 @@ func (s *Subscriber) Receive() {
 		for d := range msgs {
 			s.Log.Infof("Receive a message from user service: %s", d.Body)
 
-			var ctx context.Context
+			ctx := context.Background()
 			var deleteUserEvent *model.DeleteUserEvent
 			if err := json.Unmarshal(d.Body, deleteUserEvent); err != nil {
 				s.Log.WithError(err).Error(s.Log, err, "error unmarshaling message body")
