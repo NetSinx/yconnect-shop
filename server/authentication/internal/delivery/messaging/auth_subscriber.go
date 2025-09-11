@@ -31,7 +31,7 @@ func (s *Subscriber) Receive() {
 	ch, err := s.Connection.Channel()
 	helpers.PanicError(s.Log, err, "failed to open a channel")
 
-	exchange := "user_deleted_events"
+	exchange := "user_auth_events"
 	err = ch.ExchangeDeclare(
 		exchange,
 		"direct",
@@ -79,7 +79,7 @@ func (s *Subscriber) Receive() {
 
 			ctx := context.Background()
 			var deleteUserEvent *model.DeleteUserEvent
-			if err := json.Unmarshal(d.Body, deleteUserEvent); err != nil {
+			if err := json.Unmarshal(d.Body, &deleteUserEvent); err != nil {
 				s.Log.WithError(err).Error(s.Log, err, "error unmarshaling message body")
 				continue
 			}

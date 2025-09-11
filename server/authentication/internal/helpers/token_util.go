@@ -25,7 +25,6 @@ func NewTokenUtil(secretKey string, redisClient *redis.Client) *TokenUtil {
 
 func (t *TokenUtil) CreateToken(ctx context.Context, role string, id uint) (string, error) {	
 	claims := model.CustomClaims{
-		ID: id,
 		Role: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -39,7 +38,7 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string, id uint) (stri
 		return "", err
 	}
 
-	valueAuth := map[string]any{"id": id, "role": role}
+	valueAuth := map[string]any{"role": role}
 	byteValue, _ := json.Marshal(valueAuth)
 	t.RedisClient.Set(ctx, "authToken:"+jwt, byteValue, time.Hour)
 

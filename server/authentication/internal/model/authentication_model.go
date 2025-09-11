@@ -19,7 +19,6 @@ type AuthTokenRequest struct {
 }
 
 type LoginResponse struct {
-	ID        uint   `json:"id"`
 	Role      string `json:"role"`
 	AuthToken string `json:"auth_token"`
 }

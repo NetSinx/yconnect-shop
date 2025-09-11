@@ -16,10 +16,10 @@ Cookie: csrf_token=dFZdVaqxBfrfPDcPBJUKNRvcxRLdqVfF; Path=/; Expires=Tue, 09 Sep
 X-CSRF-Token: dFZdVaqxBfrfPDcPBJUKNRvcxRLdqVfF
 
 {
-    "nama_lengkap": "Alif Firman Hakim",
-    "username": "hedlif",
-    "email": "hedlif@gmail.com",
-    "no_hp": "089675884732",
-    "password": "@Abalif123",
-    "konfirmasi_password": "@Abalif123"
+    "nama_lengkap": "Yasin Ayatulloh Hakim",
+    "username": "netsinx",
+    "email": "yasin@gmail.com",
+    "no_hp": "089676798686",
+    "password": "@Abyasinah22123",
+    "konfirmasi_password": "@Abyasinah22123"
 }

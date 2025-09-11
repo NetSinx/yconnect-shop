@@ -50,7 +50,7 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 		return nil, echo.ErrBadRequest
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerRequest.Password), 12)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerRequest.Password), bcrypt.DefaultCost)
 	if err != nil {
 		a.Log.WithError(err).Error("error hashing password")
 		return nil, echo.ErrInternalServerError
@@ -129,7 +129,6 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 	}
 
 	response := &model.LoginResponse{
-		ID: result.ID,
 		Role: result.Role,
 		AuthToken: jwtToken,
 	}

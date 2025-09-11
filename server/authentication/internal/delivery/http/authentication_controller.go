@@ -3,7 +3,6 @@ package http
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
@@ -53,7 +52,6 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 		return err
 	}
 
-	helpers.SetCookie(ctx, "id", strconv.Itoa(int(response.ID)), time.Now().Add(30*time.Minute))
 	helpers.SetCookie(ctx, "role", response.Role, time.Now().Add(30*time.Minute))
 	helpers.SetCookie(ctx, "auth_token", response.AuthToken, time.Now().Add(30*time.Minute))
 
