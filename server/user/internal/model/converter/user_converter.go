@@ -6,15 +6,19 @@ import (
 )
 
 func UserToResponse(userEntity *entity.User) *model.UserResponse {
-	alamatResponse := &model.AlamatResponse{
-		ID: userEntity.Alamat.ID,
-		NamaJalan: userEntity.Alamat.NamaJalan,
-		RT: userEntity.Alamat.RT,
-		RW: userEntity.Alamat.RW,
-		Kelurahan: userEntity.Alamat.Kelurahan,
-		Kecamatan: userEntity.Alamat.Kecamatan,
-		Kota: userEntity.Alamat.Kota,
-		KodePos: userEntity.Alamat.KodePos,
+	var alamatResponse *model.AlamatResponse
+	
+	if userEntity.Alamat != nil {
+		alamatResponse = &model.AlamatResponse{
+			ID: userEntity.Alamat.ID,
+			NamaJalan: userEntity.Alamat.NamaJalan,
+			RT: userEntity.Alamat.RT,
+			RW: userEntity.Alamat.RW,
+			Kelurahan: userEntity.Alamat.Kelurahan,
+			Kecamatan: userEntity.Alamat.Kecamatan,
+			Kota: userEntity.Alamat.Kota,
+			KodePos: userEntity.Alamat.KodePos,
+		}
 	}
 
 	return &model.UserResponse{
@@ -23,6 +27,7 @@ func UserToResponse(userEntity *entity.User) *model.UserResponse {
 		Username: userEntity.Username,
 		Email: userEntity.Email,
 		Alamat: alamatResponse,
+		Role: userEntity.Role,
 		NoHP: userEntity.NoHP,
 	}
 }

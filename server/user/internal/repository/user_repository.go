@@ -25,7 +25,7 @@ func (u *UserRepository) RegisterUser(db *gorm.DB, userEntity *entity.User) erro
 }
 
 func (u *UserRepository) UpdateUser(db *gorm.DB, userEntity *entity.User) error {
-	if err := db.Save(userEntity.Alamat).Error; err != nil {
+	if err := db.Save(&userEntity.Alamat).Error; err != nil {
 		return err
 	}
 

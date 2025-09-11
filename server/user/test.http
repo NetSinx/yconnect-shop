@@ -1,4 +1,20 @@
-GET http://localhost:8082/api/users/netsinx
+GET http://localhost:8082/api/users/netsinx_15
 ###
-PUT http://localhost:8082/api/users/yasin
+PUT http://localhost:8082/api/users/netsinx_15
+Content-Type: application/json
 
+{
+    "nama_lengkap": "Yasin A.H.",
+    "username": "netsinx_15",
+    "email": "yasin@gmail.com",
+    "alamat": {
+        "nama_jalan": "Jl. Kayu Manis No.15",
+        "rt": 12,
+        "rw": 5,
+        "kelurahan": "Balekambang",
+        "kecamatan": "Kramat Jati",
+        "kota": "Jakarta Timur",
+        "kode_pos": 13530
+    },
+    "no_hp": "089676798686"
+}
