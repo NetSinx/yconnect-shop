@@ -66,7 +66,7 @@ func (s *Subscriber) Receive() {
 	msgs, err := ch.Consume(
 		q.Name,
 		"",
-		false,
+		true,
 		false,
 		false,
 		false,

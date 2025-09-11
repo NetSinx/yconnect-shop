@@ -13,18 +13,18 @@ func main() {
 	app := config.NewEcho()
 	rabbitmq := config.NewRabbitMQ(viperConfig, log)
 	defer rabbitmq.Close()
-	
+
 	redis := config.NewRedis(viperConfig, log)
 	validator := config.NewValidator()
 
 	config.BootstrapApp(&config.AppConfig{
-		Config: viperConfig,
-		DB: db,
-		Log: log,
-		Validator: validator,
-		App: app,
+		Config:      viperConfig,
+		DB:          db,
+		Log:         log,
+		Validator:   validator,
+		App:         app,
 		RedisClient: redis,
-		RabbitMQ: rabbitmq,
+		RabbitMQ:    rabbitmq,
 	})
 
 	host := viperConfig.GetString("app.host")
