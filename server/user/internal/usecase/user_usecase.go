@@ -90,38 +90,28 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 		}
 	}
 
-	var alamatEntity *entity.Alamat
-	if userEntity.Alamat != nil {
-		alamatEntity = &entity.Alamat{
-			ID:        userEntity.Alamat.ID,
-			NamaJalan: userRequest.Alamat.NamaJalan,
-			RT:        userRequest.Alamat.RT,
-			RW:        userRequest.Alamat.RW,
-			Kelurahan: userRequest.Alamat.Kelurahan,
-			Kecamatan: userRequest.Alamat.Kecamatan,
-			Kota:      userRequest.Alamat.Kota,
-			KodePos:   userRequest.Alamat.KodePos,
-			UserID:    userEntity.ID,
-		}
-	} else {
-		alamatEntity = &entity.Alamat{
-			NamaJalan: userRequest.Alamat.NamaJalan,
-			RT:        userRequest.Alamat.RT,
-			RW:        userRequest.Alamat.RW,
-			Kelurahan: userRequest.Alamat.Kelurahan,
-			Kecamatan: userRequest.Alamat.Kecamatan,
-			Kota:      userRequest.Alamat.Kota,
-			KodePos:   userRequest.Alamat.KodePos,
-			UserID:    userEntity.ID,
-		}
+	alamatEntity := &entity.Alamat{
+		ID:        userEntity.Alamat.ID,
+		NamaJalan: userRequest.Alamat.NamaJalan,
+		RT:        userRequest.Alamat.RT,
+		RW:        userRequest.Alamat.RW,
+		Kelurahan: userRequest.Alamat.Kelurahan,
+		Kecamatan: userRequest.Alamat.Kecamatan,
+		Kota:      userRequest.Alamat.Kota,
+		KodePos:   userRequest.Alamat.KodePos,
+		UserID:    userEntity.ID,
+		CreatedAt: userEntity.CreatedAt,
+		UpdatedAt: userEntity.UpdatedAt,
 	}
-	u.Log.Debugf("Alamat: %v", alamatEntity)
 
 	userEntity.NamaLengkap = userRequest.NamaLengkap
 	userEntity.Username = userRequest.Username
 	userEntity.Email = userRequest.Email
 	userEntity.Alamat = alamatEntity
 	userEntity.NoHP = userRequest.NoHP
+
+	u.Log.Debugf("Alamat: %v", alamatEntity)
+	u.Log.Debugf("Alamat: %v", userEntity)
 
 	if err := u.UserRepository.UpdateUser(tx, userEntity); err != nil {
 		u.Log.WithError(err).Error("error updating user")
