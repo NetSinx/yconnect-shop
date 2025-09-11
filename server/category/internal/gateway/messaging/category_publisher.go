@@ -3,11 +3,10 @@ package messaging
 import (
 	"context"
 	"encoding/json"
-	"time"
-
 	"github.com/NetSinx/yconnect-shop/server/category/internal/helpers"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type Publisher struct {
@@ -43,7 +42,8 @@ func (p *Publisher) Send(routingKey string, message any) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err = ch.PublishWithContext(ctx,
+	err = ch.PublishWithContext(
+		ctx,
 		exchange,
 		routingKey,
 		false,
