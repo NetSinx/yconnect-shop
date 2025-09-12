@@ -10,19 +10,19 @@ import (
 )
 
 type Publisher struct {
-	Connection *amqp.Connection
-	Log        *logrus.Logger
+	RabbitMQ *amqp.Connection
+	Log      *logrus.Logger
 }
 
-func NewPublisher(connection *amqp.Connection, log *logrus.Logger) *Publisher {
+func NewPublisher(rabbitmq *amqp.Connection, log *logrus.Logger) *Publisher {
 	return &Publisher{
-		Connection: connection,
-		Log:        log,
+		RabbitMQ: rabbitmq,
+		Log:      log,
 	}
 }
 
 func (p *Publisher) Send(routingKey string, message any) {
-	ch, err := p.Connection.Channel()
+	ch, err := p.RabbitMQ.Channel()
 	helpers.PanicError(p.Log, err, "Failed to open a channel")
 	defer ch.Close()
 

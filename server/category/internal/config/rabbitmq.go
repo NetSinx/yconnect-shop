@@ -23,7 +23,6 @@ func NewRabbitMQ(config *viper.Viper, log *logrus.Logger) *amqp.Connection {
 
 	connection, err := amqp.Dial(url)
 	helpers.PanicError(log, err, "failed to connect rabbitmq")
-	defer connection.Close()
 
 	return connection
 }

@@ -1,10 +1,12 @@
 package route
 
 import (
-	httpController "github.com/NetSinx/yconnect-shop/server/category/internal/delivery/http"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/echo/v4"
 	"net/http"
+
+	httpController "github.com/NetSinx/yconnect-shop/server/category/internal/delivery/http"
+	"github.com/NetSinx/yconnect-shop/server/category/internal/delivery/http/middleware"
+	"github.com/labstack/echo/v4"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
 
 type APIRoutes struct {
@@ -25,7 +27,7 @@ func (a *APIRoutes) guestAPIRoutes() {
 
 func (a *APIRoutes) authAdminAPIRoutes() {
 	adminGroup := a.AppGroup.Group("/admin")
-	adminGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+	adminGroup.Use(echoMiddleware.CSRFWithConfig(echoMiddleware.CSRFConfig{
 		CookieName: "csrf_token",
 		TokenLookup: "cookie:csrf_token",
 		ContextKey: "csrf_token",
@@ -34,6 +36,7 @@ func (a *APIRoutes) authAdminAPIRoutes() {
 		CookieSecure: true,
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
+	adminGroup.Use(middleware.AuthorizationMiddleware)
 	adminGroup.POST("/category", a.CategoryController.CreateCategory)
 	adminGroup.PUT("/category/:slug", a.CategoryController.UpdateCategory)
 	adminGroup.DELETE("/category/:slug", a.CategoryController.DeleteCategory)

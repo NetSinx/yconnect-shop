@@ -26,8 +26,11 @@ func (c *CategoryController) ListCategory(ctx echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	pageSize, _ := strconv.Atoi(ctx.QueryParam("page_size"))
 
-	if page <= 0 || pageSize <= 0 {
+	if page <= 0 {
 		page = 1
+	}
+	
+	if pageSize <= 0 {
 		pageSize = 20
 	}
 

@@ -217,7 +217,7 @@ func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 	
-	var category *entity.Category
+	category := new(entity.Category)
 	getCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
 	if err != nil {
 		c.Log.WithError(err).Error("error getting category")
