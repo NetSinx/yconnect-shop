@@ -52,10 +52,13 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 		return err
 	}
 
-	helpers.SetCookie(ctx, "role", response.Role, time.Now().Add(30*time.Minute))
-	helpers.SetCookie(ctx, "auth_token", response.AuthToken, time.Now().Add(30*time.Minute))
+	helpers.SetCookie(ctx, "auth_token", response.AuthToken, time.Now().Add(time.Hour))
+	ctx.Response().Header().Add("X-User-Username", response.Username)
+	ctx.Response().Header().Add("X-User-Role", response.Role)
 
-	return ctx.NoContent(http.StatusNoContent)
+	return ctx.JSON(http.StatusOK, &model.AuthenticationResponse{
+		AuthToken: response.AuthToken,
+	})
 }
 
 func (a *AuthController) Verify(ctx echo.Context) error {
