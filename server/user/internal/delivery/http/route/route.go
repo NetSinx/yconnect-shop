@@ -1,17 +1,29 @@
 package route
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http"
+	httpController "github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 type APIRoutes struct {
 	AppGroup       *echo.Group
-	UserController *http.UserController
+	UserController *httpController.UserController
 }
 
 func NewApiRoutes(apiRoutes *APIRoutes) {
 	apiGroup := apiRoutes.AppGroup
+	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		CookieName: "csrf_token",
+		TokenLookup: "header:X-CSRF-Token",
+		ContextKey: "csrf_token",
+		CookiePath: "/",
+		CookieHTTPOnly: true,
+		CookieSecure: true,
+		CookieMaxAge: 600,
+		CookieSameSite: http.SameSiteStrictMode,
+	}))
 	apiGroup.GET("/users/:username", apiRoutes.UserController.GetUserByUsername)
 	apiGroup.PUT("/users/:username", apiRoutes.UserController.UpdateUser)
 	apiGroup.DELETE("/users/:username", apiRoutes.UserController.DeleteUser)

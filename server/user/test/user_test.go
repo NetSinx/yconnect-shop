@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 	"testing"
-	"github.com/NetSinx/yconnect-shop/server/user/model/domain"
 )
 
 func TestListUser(t *testing.T) {
@@ -62,15 +61,6 @@ func TestRegisterUser(t *testing.T) {
 
 func TestUpdateUser(t *testing.T) {
 	var httpClient http.Client
-
-	body := `{
-		"name": "Nur Azizah",
-		"username": "azizah6",
-		"email": "nurazizah@gmail.com",
-		"alamat": "Jl. Kayu Manis",
-		"no_telp": "089676798686",
-		"password": "@Abnurazizah123"
-	}`
 
 	req, _ := http.NewRequest("PUT", "http://localhost:8082/user/5", strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
