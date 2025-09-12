@@ -52,7 +52,7 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 		return err
 	}
 
-	helpers.SetCookie(ctx, "auth_token", response.RefreshToken, time.Now().Add(time.Hour))
+	helpers.SetCookie(ctx, "auth_token", response.RefreshToken, time.Now().Add(30*24*time.Hour))
 	ctx.Response().Header().Add("X-User-Username", response.Username)
 	ctx.Response().Header().Add("X-User-Role", response.Role)
 
@@ -62,14 +62,14 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 }
 
 func (a *AuthController) Verify(ctx echo.Context) error {
-	authTokenRequest, err := ctx.Cookie("auth_token")
-	if err != nil {
-		a.Log.WithError(err).Error("error getting auth token in cookie")
+	authTokenRequest := ctx.Request().Header.Get("Authorization")
+	if authTokenRequest == "" {
+		a.Log.Error("error getting auth token in cookie")
 		return echo.ErrBadRequest
 	}
 
 	authRequest := &model.AuthTokenRequest{
-		AuthToken: authTokenRequest.Value,
+		AuthToken: authTokenRequest,
 	}
 
 	if err := a.AuthUseCase.Verify(ctx.Request().Context(), authRequest); err != nil {
@@ -78,6 +78,30 @@ func (a *AuthController) Verify(ctx echo.Context) error {
 	}
 
 	return ctx.NoContent(http.StatusNoContent)
+}
+
+func (a *AuthController) RefreshToken(ctx echo.Context) error {
+	refreshToken, err := ctx.Cookie("auth_token")
+	if err != nil {
+		a.Log.WithError(err).Error("error getting refresh token in cookie")
+		return err
+	}
+
+	refreshTokenRequest := &model.AuthTokenRequest{
+		AuthToken: refreshToken.Value,
+	}
+
+	response, err := a.AuthUseCase.RefreshToken(ctx.Request().Context(), refreshTokenRequest)
+	if err != nil {
+		a.Log.WithError(err).Error("error generating jwt token")
+		return err
+	}
+
+	dataResponse := &model.DataResponse[*model.TokenResponse]{
+		Data: response,
+	}
+
+	return ctx.JSON(http.StatusOK, dataResponse)
 }
 
 func (a *AuthController) LogoutUser(ctx echo.Context) error {

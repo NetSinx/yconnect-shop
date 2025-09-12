@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
+
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
@@ -149,12 +151,44 @@ func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTo
 		return err
 	}
 
-	if err := a.RedisClient.Exists(ctx, "authToken:"+authTokenRequest.AuthToken).Err(); err != nil {
-		a.Log.WithError(err).Error("error getting token")
-		return echo.ErrUnauthorized
+	return nil
+}
+
+func (a *AuthUseCase) RefreshToken(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (*model.TokenResponse, error) {
+	if err := a.Validator.Struct(authTokenRequest); err != nil {
+		a.Log.WithError(err).Error("error validating request")
+		return nil, echo.ErrBadRequest
 	}
 
-	return nil
+	if err := a.TokenUtil.ParseRefreshToken(authTokenRequest.AuthToken); err != nil {
+		a.Log.WithError(err).Error("error parsing refresh token")
+		return nil, err
+	}
+
+	result, err := a.RedisClient.Get(ctx, "refresh_token:"+authTokenRequest.AuthToken).Result()
+	if err != nil {
+		a.Log.WithError(err).Error("error getting token")
+		return nil, echo.ErrUnauthorized
+	}
+
+	var authToken *model.RefreshTokenResponse
+	if err := json.Unmarshal([]byte(result), &authToken); err != nil {
+		a.Log.WithError(err).Error("error unmarshaling data")
+		return nil, echo.ErrInternalServerError
+	}
+
+	accessToken, refreshToken, err := a.TokenUtil.CreateToken(ctx, authToken.Role)
+	if err != nil {
+		a.Log.WithError(err).Error("error generating jwt token")
+		return nil, err
+	}
+
+	response := &model.TokenResponse{
+		AccessToken: accessToken,
+		RefreshToken: refreshToken,
+	}
+
+	return response, nil
 }
 
 func (a *AuthUseCase) LogoutUser(ctx context.Context, authTokenRequest *model.AuthTokenRequest) error {

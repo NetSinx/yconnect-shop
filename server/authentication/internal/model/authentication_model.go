@@ -25,11 +25,6 @@ type LoginResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-type VerifyResponse struct {
-	ID   uint   `json:"id"`
-	Role string `json:"role"`
-}
-
 type AuthenticationResponse struct {
 	AuthToken string `json:"auth_token"`
 }
@@ -40,6 +35,15 @@ type RegisterResponse struct {
 	Username    string `json:"username"`
 	Email       string `json:"email"`
 	NoHP        string `json:"no_hp"`
+}
+
+type RefreshTokenResponse struct {
+	Role string `json:"role"`
+}
+
+type TokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type DataResponse[T any] struct {

@@ -47,11 +47,3 @@ func (a *AuthRepository) GetByEmail(db *gorm.DB, entity *entity.UserAuthenticati
 
 	return entity, nil
 }
-
-func (a *AuthRepository) GetByID(db *gorm.DB, entity *entity.UserAuthentication, id uint) error {
-	if err := db.First(entity, "id = ?", id).Error; err != nil {
-		return err
-	}
-
-	return nil
-}
