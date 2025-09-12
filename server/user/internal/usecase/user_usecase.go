@@ -90,18 +90,34 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 		}
 	}
 
-	alamatEntity := &entity.Alamat{
-		ID:        userEntity.Alamat.ID,
-		NamaJalan: userRequest.Alamat.NamaJalan,
-		RT:        userRequest.Alamat.RT,
-		RW:        userRequest.Alamat.RW,
-		Kelurahan: userRequest.Alamat.Kelurahan,
-		Kecamatan: userRequest.Alamat.Kecamatan,
-		Kota:      userRequest.Alamat.Kota,
-		KodePos:   userRequest.Alamat.KodePos,
-		UserID:    userEntity.ID,
-		CreatedAt: userEntity.CreatedAt,
-		UpdatedAt: userEntity.UpdatedAt,
+	var alamatEntity *entity.Alamat
+	if userEntity.Alamat != nil {
+		alamatEntity = &entity.Alamat{
+			ID:        userEntity.Alamat.ID,
+			NamaJalan: userRequest.Alamat.NamaJalan,
+			RT:        userRequest.Alamat.RT,
+			RW:        userRequest.Alamat.RW,
+			Kelurahan: userRequest.Alamat.Kelurahan,
+			Kecamatan: userRequest.Alamat.Kecamatan,
+			Kota:      userRequest.Alamat.Kota,
+			KodePos:   userRequest.Alamat.KodePos,
+			UserID:    userEntity.ID,
+			CreatedAt: userEntity.CreatedAt,
+			UpdatedAt: userEntity.UpdatedAt,
+		}
+	} else {
+		alamatEntity = &entity.Alamat{
+			NamaJalan: userRequest.Alamat.NamaJalan,
+			RT:        userRequest.Alamat.RT,
+			RW:        userRequest.Alamat.RW,
+			Kelurahan: userRequest.Alamat.Kelurahan,
+			Kecamatan: userRequest.Alamat.Kecamatan,
+			Kota:      userRequest.Alamat.Kota,
+			KodePos:   userRequest.Alamat.KodePos,
+			UserID:    userEntity.ID,
+			CreatedAt: userEntity.CreatedAt,
+			UpdatedAt: userEntity.UpdatedAt,
+		}
 	}
 
 	userEntity.NamaLengkap = userRequest.NamaLengkap
