@@ -28,7 +28,7 @@ type AppConfig struct {
 }
 
 func BootstrapApp(config *AppConfig) {
-	tokenUtil := helpers.NewTokenUtil("rahasiadeh", config.RedisClient)
+	tokenUtil := helpers.NewTokenUtil([]byte("rahasiadeh"), config.RedisClient)
 	publisher := publishMsg.NewPublisher(config.RabbitMQ, config.Log)
 	
 	repository := repository.NewAuthRepository(config.Log)

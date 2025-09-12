@@ -122,7 +122,7 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		return nil, echo.ErrUnauthorized
 	}
 
-	jwtToken, err := a.TokenUtil.CreateToken(ctx, result.Role, result.ID)
+	jwtToken, err := a.TokenUtil.CreateToken(ctx, result.Role)
 	if err != nil {
 		a.Log.WithError(err).Error("error generating jwt token")
 		return nil, echo.ErrInternalServerError

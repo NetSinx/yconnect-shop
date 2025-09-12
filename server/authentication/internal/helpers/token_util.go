@@ -12,19 +12,29 @@ import (
 )
 
 type TokenUtil struct {
-	SecretKey   string
+	AccessKey   []byte
+	RefreshKey  []byte
 	RedisClient *redis.Client
 }
 
-func NewTokenUtil(secretKey string, redisClient *redis.Client) *TokenUtil {
+func NewTokenUtil(accessKey []byte, refreshKey []byte, redisClient *redis.Client) *TokenUtil {
 	return &TokenUtil{
-		SecretKey:   secretKey,
+		AccessKey:   accessKey,
+		RefreshKey:  refreshKey,
 		RedisClient: redisClient,
 	}
 }
 
-func (t *TokenUtil) CreateToken(ctx context.Context, role string, id uint) (string, error) {	
-	claims := model.CustomClaims{
+func (t *TokenUtil) CreateToken(ctx context.Context, role string) (string, error) {
+	refreshClaims := model.CustomClaims{
+		Role: role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(30*24*time.Hour)),
+		},
+	}
+
+	accessClaims := model.CustomClaims{
 		Role: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -32,15 +42,21 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string, id uint) (stri
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	jwt, err := token.SignedString(t.SecretKey)
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
+	jwtRefresh, err := refreshToken.SignedString(t.RefreshKey)
+	if err != nil {
+		return "", err
+	}
+
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
+	jwtAccess, err := accessToken.SignedString(t.AccessKey)
 	if err != nil {
 		return "", err
 	}
 
 	valueAuth := map[string]any{"role": role}
 	byteValue, _ := json.Marshal(valueAuth)
-	t.RedisClient.Set(ctx, "authToken:"+jwt, byteValue, time.Hour)
+	t.RedisClient.Set(ctx, "refresh_token:"+jwtRefresh, byteValue, time.Hour)
 
 	return jwt, nil
 }

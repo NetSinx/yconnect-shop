@@ -9,7 +9,7 @@ type UserAuthentication struct {
 	Email       string    `json:"email" gorm:"uniqueIndex;type:varchar(100);not null"`
 	Role        string    `json:"role" gorm:"type:varchar(20);not null"`
 	NoHP        string    `json:"no_hp" gorm:"unique;type:varchar(16);not null"`
-	Password string `json:"password" gorm:"type:varchar(255)"`
+	Password    string    `json:"password" gorm:"type:varchar(255)"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
