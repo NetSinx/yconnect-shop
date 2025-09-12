@@ -52,7 +52,7 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 		return err
 	}
 
-	helpers.SetCookie(ctx, "auth_token", response.AuthToken, time.Now().Add(time.Hour))
+	helpers.SetCookie(ctx, "auth_token", response.RefreshToken, time.Now().Add(time.Hour))
 	ctx.Response().Header().Add("X-User-Username", response.Username)
 	ctx.Response().Header().Add("X-User-Role", response.Role)
 

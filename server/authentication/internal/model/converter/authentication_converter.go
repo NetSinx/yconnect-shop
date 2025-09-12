@@ -14,11 +14,3 @@ func UserRegisterToResponse(entity *entity.UserAuthentication) *model.RegisterRe
 		NoHP:        entity.NoHP,
 	}
 }
-
-func UserAuthenticationToResponse(entity *entity.UserAuthentication) *model.AuthenticationResponse {
-	return &model.AuthenticationResponse{
-		ID:    entity.ID,
-		Email: entity.Email,
-		Role:  entity.Role,
-	}
-}

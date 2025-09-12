@@ -144,7 +144,7 @@ func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTo
 		return echo.ErrBadRequest
 	}
 
-	if err := a.TokenUtil.ParseToken(authTokenRequest.AuthToken); err != nil {
+	if err := a.TokenUtil.ParseAccessToken(authTokenRequest.AuthToken); err != nil {
 		a.Log.WithError(err).Error("error parsing token")
 		return err
 	}

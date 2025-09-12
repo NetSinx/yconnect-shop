@@ -56,7 +56,7 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string) (string, strin
 
 	valueAuth := map[string]any{"role": role}
 	byteValue, _ := json.Marshal(valueAuth)
-	t.RedisClient.Set(ctx, "refresh_token:"+jwtRefresh, byteValue, time.Hour)
+	t.RedisClient.Set(ctx, "refresh_token:"+jwtRefresh, byteValue, 30*24*time.Hour)
 
 	return jwtAccess, jwtRefresh, nil
 }
