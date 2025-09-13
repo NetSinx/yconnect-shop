@@ -32,16 +32,16 @@ func (u *UserRepository) UpdateUser(db *gorm.DB, userEntity *entity.User) error 
 	return nil
 }
 
-func (u *UserRepository) GetUserByUsername(db *gorm.DB, entity *entity.User, username string) (*entity.User, error) {
-	if err := db.Preload("Alamat").First(entity, "username = ?", username).Error; err != nil {
+func (u *UserRepository) GetUserByID(db *gorm.DB, entity *entity.User, id uint) (*entity.User, error) {
+	if err := db.Preload("Alamat").First(entity, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 
 	return entity, nil
 }
 
-func (u *UserRepository) DeleteUser(db *gorm.DB, entity *entity.User, username string) error {
-	if err := db.Delete(entity, "username = ?", username).Error; err != nil {
+func (u *UserRepository) DeleteUser(db *gorm.DB, entity *entity.User, id uint) error {
+	if err := db.Delete(entity, "id = ?", id).Error; err != nil {
 		return err
 	}
 

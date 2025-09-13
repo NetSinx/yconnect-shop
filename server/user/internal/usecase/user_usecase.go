@@ -3,6 +3,8 @@ package usecase
 import (
 	"context"
 	"encoding/json"
+	"strconv"
+	"time"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
@@ -14,7 +16,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
-	"time"
 )
 
 type UserUseCase struct {
@@ -64,7 +65,7 @@ func (u *UserUseCase) RegisterUser(ctx context.Context, userEvent *model.Registe
 	return nil
 }
 
-func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserRequest, username string) (*model.DataResponse, error) {
+func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserRequest, id uint) (*model.DataResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -74,9 +75,9 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 	}
 
 	userEntity := new(entity.User)
-	result, err := u.RedisClient.Get(ctx, "user:"+username).Result()
+	result, err := u.RedisClient.Get(ctx, "user:"+strconv.Itoa(int(id))).Result()
 	if err != nil {
-		user, err := u.UserRepository.GetUserByUsername(tx, userEntity, username)
+		user, err := u.UserRepository.GetUserByID(tx, userEntity, id)
 		if err != nil {
 			u.Log.WithError(err).Error("error getting user")
 			return nil, echo.ErrNotFound
@@ -149,7 +150,7 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 	return response, nil
 }
 
-func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.GetUserByUsernameRequest) (*model.DataResponse, error) {
+func (u *UserUseCase) GetUserByID(ctx context.Context, userRequest *model.GetUserByIDRequest) (*model.DataResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -158,7 +159,7 @@ func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.
 		return nil, echo.ErrBadRequest
 	}
 
-	result, err := u.RedisClient.Get(ctx, "user:"+userRequest.Username).Result()
+	result, err := u.RedisClient.Get(ctx, "user:"+strconv.Itoa(int(userRequest.ID))).Result()
 	if err == nil {
 		userEntity := new(entity.User)
 		if err := json.Unmarshal([]byte(result), userEntity); err != nil {
@@ -174,7 +175,7 @@ func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.
 	}
 
 	entity := new(entity.User)
-	user, err := u.UserRepository.GetUserByUsername(tx, entity, userRequest.Username)
+	user, err := u.UserRepository.GetUserByID(tx, entity, userRequest.ID)
 	if err != nil {
 		u.Log.WithError(err).Error("error getting user")
 		return nil, echo.ErrNotFound
@@ -186,7 +187,7 @@ func (u *UserUseCase) GetUserByUsername(ctx context.Context, userRequest *model.
 	}
 
 	userByte, _ := json.Marshal(user)
-	if err := u.RedisClient.Set(ctx, "user:"+userRequest.Username, userByte, 20*time.Minute).Err(); err != nil {
+	if err := u.RedisClient.Set(ctx, "user:"+strconv.Itoa(int(userRequest.ID)), userByte, 20*time.Minute).Err(); err != nil {
 		u.Log.WithError(err).Error("error caching user in redis")
 		return nil, echo.ErrInternalServerError
 	}
@@ -208,9 +209,9 @@ func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteU
 	}
 
 	entity := new(entity.User)
-	result, err := u.RedisClient.GetDel(ctx, "user:"+userRequest.Username).Result()
+	result, err := u.RedisClient.GetDel(ctx, "user:"+strconv.Itoa(int(userRequest.ID))).Result()
 	if err != nil {
-		user, err := u.UserRepository.GetUserByUsername(tx, entity, userRequest.Username)
+		user, err := u.UserRepository.GetUserByID(tx, entity, userRequest.ID)
 		if err != nil {
 			u.Log.WithError(err).Error("error getting user")
 			return echo.ErrNotFound
@@ -224,7 +225,7 @@ func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteU
 		}
 	}
 
-	if err := u.UserRepository.DeleteUser(tx, entity, userRequest.Username); err != nil {
+	if err := u.UserRepository.DeleteUser(tx, entity, userRequest.ID); err != nil {
 		u.Log.WithError(err).Error("error deleting user")
 		return echo.ErrInternalServerError
 	}

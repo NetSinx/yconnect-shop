@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/usecase"
 	"github.com/labstack/echo/v4"
@@ -27,8 +28,8 @@ func (u *UserController) UpdateUser(c echo.Context) error {
 		return err
 	}
 
-	username := c.Param("username")
-	response, err := u.UserUseCase.UpdateUser(c.Request().Context(), userRequest, username)
+	id, _ := strconv.ParseUint(c.Param("username"), 10, strconv.IntSize)
+	response, err := u.UserUseCase.UpdateUser(c.Request().Context(), userRequest, uint(id))
 	if err != nil {
 		u.Log.WithError(err).Error("error updating user")
 		return err
@@ -38,14 +39,16 @@ func (u *UserController) UpdateUser(c echo.Context) error {
 }
 
 func (u *UserController) GetUserByUsername(c echo.Context) error {
-	userRequest := new(model.GetUserByUsernameRequest)
-	userRequest.Username = c.Param("username")
+	userRequest := new(model.GetUserByIDRequest)
+	
+	id, _ := strconv.ParseUint(c.Param("username"), 10, strconv.IntSize)
+	userRequest.ID = uint(id)
 	if err := c.Bind(userRequest); err != nil {
 		u.Log.WithError(err).Error("error binding request to JSON")
 		return err
 	}
 
-	response, err := u.UserUseCase.GetUserByUsername(c.Request().Context(), userRequest)
+	response, err := u.UserUseCase.GetUserByID(c.Request().Context(), userRequest)
 	if err != nil {
 		u.Log.WithError(err).Error("error getting user")
 		return err
@@ -56,7 +59,8 @@ func (u *UserController) GetUserByUsername(c echo.Context) error {
 
 func (u *UserController) DeleteUser(c echo.Context) error {
 	userRequest := new(model.DeleteUserRequest)
-	userRequest.Username = c.Param("username")
+	id, _ := strconv.ParseUint(c.Param("username"), 10, strconv.IntSize)
+	userRequest.ID = uint(id)
 	if err := c.Bind(userRequest); err != nil {
 		u.Log.WithError(err).Error("error binding request to JSON")
 		return err

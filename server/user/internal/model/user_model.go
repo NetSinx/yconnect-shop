@@ -23,11 +23,11 @@ type UserRequest struct {
 }
 
 type DeleteUserRequest struct {
-	Username string `json:"username" validate:"required,max=50"`
+	ID uint `json:"username" validate:"required,max=50"`
 }
 
-type GetUserByUsernameRequest struct {
-	Username string `json:"username" validate:"required,max=50"`
+type GetUserByIDRequest struct {
+	ID uint `json:"username" validate:"required,max=50"`
 }
 
 type AlamatResponse struct {
