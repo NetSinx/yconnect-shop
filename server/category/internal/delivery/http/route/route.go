@@ -29,7 +29,7 @@ func (a *APIRoutes) authAdminAPIRoutes() {
 	adminGroup := a.AppGroup.Group("/admin")
 	adminGroup.Use(echoMiddleware.CSRFWithConfig(echoMiddleware.CSRFConfig{
 		CookieName: "csrf_token",
-		TokenLookup: "cookie:csrf_token",
+		TokenLookup: "header:X-CSRF-Token",
 		ContextKey: "csrf_token",
 		CookiePath: "/",
 		CookieHTTPOnly: true,

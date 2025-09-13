@@ -52,7 +52,9 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 	result, err := c.RedisClient.Get(key).Result()
 	if err == nil {
 		var categories []model.CategoryResponse
-		json.Unmarshal([]byte(result), &categories)
+		if err := json.Unmarshal([]byte(result), &categories); err != nil {
+			return nil, 0, echo.ErrInternalServerError
+		}
 
 		return categories, int64(len(categories)), nil
 	}
@@ -172,8 +174,7 @@ func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *m
 		return nil, echo.ErrBadRequest
 	}
 
-	var category *entity.Category
-
+	category := new(entity.Category)
 	resultCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
 	if err != nil {
 		c.Log.WithError(err).Error("error getting category")
@@ -208,8 +209,11 @@ func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest
 	
 	result, err := c.RedisClient.Get("categoryCache:"+categoryRequest.Slug).Result()
 	if err == nil {
-		var categoryResponse *model.CategoryResponse
-		json.Unmarshal([]byte(result), categoryResponse)
+		categoryResponse := new(model.CategoryResponse)
+		if err := json.Unmarshal([]byte(result), categoryResponse); err != nil {
+			c.Log.WithError(err).Error("error unmarshaling data")
+			return nil, echo.ErrInternalServerError
+		}
 
 		return categoryResponse, nil
 	}
