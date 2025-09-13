@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"encoding/json"
-
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
@@ -124,15 +123,13 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		return nil, echo.ErrUnauthorized
 	}
 
-	jwtAccess, jwtRefresh, err := a.TokenUtil.CreateToken(ctx, result.Role)
+	jwtAccess, jwtRefresh, err := a.TokenUtil.CreateToken(ctx, result.Username, result.Role)
 	if err != nil {
 		a.Log.WithError(err).Error("error generating jwt token")
 		return nil, echo.ErrInternalServerError
 	}
 
 	response := &model.LoginResponse{
-		Username: result.Username,
-		Role: result.Role,
 		AuthToken: jwtAccess,
 		RefreshToken: jwtRefresh,
 	}
@@ -140,18 +137,19 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 	return response, nil
 }
 
-func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTokenRequest) error {
+func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (string, string, error) {
 	if err := a.Validator.Struct(authTokenRequest); err != nil {
 		a.Log.WithError(err).Error("error validating request")
-		return echo.ErrBadRequest
+		return "", "", echo.ErrBadRequest
 	}
 
-	if err := a.TokenUtil.ParseAccessToken(authTokenRequest.AuthToken); err != nil {
+	username, role, err := a.TokenUtil.ParseAccessToken(authTokenRequest.AuthToken)
+	if err != nil {
 		a.Log.WithError(err).Error("error parsing token")
-		return err
+		return "", "", err
 	}
 
-	return nil
+	return username, role, nil
 }
 
 func (a *AuthUseCase) RefreshToken(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (*model.TokenResponse, error) {
@@ -177,7 +175,7 @@ func (a *AuthUseCase) RefreshToken(ctx context.Context, authTokenRequest *model.
 		return nil, echo.ErrInternalServerError
 	}
 
-	accessToken, refreshToken, err := a.TokenUtil.CreateToken(ctx, authToken.Role)
+	accessToken, refreshToken, err := a.TokenUtil.CreateToken(ctx, authToken.Username, authToken.Role)
 	if err != nil {
 		a.Log.WithError(err).Error("error generating jwt token")
 		return nil, err

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"time"
-
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -25,8 +24,9 @@ func NewTokenUtil(accessKey []byte, refreshKey []byte, redisClient *redis.Client
 	}
 }
 
-func (t *TokenUtil) CreateToken(ctx context.Context, role string) (string, string, error) {
+func (t *TokenUtil) CreateToken(ctx context.Context, username string, role string) (string, string, error) {
 	refreshClaims := model.CustomClaims{
+		Username: username,
 		Role: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -35,6 +35,7 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string) (string, strin
 	}
 
 	accessClaims := model.CustomClaims{
+		Username: username,
 		Role: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -54,31 +55,31 @@ func (t *TokenUtil) CreateToken(ctx context.Context, role string) (string, strin
 		return "", "", err
 	}
 
-	valueAuth := map[string]any{"role": role}
+	valueAuth := map[string]any{"username": username, "role": role}
 	byteValue, _ := json.Marshal(valueAuth)
 	t.RedisClient.Set(ctx, "refresh_token:"+jwtRefresh, byteValue, 30*24*time.Hour)
 
 	return jwtAccess, jwtRefresh, nil
 }
 
-func (t *TokenUtil) ParseAccessToken(authToken string) error {
+func (t *TokenUtil) ParseAccessToken(authToken string) (string, string, error) {
 	token, err := jwt.ParseWithClaims(authToken, &model.CustomClaims{}, func(token *jwt.Token) (any, error) {
 		return []byte(t.AccessKey), nil
 	})
 	if err != nil {
-		return echo.ErrInternalServerError
+		return "", "", echo.ErrInternalServerError
 	}
 
 	if !token.Valid {
-		return echo.ErrUnauthorized
+		return "", "", echo.ErrUnauthorized
 	}
 
 	claims := token.Claims.(*model.CustomClaims)
 	if claims.ExpiresAt.UnixMilli() < time.Now().UnixMilli() {
-		return echo.ErrUnauthorized
+		return "", "", echo.ErrUnauthorized
 	}
 
-	return nil
+	return claims.Username, claims.Role, nil
 }
 
 func (t *TokenUtil) ParseRefreshToken(authToken string) error {

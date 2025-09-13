@@ -19,8 +19,6 @@ type AuthTokenRequest struct {
 }
 
 type LoginResponse struct {
-	Username     string `json:"username"`
-	Role         string `json:"role"`
 	AuthToken    string `json:"auth_token"`
 	RefreshToken string `json:"refresh_token"`
 }
@@ -38,7 +36,8 @@ type RegisterResponse struct {
 }
 
 type RefreshTokenResponse struct {
-	Role string `json:"role"`
+	Username string `json:"username"`
+	Role     string `json:"role"`
 }
 
 type TokenResponse struct {
