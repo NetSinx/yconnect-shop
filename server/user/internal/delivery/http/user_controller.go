@@ -28,7 +28,7 @@ func (u *UserController) UpdateUser(c echo.Context) error {
 		return err
 	}
 
-	id, _ := strconv.ParseUint(c.Param("username"), 10, strconv.IntSize)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, strconv.IntSize)
 	response, err := u.UserUseCase.UpdateUser(c.Request().Context(), userRequest, uint(id))
 	if err != nil {
 		u.Log.WithError(err).Error("error updating user")
@@ -38,10 +38,10 @@ func (u *UserController) UpdateUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func (u *UserController) GetUserByUsername(c echo.Context) error {
+func (u *UserController) GetUserByID(c echo.Context) error {
 	userRequest := new(model.GetUserByIDRequest)
 	
-	id, _ := strconv.ParseUint(c.Param("username"), 10, strconv.IntSize)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, strconv.IntSize)
 	userRequest.ID = uint(id)
 	if err := c.Bind(userRequest); err != nil {
 		u.Log.WithError(err).Error("error binding request to JSON")
@@ -59,7 +59,7 @@ func (u *UserController) GetUserByUsername(c echo.Context) error {
 
 func (u *UserController) DeleteUser(c echo.Context) error {
 	userRequest := new(model.DeleteUserRequest)
-	id, _ := strconv.ParseUint(c.Param("username"), 10, strconv.IntSize)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, strconv.IntSize)
 	userRequest.ID = uint(id)
 	if err := c.Bind(userRequest); err != nil {
 		u.Log.WithError(err).Error("error binding request to JSON")
