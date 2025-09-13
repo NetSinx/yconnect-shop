@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
 	"github.com/golang-jwt/jwt/v5"
@@ -24,18 +23,9 @@ func NewTokenUtil(accessKey []byte, refreshKey []byte, redisClient *redis.Client
 	}
 }
 
-func (t *TokenUtil) CreateToken(ctx context.Context, username string, role string) (string, string, error) {
-	refreshClaims := model.CustomClaims{
-		Username: username,
-		Role: role,
-		RegisteredClaims: jwt.RegisteredClaims{
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(30*24*time.Hour)),
-		},
-	}
-
+func (t *TokenUtil) CreateAccessToken(ctx context.Context, id uint, role string) (string, error) {
 	accessClaims := model.CustomClaims{
-		Username: username,
+		ID: id,
 		Role: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -43,43 +33,52 @@ func (t *TokenUtil) CreateToken(ctx context.Context, username string, role strin
 		},
 	}
 
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
-	jwtRefresh, err := refreshToken.SignedString(t.RefreshKey)
-	if err != nil {
-		return "", "", err
-	}
-
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
 	jwtAccess, err := accessToken.SignedString(t.AccessKey)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
-	valueAuth := map[string]any{"username": username, "role": role}
-	byteValue, _ := json.Marshal(valueAuth)
-	t.RedisClient.Set(ctx, "refresh_token:"+jwtRefresh, byteValue, 30*24*time.Hour)
-
-	return jwtAccess, jwtRefresh, nil
+	return jwtAccess, nil
 }
 
-func (t *TokenUtil) ParseAccessToken(authToken string) (string, string, error) {
+func (t *TokenUtil) CreateRefreshToken(ctx context.Context, id uint, role string) (string, error) {
+	refreshClaims := model.CustomClaims{
+		ID: id,
+		Role: role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(30*24*time.Hour)),
+		},
+	}
+
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
+	jwtRefresh, err := refreshToken.SignedString(t.RefreshKey)
+	if err != nil {
+		return "", err
+	}
+
+	return jwtRefresh, nil
+}
+
+func (t *TokenUtil) ParseAccessToken(authToken string) (uint, string, error) {
 	token, err := jwt.ParseWithClaims(authToken, &model.CustomClaims{}, func(token *jwt.Token) (any, error) {
 		return []byte(t.AccessKey), nil
 	})
 	if err != nil {
-		return "", "", echo.ErrInternalServerError
+		return 0, "", echo.ErrInternalServerError
 	}
 
 	if !token.Valid {
-		return "", "", echo.ErrUnauthorized
+		return 0, "", echo.ErrUnauthorized
 	}
 
 	claims := token.Claims.(*model.CustomClaims)
 	if claims.ExpiresAt.UnixMilli() < time.Now().UnixMilli() {
-		return "", "", echo.ErrUnauthorized
+		return 0, "", echo.ErrUnauthorized
 	}
 
-	return claims.Username, claims.Role, nil
+	return claims.ID, claims.Role, nil
 }
 
 func (t *TokenUtil) ParseRefreshToken(authToken string) error {

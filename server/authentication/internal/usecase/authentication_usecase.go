@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"encoding/json"
+	"time"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
@@ -59,11 +60,11 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 
 	entity := &entity.UserAuthentication{
 		NamaLengkap: registerRequest.NamaLengkap,
-		Username: registerRequest.Username,
-		Email:    registerRequest.Email,
-		Role:     "customer",
-		NoHP: registerRequest.NoHP,
-		Password: string(hashedPassword),
+		Username:    registerRequest.Username,
+		Email:       registerRequest.Email,
+		Role:        "customer",
+		NoHP:        registerRequest.NoHP,
+		Password:    string(hashedPassword),
 	}
 
 	id, err := a.AuthRepository.Create(tx, entity)
@@ -79,10 +80,10 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 
 	registerUserEvent := &model.RegisterUserEvent{
 		NamaLengkap: registerRequest.NamaLengkap,
-		Username: registerRequest.Username,
-		Email: registerRequest.Email,
-		NoHP: registerRequest.NoHP,
-		Role: "customer",
+		Username:    registerRequest.Username,
+		Email:       registerRequest.Email,
+		NoHP:        registerRequest.NoHP,
+		Role:        "customer",
 	}
 
 	if a.Config.GetBool("rabbitmq.enabled") {
@@ -97,7 +98,7 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 	return response, nil
 }
 
-func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRequest) (*model.LoginResponse, error) {
+func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRequest) (*model.TokenResponse, error) {
 	tx := a.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -123,33 +124,47 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		return nil, echo.ErrUnauthorized
 	}
 
-	jwtAccess, jwtRefresh, err := a.TokenUtil.CreateToken(ctx, result.Username, result.Role)
+	jwtRefresh, err := a.TokenUtil.CreateRefreshToken(ctx, result.ID, result.Role)
 	if err != nil {
 		a.Log.WithError(err).Error("error generating jwt token")
 		return nil, echo.ErrInternalServerError
 	}
 
-	response := &model.LoginResponse{
-		AuthToken: jwtAccess,
+	jwtAccess, err := a.TokenUtil.CreateAccessToken(ctx, result.ID, result.Role)
+	if err != nil {
+		a.Log.WithError(err).Error("error generating jwt token")
+		return nil, echo.ErrInternalServerError
+	}
+
+	valueAuth := map[string]any{"id": result.ID, "role": result.Role}
+	byteValue, err := json.Marshal(valueAuth)
+	if err != nil {
+		a.Log.WithError(err).Error("error marshaling json data")
+		return nil, echo.ErrInternalServerError
+	}
+	a.RedisClient.Set(ctx, "refresh_token:"+jwtRefresh, byteValue, 30*24*time.Hour)
+
+	response := &model.TokenResponse{
+		AccessToken:  jwtAccess,
 		RefreshToken: jwtRefresh,
 	}
 
 	return response, nil
 }
 
-func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (string, string, error) {
+func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (uint, string, error) {
 	if err := a.Validator.Struct(authTokenRequest); err != nil {
 		a.Log.WithError(err).Error("error validating request")
-		return "", "", echo.ErrBadRequest
+		return 0, "", echo.ErrBadRequest
 	}
 
-	username, role, err := a.TokenUtil.ParseAccessToken(authTokenRequest.AuthToken)
+	id, role, err := a.TokenUtil.ParseAccessToken(authTokenRequest.AuthToken)
 	if err != nil {
 		a.Log.WithError(err).Error("error parsing token")
-		return "", "", err
+		return 0, "", err
 	}
 
-	return username, role, nil
+	return id, role, nil
 }
 
 func (a *AuthUseCase) RefreshToken(ctx context.Context, authTokenRequest *model.AuthTokenRequest) (*model.TokenResponse, error) {
@@ -175,7 +190,7 @@ func (a *AuthUseCase) RefreshToken(ctx context.Context, authTokenRequest *model.
 		return nil, echo.ErrInternalServerError
 	}
 
-	accessToken, refreshToken, err := a.TokenUtil.CreateToken(ctx, authToken.Username, authToken.Role)
+	accessToken, err := a.TokenUtil.CreateAccessToken(ctx, authToken.ID, authToken.Role)
 	if err != nil {
 		a.Log.WithError(err).Error("error generating jwt token")
 		return nil, err
@@ -183,7 +198,6 @@ func (a *AuthUseCase) RefreshToken(ctx context.Context, authTokenRequest *model.
 
 	response := &model.TokenResponse{
 		AccessToken: accessToken,
-		RefreshToken: refreshToken,
 	}
 
 	return response, nil

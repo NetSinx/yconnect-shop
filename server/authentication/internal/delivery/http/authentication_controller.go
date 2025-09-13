@@ -55,7 +55,7 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 	helpers.SetCookie(ctx, "auth_token", response.RefreshToken, time.Now().Add(30*24*time.Hour))
 
 	return ctx.JSON(http.StatusOK, &model.AuthenticationResponse{
-		AuthToken: response.AuthToken,
+		AuthToken: response.AccessToken,
 	})
 }
 
@@ -70,13 +70,14 @@ func (a *AuthController) Verify(ctx echo.Context) error {
 		AuthToken: authTokenRequest,
 	}
 
-	username, role, err := a.AuthUseCase.Verify(ctx.Request().Context(), authRequest)
+	id, role, err := a.AuthUseCase.Verify(ctx.Request().Context(), authRequest)
 	if err != nil {
 		a.Log.WithError(err).Error("error verify user")
 		return err
 	}
 
-	ctx.Response().Header().Add("X-User-Role", )
+	ctx.Response().Header().Add("X-User-ID", fmt.Sprint(id))
+	ctx.Response().Header().Add("X-User-Role", role)
 
 	return ctx.NoContent(http.StatusNoContent)
 }
@@ -98,11 +99,9 @@ func (a *AuthController) RefreshToken(ctx echo.Context) error {
 		return err
 	}
 
-	dataResponse := &model.DataResponse[*model.TokenResponse]{
-		Data: response,
-	}
-
-	return ctx.JSON(http.StatusOK, dataResponse)
+	return ctx.JSON(http.StatusOK, &model.AuthenticationResponse{
+		AuthToken: response.AccessToken,
+	})
 }
 
 func (a *AuthController) LogoutUser(ctx echo.Context) error {

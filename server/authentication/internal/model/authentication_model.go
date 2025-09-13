@@ -18,11 +18,6 @@ type AuthTokenRequest struct {
 	AuthToken string `json:"auth_token" validate:"required"`
 }
 
-type LoginResponse struct {
-	AuthToken    string `json:"auth_token"`
-	RefreshToken string `json:"refresh_token"`
-}
-
 type AuthenticationResponse struct {
 	AuthToken string `json:"auth_token"`
 }
@@ -36,8 +31,8 @@ type RegisterResponse struct {
 }
 
 type RefreshTokenResponse struct {
-	Username string `json:"username"`
-	Role     string `json:"role"`
+	ID   uint   `json:"id"`
+	Role string `json:"role"`
 }
 
 type TokenResponse struct {
