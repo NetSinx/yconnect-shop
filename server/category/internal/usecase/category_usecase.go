@@ -43,7 +43,7 @@ func NewCategoryUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, re
 	}
 }
 
-func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) (*model.ListCategoryResponse, error) {
+func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) (*model.DataResponse[[]model.CategoryResponse], error) {
 	if err := c.Validator.Struct(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")
 		return nil, echo.ErrBadRequest
@@ -52,7 +52,7 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 	key := fmt.Sprintf("categoriesCache:%d:%d", categoryRequest.Page, categoryRequest.Size)
 	result, err := c.RedisClient.Get(key).Result()
 	if err == nil {
-		categories := new(model.ListCategoryResponse)
+		categories := new(model.DataResponse[[]model.CategoryResponse])
 		if err := json.Unmarshal([]byte(result), categories); err != nil {
 			return nil, echo.ErrInternalServerError
 		}
@@ -79,7 +79,7 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 		listCategoryResponse[i] = *converter.CategoryToResponse(&category)
 	}
 
-	response := &model.ListCategoryResponse{
+	response := &model.DataResponse[[]model.CategoryResponse]{
 		Data: listCategoryResponse,
 		PageMetadata: &model.PageMetadataResponse{
 			Page:      categoryRequest.Page,
@@ -176,30 +176,30 @@ func (c *CategoryUseCase) UpdateCategory(ctx context.Context, categoryRequest *m
 	return response, nil
 }
 
-func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *model.DeleteCategoryRequest) (*model.CategoryResponse, error) {
+func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *model.DeleteCategoryRequest) error {
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
 	if err := c.Validator.Struct(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")
-		return nil, echo.ErrBadRequest
+		return echo.ErrBadRequest
 	}
 
 	category := new(entity.Category)
 	resultCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
 	if err != nil {
 		c.Log.WithError(err).Error("error getting category")
-		return nil, echo.ErrNotFound
+		return echo.ErrNotFound
 	}
 
 	if err := c.CategoryRepository.DeleteCategory(tx, category, categoryRequest.Slug); err != nil {
 		c.Log.WithError(err).Error("error deleting category")
-		return nil, echo.ErrInternalServerError
+		return echo.ErrInternalServerError
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		c.Log.WithError(err).Error("error deleting category")
-		return nil, echo.ErrInternalServerError
+		return echo.ErrInternalServerError
 	}
 
 	if c.Config.GetBool("rabbitmq.enabled") {
@@ -207,9 +207,7 @@ func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *m
 		c.CategoryPublisher.Send("category.deleted", event)
 	}
 
-	response := converter.CategoryToResponse(resultCategory)
-
-	return response, nil
+	return nil
 }
 
 func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest *model.GetCategoryBySlugRequest) (*model.CategoryResponse, error) {

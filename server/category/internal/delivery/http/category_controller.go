@@ -1,12 +1,12 @@
 package http
 
 import (
-	"net/http"
-	"strconv"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/usecase"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
+	"net/http"
+	"strconv"
 )
 
 type CategoryController struct {
@@ -28,7 +28,7 @@ func (c *CategoryController) ListCategory(ctx echo.Context) error {
 	if page <= 0 {
 		page = 1
 	}
-	
+
 	if pageSize <= 0 {
 		pageSize = 20
 	}
@@ -61,9 +61,8 @@ func (c *CategoryController) CreateCategory(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, model.CategoryResponseWithMessage{
-		Message: "Data created successfully",
-		Data:    response,
+	return ctx.JSON(http.StatusOK, &model.DataResponse[*model.CategoryResponse]{
+		Data: response,
 	})
 }
 
@@ -83,8 +82,7 @@ func (c *CategoryController) UpdateCategory(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, model.CategoryResponseWithMessage{
-		Message: "Data updated successfully",
+	return ctx.JSON(http.StatusOK, &model.DataResponse[*model.CategoryResponse]{
 		Data:    response,
 	})
 }
@@ -94,16 +92,12 @@ func (c *CategoryController) DeleteCategory(ctx echo.Context) error {
 	slug := ctx.Param("slug")
 
 	categoryRequest.Slug = slug
-	response, err := c.CategoryUseCase.DeleteCategory(ctx.Request().Context(), categoryRequest)
-	if err != nil {
+	if err := c.CategoryUseCase.DeleteCategory(ctx.Request().Context(), categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error deleting category")
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, model.CategoryResponseWithMessage{
-		Message: "Data deleted successfully",
-		Data:    response,
-	})
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 func (c *CategoryController) GetCategoryBySlug(ctx echo.Context) error {
@@ -117,7 +111,7 @@ func (c *CategoryController) GetCategoryBySlug(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, model.GetCategoryResponse{
+	return ctx.JSON(http.StatusOK, model.DataResponse[*model.CategoryResponse]{
 		Data: response,
 	})
 }

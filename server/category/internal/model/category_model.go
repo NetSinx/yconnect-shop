@@ -43,16 +43,7 @@ type PageMetadataResponse struct {
 	TotalPage int64 `json:"total_page"`
 }
 
-type ListCategoryResponse struct {
-	Data         []CategoryResponse    `json:"data"`
-	PageMetadata *PageMetadataResponse `json:"paging"`
-}
-
-type CategoryResponseWithMessage struct {
-	Message string            `json:"message"`
-	Data    *CategoryResponse `json:"data"`
-}
-
-type GetCategoryResponse struct {
-	Data *CategoryResponse `json:"data"`
+type DataResponse[T any] struct {
+	Data         T                     `json:"data"`
+	PageMetadata *PageMetadataResponse `json:"paging,omitempty"`
 }
