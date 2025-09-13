@@ -25,7 +25,7 @@ func (r *CategoryRepository) ListCategory(db *gorm.DB, request *model.ListCatego
 	}
 
 	var total int64
-	if err := db.Model(&entity.Category{}).Offset((request.Page - 1) * request.Size).Limit(request.Size).Count(&total).Error; err != nil {
+	if err := db.Model(&entity.Category{}).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 

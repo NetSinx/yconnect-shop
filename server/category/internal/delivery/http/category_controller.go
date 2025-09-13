@@ -1,7 +1,6 @@
 package http
 
 import (
-	"math"
 	"net/http"
 	"strconv"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/model"
@@ -39,23 +38,13 @@ func (c *CategoryController) ListCategory(ctx echo.Context) error {
 		Size: pageSize,
 	}
 
-	listCategories, total, err := c.CategoryUseCase.ListCategory(ctx.Request().Context(), categoryRequest)
+	response, err := c.CategoryUseCase.ListCategory(ctx.Request().Context(), categoryRequest)
 	if err != nil {
 		c.Log.WithError(err).Error("error listing categories")
 		return err
 	}
 
-	listCategoriesResponse := model.ListCategoryResponse{
-		Data: listCategories,
-		PageMetadata: &model.PageMetadataResponse{
-			Page:      categoryRequest.Page,
-			Size:      categoryRequest.Size,
-			TotalItem: total,
-			TotalPage: int64(math.Ceil(float64(total) / float64(categoryRequest.Size))),
-		},
-	}
-
-	return ctx.JSON(http.StatusOK, listCategoriesResponse)
+	return ctx.JSON(http.StatusOK, response)
 }
 
 func (c *CategoryController) CreateCategory(ctx echo.Context) error {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"time"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/gateway/messaging"
@@ -42,21 +43,21 @@ func NewCategoryUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, re
 	}
 }
 
-func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) ([]model.CategoryResponse, int64, error) {
+func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) (*model.ListCategoryResponse, error) {
 	if err := c.Validator.Struct(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")
-		return nil, 0, echo.ErrBadRequest
+		return nil, echo.ErrBadRequest
 	}
 	
 	key := fmt.Sprintf("categoriesCache:%d:%d", categoryRequest.Page, categoryRequest.Size)
 	result, err := c.RedisClient.Get(key).Result()
 	if err == nil {
-		var categories []model.CategoryResponse
-		if err := json.Unmarshal([]byte(result), &categories); err != nil {
-			return nil, 0, echo.ErrInternalServerError
+		categories := new(model.ListCategoryResponse)
+		if err := json.Unmarshal([]byte(result), categories); err != nil {
+			return nil, echo.ErrInternalServerError
 		}
 
-		return categories, int64(len(categories)), nil
+		return categories, nil
 	}
 	
 	tx := c.DB.WithContext(ctx).Begin()
@@ -65,27 +66,37 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 	listCategories, total, err := c.CategoryRepository.ListCategory(tx, categoryRequest)
 	if err != nil {
 		c.Log.WithError(err).Error("error listing categories")
-		return nil, 0, echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		c.Log.WithError(err).Error("error listing categories")
-		return nil, 0, echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
-	responses := make([]model.CategoryResponse, len(listCategories))
+	listCategoryResponse := make([]model.CategoryResponse, len(listCategories))
 	for i, category := range listCategories {
-		responses[i] = *converter.CategoryToResponse(&category)
+		listCategoryResponse[i] = *converter.CategoryToResponse(&category)
 	}
 
-	categories, _ := json.Marshal(&listCategories)
+	response := &model.ListCategoryResponse{
+		Data: listCategoryResponse,
+		PageMetadata: &model.PageMetadataResponse{
+			Page:      categoryRequest.Page,
+			Size:      categoryRequest.Size,
+			TotalItem: total,
+			TotalPage: int64(math.Ceil(float64(total) / float64(categoryRequest.Size))),
+		},
+	}
+
+	categories, _ := json.Marshal(&response)
 	key = fmt.Sprintf("categoriesCache:%d:%d", categoryRequest.Page, categoryRequest.Size)
 	if err := c.RedisClient.Set(key, categories, 5*time.Minute).Err(); err != nil {
 		c.Log.WithError(err).Error("error caching categories in redis")
-		return nil, 0, echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
-	return responses, total, nil
+	return response, nil
 }
 
 func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryRequest *model.CreateCategoryRequest) (*model.CategoryResponse, error) {
