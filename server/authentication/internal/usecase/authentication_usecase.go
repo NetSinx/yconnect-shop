@@ -171,8 +171,8 @@ func (a *AuthUseCase) RefreshToken(ctx context.Context, authTokenRequest *model.
 		return nil, echo.ErrUnauthorized
 	}
 
-	var authToken *model.RefreshTokenResponse
-	if err := json.Unmarshal([]byte(result), &authToken); err != nil {
+	authToken := new(model.RefreshTokenResponse)
+	if err := json.Unmarshal([]byte(result), authToken); err != nil {
 		a.Log.WithError(err).Error("error unmarshaling data")
 		return nil, echo.ErrInternalServerError
 	}
