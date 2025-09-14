@@ -8,7 +8,7 @@
         "host": "db-category",
         "port": 3306,
         "username": "test",
-        "password": "12345678",
+        "password": "test123",
         "name": "db_category",
         "pool": {
             "idle": 10,

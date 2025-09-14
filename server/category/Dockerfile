@@ -8,7 +8,7 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN go build -v -o /usr/local/bin/category ./...
+RUN go build -v -o /usr/local/bin/category ./cmd/
 
 EXPOSE 8080
 
