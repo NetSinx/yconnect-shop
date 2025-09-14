@@ -5,11 +5,11 @@
         "port": 8080
     },
     "database": {
-        "host": "localhost",
+        "host": "db-category",
         "port": 3306,
-        "username": "root",
-        "password": "",
-        "name": "yconnect_shop_category",
+        "username": "test",
+        "password": "12345678",
+        "name": "db_category",
         "pool": {
             "idle": 10,
             "max": 100,
@@ -17,15 +17,15 @@
         }
     },
     "rabbitmq": {
-        "enabled": false,
-        "host": "localhost",
+        "enabled": true,
+        "host": "rabbitmq",
         "port": 5672,
         "username": "guest",
         "password": "guest"
     },
     "redis": {
         "enabled": true,
-        "host": "localhost",
+        "host": "redis",
         "port": 6379,
         "password": "",
         "database": 0,

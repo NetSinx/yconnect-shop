@@ -214,15 +214,17 @@ func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest
 		return nil, echo.ErrBadRequest
 	}
 	
-	result, err := c.RedisClient.Get("categoryCache:"+categoryRequest.Slug).Result()
-	if err == nil {
-		categoryResponse := new(model.CategoryResponse)
-		if err := json.Unmarshal([]byte(result), categoryResponse); err != nil {
-			c.Log.WithError(err).Error("error unmarshaling data")
-			return nil, echo.ErrInternalServerError
+	if c.Config.GetBool("redis.enabled") {
+		result, err := c.RedisClient.Get("categoryCache:"+categoryRequest.Slug).Result()
+		if err == nil {
+			categoryResponse := new(model.CategoryResponse)
+			if err := json.Unmarshal([]byte(result), categoryResponse); err != nil {
+				c.Log.WithError(err).Error("error unmarshaling data")
+				return nil, echo.ErrInternalServerError
+			}
+	
+			return categoryResponse, nil
 		}
-
-		return categoryResponse, nil
 	}
 	
 	tx := c.DB.WithContext(ctx).Begin()
@@ -239,10 +241,12 @@ func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest
 		return nil, echo.ErrInternalServerError
 	}
 
-	categoryByte, _ := json.Marshal(category)
-	if err := c.RedisClient.Set("categoryCache:"+categoryRequest.Slug, categoryByte, 5*time.Minute).Err(); err != nil {
-		c.Log.WithError(err).Error("error caching category in redis")
-		return nil, echo.ErrInternalServerError
+	if c.Config.GetBool("redis.enabled") {
+		categoryByte, _ := json.Marshal(category)
+		if err := c.RedisClient.Set("categoryCache:"+categoryRequest.Slug, categoryByte, 5*time.Minute).Err(); err != nil {
+			c.Log.WithError(err).Error("error caching category in redis")
+			return nil, echo.ErrInternalServerError
+		}
 	}
 
 	response := converter.CategoryToResponse(category)
