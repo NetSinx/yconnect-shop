@@ -24,7 +24,7 @@ func NewApiRoutes(apiRoutes *APIRoutes) {
 		CookieMaxAge: 600,
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
-	apiGroup.GET("/users/:id", apiRoutes.UserController.GetUserByID)
-	apiGroup.PUT("/users/:id", apiRoutes.UserController.UpdateUser)
-	apiGroup.DELETE("/users/:id", apiRoutes.UserController.DeleteUser)
+	apiGroup.GET("/user/:id", apiRoutes.UserController.GetUserByID)
+	apiGroup.PUT("/user/:id", apiRoutes.UserController.UpdateUser)
+	apiGroup.DELETE("/user/:id", apiRoutes.UserController.DeleteUser)
 }

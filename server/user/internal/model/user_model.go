@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type DataResponse struct {
 	Data *UserResponse `json:"data"`
 }
@@ -49,6 +51,8 @@ type UserResponse struct {
 	Role        string          `json:"role"`
 	Alamat      *AlamatResponse `json:"alamat,omitempty"`
 	NoHP        string          `json:"no_hp"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
 }
 
 type MessageResp struct {

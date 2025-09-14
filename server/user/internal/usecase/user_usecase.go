@@ -3,8 +3,6 @@ package usecase
 import (
 	"context"
 	"encoding/json"
-	"strconv"
-	"time"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
@@ -16,6 +14,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"strconv"
+	"time"
 )
 
 type UserUseCase struct {
@@ -77,13 +77,11 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 	userEntity := new(entity.User)
 	result, err := u.RedisClient.Get(ctx, "user:"+strconv.Itoa(int(id))).Result()
 	if err != nil {
-		user, err := u.UserRepository.GetUserByID(tx, userEntity, id)
+		userEntity, err = u.UserRepository.GetUserByID(tx, userEntity, id)
 		if err != nil {
 			u.Log.WithError(err).Error("error getting user")
 			return nil, echo.ErrNotFound
 		}
-
-		userEntity = user
 	} else {
 		if err := json.Unmarshal([]byte(result), userEntity); err != nil {
 			u.Log.WithError(err).Error("error unmarshaling data")
@@ -103,8 +101,8 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 			Kota:      userRequest.Alamat.Kota,
 			KodePos:   userRequest.Alamat.KodePos,
 			UserID:    userEntity.ID,
-			CreatedAt: userEntity.CreatedAt,
-			UpdatedAt: userEntity.UpdatedAt,
+			CreatedAt: userEntity.Alamat.CreatedAt,
+			UpdatedAt: userEntity.Alamat.UpdatedAt,
 		}
 	} else {
 		alamatEntity = &entity.Alamat{
@@ -116,8 +114,8 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 			Kota:      userRequest.Alamat.Kota,
 			KodePos:   userRequest.Alamat.KodePos,
 			UserID:    userEntity.ID,
-			CreatedAt: userEntity.CreatedAt,
-			UpdatedAt: userEntity.UpdatedAt,
+			CreatedAt: userEntity.Alamat.CreatedAt,
+			UpdatedAt: userEntity.Alamat.UpdatedAt,
 		}
 	}
 
