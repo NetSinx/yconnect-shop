@@ -66,16 +66,16 @@ func (t *TokenUtil) ParseAccessToken(authToken string) (uint, string, error) {
 		return []byte(t.AccessKey), nil
 	})
 	if err != nil {
-		return 0, "", echo.ErrInternalServerError
+		return 0, "", err
 	}
 
 	if !token.Valid {
-		return 0, "", echo.ErrUnauthorized
+		return 0, "", err
 	}
 
 	claims := token.Claims.(*model.CustomClaims)
 	if claims.ExpiresAt.UnixMilli() < time.Now().UnixMilli() {
-		return 0, "", echo.ErrUnauthorized
+		return 0, "", err
 	}
 
 	return claims.ID, claims.Role, nil

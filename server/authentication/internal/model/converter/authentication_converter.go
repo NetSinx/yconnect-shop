@@ -12,5 +12,7 @@ func UserRegisterToResponse(entity *entity.UserAuthentication) *model.RegisterRe
 		Username:    entity.Username,
 		Email:       entity.Email,
 		NoHP:        entity.NoHP,
+		CreatedAt:   entity.CreatedAt,
+		UpdatedAt:   entity.UpdatedAt,
 	}
 }

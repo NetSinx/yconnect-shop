@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type RegisterRequest struct {
 	NamaLengkap        string `json:"nama_lengkap" validate:"required,max=100"`
 	Username           string `json:"username" validate:"required,max=50"`
@@ -23,11 +25,13 @@ type AuthenticationResponse struct {
 }
 
 type RegisterResponse struct {
-	ID          uint   `json:"id"`
-	NamaLengkap string `json:"nama_lengkap"`
-	Username    string `json:"username"`
-	Email       string `json:"email"`
-	NoHP        string `json:"no_hp"`
+	ID          uint      `json:"id"`
+	NamaLengkap string    `json:"nama_lengkap"`
+	Username    string    `json:"username"`
+	Email       string    `json:"email"`
+	NoHP        string    `json:"no_hp"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type RefreshTokenResponse struct {

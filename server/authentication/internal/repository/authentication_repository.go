@@ -16,12 +16,12 @@ func NewAuthRepository(log *logrus.Logger) *AuthRepository {
 	}
 }
 
-func (a *AuthRepository) Create(db *gorm.DB, entity *entity.UserAuthentication) (uint, error) {
+func (a *AuthRepository) Create(db *gorm.DB, entity *entity.UserAuthentication) error {
 	if err := db.Create(entity).Error; err != nil {
-		return 0, err
+		return err
 	}
 
-	return entity.ID, nil
+	return nil
 }
 
 func (a *AuthRepository) Update(db *gorm.DB, entity *entity.UserAuthentication) error {
@@ -40,10 +40,10 @@ func (a *AuthRepository) Delete(db *gorm.DB, entity *entity.UserAuthentication) 
 	return nil
 }
 
-func (a *AuthRepository) GetByEmail(db *gorm.DB, entity *entity.UserAuthentication, email string) (*entity.UserAuthentication, error) {
+func (a *AuthRepository) GetByEmail(db *gorm.DB, entity *entity.UserAuthentication, email string) error {
 	if err := db.Select("id", "role", "password").First(entity, "email = ?", email).Error; err != nil {
-		return nil, err
+		return err
 	}
 
-	return entity, nil
+	return nil
 }

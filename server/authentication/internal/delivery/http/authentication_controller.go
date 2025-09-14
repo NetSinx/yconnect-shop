@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
@@ -60,7 +61,7 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 }
 
 func (a *AuthController) Verify(ctx echo.Context) error {
-	authTokenRequest := ctx.Request().Header.Get("Authorization")
+	authTokenRequest := strings.Split(ctx.Request().Header.Get("Authorization"), " ")[1]
 	if authTokenRequest == "" {
 		a.Log.Error("error getting auth token in cookie")
 		return echo.ErrBadRequest
@@ -119,6 +120,8 @@ func (a *AuthController) LogoutUser(ctx echo.Context) error {
 		a.Log.WithError(err).Error("error logout user")
 		return err
 	}
+
+	helpers.SetCookie(ctx, "auth_token", "", time.Now())
 
 	return ctx.NoContent(http.StatusNoContent)
 }

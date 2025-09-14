@@ -67,8 +67,7 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 		Password:    string(hashedPassword),
 	}
 
-	id, err := a.AuthRepository.Create(tx, entity)
-	if err != nil {
+	if err := a.AuthRepository.Create(tx, entity); err != nil {
 		a.Log.WithError(err).Error("error registering user")
 		return nil, echo.ErrInternalServerError
 	}
@@ -90,7 +89,6 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 		a.Publisher.Send(ctx, registerUserEvent)
 	}
 
-	entity.ID = id
 	response := &model.DataResponse[*model.RegisterResponse]{
 		Data: converter.UserRegisterToResponse(entity),
 	}
@@ -108,8 +106,7 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 	}
 
 	authEntity := new(entity.UserAuthentication)
-	result, err := a.AuthRepository.GetByEmail(tx, authEntity, loginRequest.Email)
-	if err != nil {
+	if err := a.AuthRepository.GetByEmail(tx, authEntity, loginRequest.Email); err != nil {
 		a.Log.WithError(err).Error("error getting user")
 		return nil, echo.ErrUnauthorized
 	}
@@ -119,24 +116,24 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		return nil, echo.ErrInternalServerError
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(loginRequest.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(authEntity.Password), []byte(loginRequest.Password)); err != nil {
 		a.Log.WithError(err).Error("error to compare hash and password")
 		return nil, echo.ErrUnauthorized
 	}
 
-	jwtRefresh, err := a.TokenUtil.CreateRefreshToken(ctx, result.ID, result.Role)
+	jwtRefresh, err := a.TokenUtil.CreateRefreshToken(ctx, authEntity.ID, authEntity.Role)
 	if err != nil {
 		a.Log.WithError(err).Error("error generating jwt token")
 		return nil, echo.ErrInternalServerError
 	}
 
-	jwtAccess, err := a.TokenUtil.CreateAccessToken(ctx, result.ID, result.Role)
+	jwtAccess, err := a.TokenUtil.CreateAccessToken(ctx, authEntity.ID, authEntity.Role)
 	if err != nil {
 		a.Log.WithError(err).Error("error generating jwt token")
 		return nil, echo.ErrInternalServerError
 	}
 
-	valueAuth := map[string]any{"id": result.ID, "role": result.Role}
+	valueAuth := map[string]any{"id": authEntity.ID, "role": authEntity.Role}
 	byteValue, err := json.Marshal(valueAuth)
 	if err != nil {
 		a.Log.WithError(err).Error("error marshaling json data")
@@ -161,7 +158,7 @@ func (a *AuthUseCase) Verify(ctx context.Context, authTokenRequest *model.AuthTo
 	id, role, err := a.TokenUtil.ParseAccessToken(authTokenRequest.AuthToken)
 	if err != nil {
 		a.Log.WithError(err).Error("error parsing token")
-		return 0, "", err
+		return 0, "", echo.ErrUnauthorized
 	}
 
 	return id, role, nil
@@ -184,13 +181,13 @@ func (a *AuthUseCase) RefreshToken(ctx context.Context, authTokenRequest *model.
 		return nil, echo.ErrUnauthorized
 	}
 
-	authToken := new(model.RefreshTokenResponse)
-	if err := json.Unmarshal([]byte(result), authToken); err != nil {
+	refreshTokenResponse := new(model.RefreshTokenResponse)
+	if err := json.Unmarshal([]byte(result), refreshTokenResponse); err != nil {
 		a.Log.WithError(err).Error("error unmarshaling data")
 		return nil, echo.ErrInternalServerError
 	}
 
-	accessToken, err := a.TokenUtil.CreateAccessToken(ctx, authToken.ID, authToken.Role)
+	accessToken, err := a.TokenUtil.CreateAccessToken(ctx, refreshTokenResponse.ID, refreshTokenResponse.Role)
 	if err != nil {
 		a.Log.WithError(err).Error("error generating jwt token")
 		return nil, err
@@ -209,7 +206,7 @@ func (a *AuthUseCase) LogoutUser(ctx context.Context, authTokenRequest *model.Au
 		return echo.ErrBadRequest
 	}
 
-	if err := a.RedisClient.Del(ctx, "authToken:"+authTokenRequest.AuthToken).Err(); err != nil {
+	if err := a.RedisClient.Del(ctx, "refresh_token:"+authTokenRequest.AuthToken).Err(); err != nil {
 		a.Log.WithError(err).Error("error deleting token")
 		return echo.ErrInternalServerError
 	}
@@ -222,13 +219,12 @@ func (a *AuthUseCase) DeleteUserAuthentication(ctx context.Context, deleteUserEv
 	defer tx.Rollback()
 
 	entity := new(entity.UserAuthentication)
-	result, err := a.AuthRepository.GetByEmail(tx, entity, deleteUserEvent.Email)
-	if err != nil {
+	if err := a.AuthRepository.GetByEmail(tx, entity, deleteUserEvent.Email); err != nil {
 		a.Log.WithError(err).Error("error getting user authentication")
 		return echo.ErrNotFound
 	}
 
-	if err := a.AuthRepository.Delete(tx, result); err != nil {
+	if err := a.AuthRepository.Delete(tx, entity); err != nil {
 		a.Log.WithError(err).Error("error deleting user authentication")
 		return echo.ErrInternalServerError
 	}
