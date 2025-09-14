@@ -49,15 +49,17 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 		return nil, echo.ErrBadRequest
 	}
 	
-	key := fmt.Sprintf("categoriesCache:%d:%d", categoryRequest.Page, categoryRequest.Size)
-	result, err := c.RedisClient.Get(key).Result()
-	if err == nil {
-		categories := new(model.DataResponse[[]model.CategoryResponse])
-		if err := json.Unmarshal([]byte(result), categories); err != nil {
-			return nil, echo.ErrInternalServerError
+	if c.Config.GetBool("redis.enabled") {
+		key := fmt.Sprintf("categoriesCache:%d:%d", categoryRequest.Page, categoryRequest.Size)
+		result, err := c.RedisClient.Get(key).Result()
+		if err == nil {
+			categories := new(model.DataResponse[[]model.CategoryResponse])
+			if err := json.Unmarshal([]byte(result), categories); err != nil {
+				return nil, echo.ErrInternalServerError
+			}
+	
+			return categories, nil
 		}
-
-		return categories, nil
 	}
 	
 	tx := c.DB.WithContext(ctx).Begin()
@@ -89,11 +91,13 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 		},
 	}
 
-	categories, _ := json.Marshal(&response)
-	key = fmt.Sprintf("categoriesCache:%d:%d", categoryRequest.Page, categoryRequest.Size)
-	if err := c.RedisClient.Set(key, categories, 5*time.Minute).Err(); err != nil {
-		c.Log.WithError(err).Error("error caching categories in redis")
-		return nil, echo.ErrInternalServerError
+	if c.Config.GetBool("redis.enabled") {
+		categories, _ := json.Marshal(&response)
+		key := fmt.Sprintf("categoriesCache:%d:%d", categoryRequest.Page, categoryRequest.Size)
+		if err := c.RedisClient.Set(key, categories, 5*time.Minute).Err(); err != nil {
+			c.Log.WithError(err).Error("error caching categories in redis")
+			return nil, echo.ErrInternalServerError
+		}
 	}
 
 	return response, nil
@@ -113,8 +117,7 @@ func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryRequest *m
 		Slug: helpers.ToSlug(categoryRequest.Nama),
 	}
 
-	categoryID, err := c.CategoryRepository.CreateCategory(tx, category)
-	if err != nil {
+	if err := c.CategoryRepository.CreateCategory(tx, category); err != nil {
 		c.Log.WithError(err).Error("error creating category")
 		return nil, echo.ErrInternalServerError
 	}
@@ -123,8 +126,6 @@ func (c *CategoryUseCase) CreateCategory(ctx context.Context, categoryRequest *m
 		c.Log.WithError(err).Error("error creating category")
 		return nil, echo.ErrInternalServerError
 	}
-
-	category.ID = categoryID
 
 	if c.Config.GetBool("rabbitmq.enabled") {
 		event := converter.CategoryToEvent(category)
@@ -146,13 +147,11 @@ func (c *CategoryUseCase) UpdateCategory(ctx context.Context, categoryRequest *m
 	}
 
 	category := new(entity.Category)
-	resultCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
-	if err != nil {
+	if err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug); err != nil {
 		c.Log.WithError(err).Error("error getting category")
 		return nil, echo.ErrNotFound
 	}
 
-	category.ID = resultCategory.ID
 	category.Nama = helpers.ToTitle(categoryRequest.Nama)
 	category.Slug = helpers.ToSlug(categoryRequest.Nama)
 
@@ -186,8 +185,7 @@ func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *m
 	}
 
 	category := new(entity.Category)
-	resultCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
-	if err != nil {
+	if err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug); err != nil {
 		c.Log.WithError(err).Error("error getting category")
 		return echo.ErrNotFound
 	}
@@ -203,7 +201,7 @@ func (c *CategoryUseCase) DeleteCategory(ctx context.Context, categoryRequest *m
 	}
 
 	if c.Config.GetBool("rabbitmq.enabled") {
-		event := converter.CategoryToEvent(resultCategory)
+		event := converter.CategoryToEvent(category)
 		c.CategoryPublisher.Send("category.deleted", event)
 	}
 
@@ -231,8 +229,7 @@ func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest
 	defer tx.Rollback()
 	
 	category := new(entity.Category)
-	getCategory, err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug)
-	if err != nil {
+	if err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug); err != nil {
 		c.Log.WithError(err).Error("error getting category")
 		return nil, echo.ErrNotFound
 	}
@@ -242,13 +239,13 @@ func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest
 		return nil, echo.ErrInternalServerError
 	}
 
-	categoryByte, _ := json.Marshal(getCategory)
+	categoryByte, _ := json.Marshal(category)
 	if err := c.RedisClient.Set("categoryCache:"+categoryRequest.Slug, categoryByte, 5*time.Minute).Err(); err != nil {
 		c.Log.WithError(err).Error("error caching category in redis")
 		return nil, echo.ErrInternalServerError
 	}
 
-	response := converter.CategoryToResponse(getCategory)
+	response := converter.CategoryToResponse(category)
 
 	return response, nil
 }
