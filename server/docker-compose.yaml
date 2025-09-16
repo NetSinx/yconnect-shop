@@ -84,6 +84,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.user-service.rule=PathPrefix(`/api/user`)"
       - "traefik.http.routers.user-service.entrypoints=web"
+      - "traefik.http.routers.user-service.service=user-service"
+      - "traefik.http.services.user-service.loadbalancer.server.port=8082"
 
   cart-db:
     container_name: db-cart
@@ -175,13 +177,26 @@ services:
     restart: on-failure
     pull_policy: if_not_present
 
-  redis-service:
-    container_name: redis-cache
+  redis-svc:
+    container_name: redis
+    image: redis:alpine
     pull_policy: if_not_present
-    image: redis
-    volumes:
-      - .\mail\myredis\config:/usr/local/etc/redis/
-    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    networks:
+      - server_default
+
+  rabbitmq-svc:
+    container_name: rabbitmq
+    image: rabbitmq:4-management
+    pull_policy: if_not_present
+    restart: on-failure
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - server_default
 
 networks:
   netsinx_default:
