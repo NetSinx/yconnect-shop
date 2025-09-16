@@ -1,4 +1,51 @@
 services:
+  traefik-svc:
+    container_name: traefik
+    image: traefik:v3.4
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - netsinx_default
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./home/netsinx/traefik/certs:/certs:ro
+      - ./home/netsinx/traefik/dynamic:/dynamic:ro
+    command:
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+
+      - "--providers.file.filename=/home/netsinx/traefik/dynamic/tls.yaml"
+
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=netsinx_default"
+
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+
+      - "--log.level=INFO"
+      - "--accesslog=true"
+      - "--metrics.prometheus=true"
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.localhost`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls=true"
+
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$F5ULpPt5$$YJIFbP1r7AF.TXn9WSOLP1"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
+
   product-db:
     container_name: db-product
     image: mysql
@@ -51,10 +98,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.category-service.rule=PathPrefix(`/api/category`) && Method(`GET`)"
-      - "traefik.http.routers.category-service.entrypoints=web"
+      - "traefik.http.routers.category-service.entrypoints=websecure"
+      - "traefik.http.routers.category-service.tls=true"
       - "traefik.http.routers.category-service.service=category-service"
       - "traefik.http.routers.category-service-admin.rule=PathPrefix(`/api/admin/category`) && Method(`POST`)"
-      - "traefik.http.routers.category-service-admin.entrypoints=web"
+      - "traefik.http.routers.category-service-admin.entrypoints=websecure"
+      - "traefik.http.routers.category-service-admin.tls=true"
       - "traefik.http.routers.category-service-admin.middlewares=auth"
       - "traefik.http.routers.category-service-admin.service=category-service"
       - "traefik.http.services.category-service.loadbalancer.server.port=8080"
@@ -83,7 +132,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user-service.rule=PathPrefix(`/api/user`)"
-      - "traefik.http.routers.user-service.entrypoints=web"
+      - "traefik.http.routers.user-service.entrypoints=websecure"
+      - "traefik.http.routers.user-service.tls=true"
 
   cart-db:
     container_name: db-cart
@@ -159,10 +209,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.auth-service-get.rule=PathPrefix(`/api/auth`) && Method(`GET`)"
-      - "traefik.http.routers.auth-service-get.entrypoints=web"
+      - "traefik.http.routers.auth-service-get.entrypoints=websecure"
+      - "traefik.http.routers.auth-service-get.tls=true"
       - "traefik.http.routers.auth-service-get.service=auth-service"
       - "traefik.http.routers.auth-service-post.rule=PathPrefix(`/api/auth`) && Method(`POST`)"
-      - "traefik.http.routers.auth-service-post.entrypoints=web"
+      - "traefik.http.routers.auth-service-post.entrypoints=websecure"
+      - "traefik.http.routers.auth-service-post.tls=true"
       - "traefik.http.routers.auth-service-post.service=auth-service"
       - "traefik.http.services.auth-service.loadbalancer.server.port=8086"
       - "traefik.http.middlewares.auth.forwardauth.address=http://auth-service:8086/api/auth/verify"
@@ -175,13 +227,26 @@ services:
     restart: on-failure
     pull_policy: if_not_present
 
-  redis-service:
-    container_name: redis-cache
+  redis-svc:
+    container_name: redis
     pull_policy: if_not_present
     image: redis
+    restart: on-failure
+    ports:
+      - "6379:6379"
     volumes:
-      - .\mail\myredis\config:/usr/local/etc/redis/
-    command: redis-server /usr/local/etc/redis/redis.conf
+      - /home/netsinx/redis/conf:/usr/local/etc/redis
+
+  rabbitmq-svc:
+    container_name: rabbitmq
+    image: rabbitmq:4-management
+    pull_policy: if_not_present
+    restart: on-failure
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - netsinx_default
 
 networks:
   netsinx_default:
