@@ -1,7 +1,7 @@
 {
     "app": {
         "name": "yconnect_shop_authentication_service",
-        "host": "localhost",
+        "host": "0.0.0.0",
         "port": 8086
     },
     "database": {

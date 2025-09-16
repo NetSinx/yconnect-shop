@@ -87,7 +87,7 @@ func (a *AuthController) RefreshToken(ctx echo.Context) error {
 	refreshToken, err := ctx.Cookie("auth_token")
 	if err != nil {
 		a.Log.WithError(err).Error("error getting refresh token in cookie")
-		return err
+		return echo.ErrBadRequest
 	}
 
 	refreshTokenRequest := &model.AuthTokenRequest{

@@ -1,15 +1,15 @@
 {
     "app": {
         "name": "yconnect_shop_user_service",
-        "host": "localhost",
+        "host": "0.0.0.0",
         "port": 8082
     },
     "database": {
-        "host": "localhost",
+        "host": "db-user",
         "port": 3306,
-        "username": "root",
-        "password": "",
-        "name": "yconnect_shop_user",
+        "username": "test",
+        "password": "test123",
+        "name": "db_user",
         "pool": {
             "idle": 10,
             "max": 100,
@@ -18,7 +18,7 @@
     },
     "rabbitmq": {
         "enabled": true,
-        "host": "localhost",
+        "host": "rabbitmq",
         "port": 5672,
         "username": "guest",
         "password": "guest"
@@ -28,7 +28,7 @@
     },
     "redis": {
         "enabled": true,
-        "host": "localhost",
+        "host": "redis",
         "port": 6379,
         "password": "",
         "database": 0,

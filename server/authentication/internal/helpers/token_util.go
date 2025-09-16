@@ -29,7 +29,7 @@ func (t *TokenUtil) CreateAccessToken(ctx context.Context, id uint, role string)
 		Role: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15*time.Minute)),
 		},
 	}
 
