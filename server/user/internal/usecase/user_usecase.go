@@ -3,6 +3,8 @@ package usecase
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"time"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
@@ -14,8 +16,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
-	"strconv"
-	"time"
 )
 
 type UserUseCase struct {
@@ -75,7 +75,7 @@ func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserReq
 	}
 
 	userEntity := new(entity.User)
-	result, err := u.RedisClient.Get(ctx, "user:"+strconv.Itoa(int(id))).Result()
+	result, err := u.RedisClient.Get(ctx, "user:"+fmt.Sprint(id)).Result()
 	if err != nil {
 		userEntity, err = u.UserRepository.GetUserByID(tx, userEntity, id)
 		if err != nil {
@@ -157,7 +157,7 @@ func (u *UserUseCase) GetUserByID(ctx context.Context, userRequest *model.GetUse
 		return nil, echo.ErrBadRequest
 	}
 
-	result, err := u.RedisClient.Get(ctx, "user:"+strconv.Itoa(int(userRequest.ID))).Result()
+	result, err := u.RedisClient.Get(ctx, "user:"+fmt.Sprint(userRequest.ID)).Result()
 	if err == nil {
 		userEntity := new(entity.User)
 		if err := json.Unmarshal([]byte(result), userEntity); err != nil {
@@ -185,7 +185,7 @@ func (u *UserUseCase) GetUserByID(ctx context.Context, userRequest *model.GetUse
 	}
 
 	userByte, _ := json.Marshal(user)
-	if err := u.RedisClient.Set(ctx, "user:"+strconv.Itoa(int(userRequest.ID)), userByte, 20*time.Minute).Err(); err != nil {
+	if err := u.RedisClient.Set(ctx, "user:"+fmt.Sprint(userRequest.ID), userByte, 20*time.Minute).Err(); err != nil {
 		u.Log.WithError(err).Error("error caching user in redis")
 		return nil, echo.ErrInternalServerError
 	}
@@ -207,7 +207,7 @@ func (u *UserUseCase) DeleteUser(ctx context.Context, userRequest *model.DeleteU
 	}
 
 	entity := new(entity.User)
-	result, err := u.RedisClient.GetDel(ctx, "user:"+strconv.Itoa(int(userRequest.ID))).Result()
+	result, err := u.RedisClient.GetDel(ctx, "user:"+fmt.Sprint(userRequest.ID)).Result()
 	if err != nil {
 		user, err := u.UserRepository.GetUserByID(tx, entity, userRequest.ID)
 		if err != nil {
