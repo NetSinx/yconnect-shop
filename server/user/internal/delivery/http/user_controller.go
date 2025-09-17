@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/model"
@@ -29,6 +30,12 @@ func (u *UserController) UpdateUser(c echo.Context) error {
 	}
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, strconv.IntSize)
+	headerID := c.Request().Header.Get("X-User-ID")
+	if fmt.Sprint(id) != headerID {
+		u.Log.Error("error validating request header and parameter")
+		return echo.ErrForbidden
+	}
+	
 	response, err := u.UserUseCase.UpdateUser(c.Request().Context(), userRequest, uint(id))
 	if err != nil {
 		u.Log.WithError(err).Error("error updating user")
@@ -42,6 +49,12 @@ func (u *UserController) GetUserByID(c echo.Context) error {
 	userRequest := new(model.GetUserByIDRequest)
 	
 	id, _ := strconv.ParseUint(c.Param("id"), 10, strconv.IntSize)
+	headerID := c.Request().Header.Get("X-User-ID")
+	if fmt.Sprint(id) != headerID {
+		u.Log.Error("error validating request header and parameter")
+		return echo.ErrForbidden
+	}
+
 	userRequest.ID = uint(id)
 	if err := c.Bind(userRequest); err != nil {
 		u.Log.WithError(err).Error("error binding request to JSON")
@@ -60,6 +73,12 @@ func (u *UserController) GetUserByID(c echo.Context) error {
 func (u *UserController) DeleteUser(c echo.Context) error {
 	userRequest := new(model.DeleteUserRequest)
 	id, _ := strconv.ParseUint(c.Param("id"), 10, strconv.IntSize)
+	headerID := c.Request().Header.Get("X-User-ID")
+	if fmt.Sprint(id) != headerID {
+		u.Log.Error("error validating request header and parameter")
+		return echo.ErrForbidden
+	}
+
 	userRequest.ID = uint(id)
 	if err := c.Bind(userRequest); err != nil {
 		u.Log.WithError(err).Error("error binding request to JSON")

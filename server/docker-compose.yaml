@@ -135,6 +135,8 @@ services:
       - "traefik.http.routers.user-service.entrypoints=websecure"
       - "traefik.http.routers.user-service.tls=true"
       - "traefik.http.routers.user-service.middlewares=auth"
+      - "traefik.http.routers.user-service.service=user-service"
+      - "traefik.http.services.user-service.loadbalancer.server.port=8082"
 
   cart-db:
     container_name: db-cart
