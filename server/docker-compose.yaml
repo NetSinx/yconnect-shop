@@ -43,7 +43,7 @@ services:
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.tls=true"
 
-      - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$F5ULpPt5$$YJIFbP1r7AF.TXn9WSOLP1"
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$VlzSzdUv$$6mCd67FVs7J5hg1XIySf.1"
       - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
 
   product-db:
@@ -217,7 +217,7 @@ services:
       - "traefik.http.routers.auth-service-post.tls=true"
       - "traefik.http.routers.auth-service-post.service=auth-service"
       - "traefik.http.services.auth-service.loadbalancer.server.port=8086"
-      - "traefik.http.middlewares.auth.forwardauth.address=http://auth-service:8086/api/auth/verify"
+      - "traefik.http.middlewares.auth.forwardauth.address=https://auth-service:8086/api/auth/verify"
       - "traefik.http.middlewares.auth.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.auth.forwardauth.authResponseHeaders=X-User-ID,X-User-Role"
 
