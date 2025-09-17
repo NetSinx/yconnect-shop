@@ -64,7 +64,7 @@ func (a *AuthController) Verify(ctx echo.Context) error {
 	authTokenRequest := strings.Split(ctx.Request().Header.Get("Authorization"), " ")[1]
 	if authTokenRequest == "" {
 		a.Log.Error("error getting auth token in cookie")
-		return echo.ErrBadRequest
+		return echo.ErrUnauthorized
 	}
 
 	authRequest := &model.AuthTokenRequest{
@@ -87,7 +87,7 @@ func (a *AuthController) RefreshToken(ctx echo.Context) error {
 	refreshToken, err := ctx.Cookie("auth_token")
 	if err != nil {
 		a.Log.WithError(err).Error("error getting refresh token in cookie")
-		return echo.ErrBadRequest
+		return echo.ErrUnauthorized
 	}
 
 	refreshTokenRequest := &model.AuthTokenRequest{
