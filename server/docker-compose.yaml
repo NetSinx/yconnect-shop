@@ -217,7 +217,7 @@ services:
       - "traefik.http.routers.auth-service-post.tls=true"
       - "traefik.http.routers.auth-service-post.service=auth-service"
       - "traefik.http.services.auth-service.loadbalancer.server.port=8086"
-      - "traefik.http.middlewares.auth.forwardauth.address=https://auth-service:8086/api/auth/verify"
+      - "traefik.http.middlewares.auth.forwardauth.address=http://auth-service:8086/api/auth/verify"
       - "traefik.http.middlewares.auth.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.auth.forwardauth.authResponseHeaders=X-User-ID,X-User-Role"
 
