@@ -1,10 +1,10 @@
 package route
 
 import (
-	httpController "github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/echo/v4"
 	"net/http"
+	httpController "github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type APIRoutes struct {

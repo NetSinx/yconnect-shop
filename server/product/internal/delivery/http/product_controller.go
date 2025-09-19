@@ -4,29 +4,14 @@ import (
 	"errors"
 	"net/http"
 	"strings"
-	"github.com/NetSinx/yconnect-shop/server/product/errs"
-	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
-	"github.com/NetSinx/yconnect-shop/server/product/model"
-	"github.com/NetSinx/yconnect-shop/server/product/service"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/usecase"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
-type ProductHandl interface {
-	ListProduct(c echo.Context) error
-	CreateProduct(c echo.Context) error
-	UpdateProduct(c echo.Context) error
-	DeleteProduct(c echo.Context) error
-	GetProductByID(c echo.Context) error
-	GetProductBySlug(c echo.Context) error
-	GetCategoryProduct(c echo.Context) error
-	GetProductByCategory(c echo.Context) error
-}
 
-type productHandler struct {
-	productService service.ProductServ
-}
 
 func NewProductHandler(prodService service.ProductServ) *productHandler {
 	return &productHandler{

@@ -4,7 +4,20 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"strings"
+	"github.com/sirupsen/logrus"
 )
+
+func FatalError(log *logrus.Logger, err error, msg string) {
+  if err != nil {
+    log.Fatalf("%s: %s", msg, err)
+  }
+}
+
+func PanicError(log *logrus.Logger, err error, msg string) {
+  if err != nil {
+    log.Panicf("%s: %s", msg, err)
+  }
+}
 
 func GenerateSlugByName(name string) (string, error) {
 	trimmed := strings.TrimSpace(name)

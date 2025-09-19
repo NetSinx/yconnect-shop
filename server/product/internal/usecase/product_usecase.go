@@ -1,4 +1,4 @@
-package service
+package usecase
 
 import (
 	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
@@ -43,7 +43,7 @@ func (p *productService) CreateProduct(productReq dto.ProductRequest) error {
 		return err
 	}
 
-	if err := p.productRepository.GetMirrorCategory(productReq.KategoriSlug); err != nil {
+	if err := p.productRepository.GetCategoryMirror(productReq.KategoriSlug); err != nil {
 		return err
 	}
 

@@ -84,7 +84,7 @@ func (a *AuthController) Verify(ctx echo.Context) error {
 }
 
 func (a *AuthController) RefreshToken(ctx echo.Context) error {
-	refreshToken, err := ctx.Cookie("auth_token")
+	refreshToken, err := ctx.Cookie("user_session")
 	if err != nil {
 		a.Log.WithError(err).Error("error getting refresh token in cookie")
 		return echo.ErrUnauthorized
@@ -106,10 +106,10 @@ func (a *AuthController) RefreshToken(ctx echo.Context) error {
 }
 
 func (a *AuthController) LogoutUser(ctx echo.Context) error {
-	authTokenRequest, err := ctx.Cookie("auth_token")
+	authTokenRequest, err := ctx.Cookie("user_session")
 	if err != nil {
 		a.Log.WithError(err).Error("error getting auth token in cookie")
-		return echo.ErrBadRequest
+		return echo.ErrUnauthorized
 	}
 
 	authRequest := &model.AuthTokenRequest{
@@ -121,7 +121,7 @@ func (a *AuthController) LogoutUser(ctx echo.Context) error {
 		return err
 	}
 
-	helpers.SetCookie(ctx, "auth_token", "", time.Now())
+	helpers.SetCookie(ctx, "user_session", authRequest.AuthToken, time.Now())
 
 	return ctx.NoContent(http.StatusNoContent)
 }

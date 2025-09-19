@@ -27,7 +27,7 @@ func NewAPIRoutes(apiRoutes *APIRoutes) {
 	apiGroup.GET("/auth/csrf-token", apiRoutes.AuthController.GetCSRFToken)
 	apiGroup.POST("/auth/register", apiRoutes.AuthController.RegisterUser)
 	apiGroup.POST("/auth/login", apiRoutes.AuthController.LoginUser)
-	apiGroup.GET("/auth/verify", apiRoutes.AuthController.Verify)
+	apiGroup.Any("/auth/verify", apiRoutes.AuthController.Verify)
 	apiGroup.POST("/auth/refresh", apiRoutes.AuthController.RefreshToken)
 	apiGroup.POST("/auth/logout", apiRoutes.AuthController.LogoutUser)
 }

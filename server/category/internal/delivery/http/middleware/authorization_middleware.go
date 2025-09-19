@@ -6,7 +6,7 @@ func AuthorizationMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		role := c.Request().Header.Get("X-User-Role")
 		if role != "admin" {
-			return echo.ErrBadRequest
+			return echo.ErrUnauthorized
 		}
 
 		return next(c)
