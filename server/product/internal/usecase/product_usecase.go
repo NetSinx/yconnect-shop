@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"math"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model/converter"
@@ -12,20 +11,22 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"math"
 )
 
 type ProductUseCase struct {
 	DB                *gorm.DB
 	Log               *logrus.Logger
+	Validator         *validator.Validate
 	RedisClient       *redis.Client
 	productRepository *repository.ProductRepository
 }
 
 func NewProductUseCase(db *gorm.DB, log *logrus.Logger, redisClient *redis.Client, productRepository *repository.ProductRepository) *ProductUseCase {
 	return &ProductUseCase{
-		DB: db,
-		Log: log,
-		RedisClient: redisClient,
+		DB:                db,
+		Log:               log,
+		RedisClient:       redisClient,
 		productRepository: productRepository,
 	}
 }
@@ -33,6 +34,11 @@ func NewProductUseCase(db *gorm.DB, log *logrus.Logger, redisClient *redis.Clien
 func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.GetAllProductRequest) (*model.DataResponse[[]model.ProductResponse], error) {
 	tx := p.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
+
+	if err := p.Validator.Struct(productReq); err != nil {
+		p.Log.WithError(err).Error("error validating request")
+		return nil, echo.ErrBadRequest
+	}
 
 	if productReq.Page <= 0 {
 		productReq.Page = 1
@@ -45,6 +51,12 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 	var entityProduct []entity.Product
 	totalProduct, err := p.productRepository.GetAll(tx, entityProduct, productReq)
 	if err != nil {
+		p.Log.WithError(err).Error("error getting all products")
+		return nil, echo.ErrInternalServerError
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		p.Log.WithError(err).Error("error getting all products")
 		return nil, echo.ErrInternalServerError
 	}
 
@@ -56,8 +68,8 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 	response := &model.DataResponse[[]model.ProductResponse]{
 		Data: getAllResponse,
 		PageMetadata: &model.PageMetadataResponse{
-			Page: productReq.Page,
-			Size: productReq.Size,
+			Page:      productReq.Page,
+			Size:      productReq.Size,
 			TotalItem: totalProduct,
 			TotalPage: int64(math.Ceil(float64(totalProduct) / float64(productReq.Size))),
 		},
@@ -66,12 +78,16 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 	return response, nil
 }
 
-func (p *ProductUseCase) CreateProduct(productReq dto.ProductRequest) error {
+func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.ProductRequest) error {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
 	if err := validator.New().Struct(productReq); err != nil {
-		return err
+		p.Log.WithError(err).Error("error validating request body")
+		return echo.ErrBadRequest
 	}
 
-	if err := p.productRepository.GetCategoryMirror(productReq.KategoriSlug); err != nil {
+	if err := p.productRepository.GetCategoryMirror(tx, productReq.KategoriSlug); err != nil {
 		return err
 	}
 
