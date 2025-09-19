@@ -32,94 +32,80 @@ func (p *ProductRepository) Create(db *gorm.DB, entity *entity.Product) error {
 	return nil
 }
 
-func (p *ProductRepository) Update(productReq model.Product, gambar []model.Gambar, slug string) error {
-	var product model.Product
-
-	if err := p.DB.Where("slug = ?", slug).First(&product).Error; err != nil {
+func (p *ProductRepository) Update(db *gorm.DB, entityProduct *entity.Product, entityGambar []entity.Gambar, slug string) error {
+	if err := db.Where("slug = ?", slug).First(entityProduct).Error; err != nil {
 		return err
 	}
 
-	if err := p.DB.Where("product_id = ?", product.Id).Delete(&gambar).Error; err != nil {
+	if err := db.Where("product_id = ?", entityProduct.ID).Delete(entityGambar).Error; err != nil {
 		return err
 	}
 
-	if err := p.DB.Where("slug = ?", slug).Updates(&productReq).Error; err != nil {
+	if err := db.Where("slug = ?", slug).Updates(entityProduct).Error; err != nil {
 		return err
 	}
 
-	if err := p.DB.Model(&product).Association("Gambar").Replace(gambar); err != nil {
+	if err := db.Model(entityProduct).Association("Gambar").Replace(entityGambar); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (p *ProductRepository) DeleteProduct(product model.Product, slug string) error {
-	if err := p.DB.Where("slug = ?", slug).First(&product).Error; err != nil {
+func (p *ProductRepository) DeleteProduct(db *gorm.DB, entityProduct *entity.Product, entityGambar *entity.Gambar, slug string) error {
+	if err := db.Where("slug = ?", slug).First(entityProduct).Error; err != nil {
 		return err
 	}
 	
-	if err := p.DB.Where("product_id = ?", product.Id).Delete(&model.Gambar{}).Error; err != nil {
+	if err := db.Where("product_id = ?", entityProduct.ID).Delete(entityGambar).Error; err != nil {
 		return err
 	}
 
-	if err := p.DB.Delete(&product).Error; err != nil {
+	if err := db.Delete(entityProduct).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (p *ProductRepository) GetProductByID(product model.Product, id string) (model.Product, error) {
-	if err := p.DB.Preload("Gambar").First(&product, "id = ?", id).Error; err != nil {
-		return product, err
+func (p *ProductRepository) GetProductBySlug(db *gorm.DB, entity *entity.Product, slug string) (*entity.Product, error) {
+	if err := db.Preload("Gambar").First(entity, "slug = ?", slug).Error; err != nil {
+		return nil, err
 	}
 
-	return product, nil
+	return entity, nil
 }
 
-func (p *ProductRepository) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
-	if err := p.DB.Preload("Gambar").First(&product, "slug = ?", slug).Error; err != nil {
-		return product, err
+func (p *ProductRepository) GetCategoryProduct(db *gorm.DB, entity *entity.Product, categoryMirror *entity.CategoryMirror, slug string) (*entity.CategoryMirror, error) {
+	if err := db.First(entity, "slug = ?", slug).Error; err != nil {
+		return nil, err
 	}
 
-	return product, nil
-}
-
-func (p *ProductRepository) GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error) {
-	if err := p.DB.First(&product, "slug = ?", slug).Error; err != nil {
-		return model.CategoryMirror{}, err
-	}
-
-	var categoryMirror model.CategoryMirror
-
-	if err := p.DB.First(&categoryMirror, "slug = ?", product.KategoriSlug).Error; err != nil {
-		return categoryMirror, err
+	if err := db.First(categoryMirror, "slug = ?", entity.KategoriSlug).Error; err != nil {
+		return nil, err
 	}
 
 	return categoryMirror, nil
 }
 
-func (p *ProductRepository) GetProductName(product model.Product, slug string) (model.Product, error) {
-	if err := p.DB.Select("nama", "slug").First(&product, "slug = ?", slug).Error; err != nil {
-		return product, err
+func (p *ProductRepository) GetProductName(db *gorm.DB, entity *entity.Product, slug string) (*entity.Product, error) {
+	if err := db.Select("nama", "slug").First(entity, "slug = ?", slug).Error; err != nil {
+		return nil, err
 	}
 
-	return product, nil
+	return entity, nil
 }
 
-func (p *ProductRepository) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
-	if err := p.DB.Preload("Gambar").Find(&products, "kategori_slug = ?", slug).Error; err != nil {
-		return products, err
+func (p *ProductRepository) GetProductByCategory(db *gorm.DB, entity []entity.Product, slug string) ([]entity.Product, error) {
+	if err := db.Preload("Gambar").Find(entity, "kategori_slug = ?", slug).Error; err != nil {
+		return nil, err
 	}
 
-	return products, nil
+	return entity, nil
 }
 
-func (p *ProductRepository) GetMirrorCategory(slug string) error {
-	var categoryMirror model.CategoryMirror
-
-	if err := p.DB.First(&categoryMirror, "slug = ?", slug).Error; err != nil {
+func (p *ProductRepository) GetCategoryMirror(db *gorm.DB, categoryMirror *entity.CategoryMirror, slug string) error {
+	if err := db.First(categoryMirror, "slug = ?", slug).Error; err != nil {
 		return err
 	}
 
