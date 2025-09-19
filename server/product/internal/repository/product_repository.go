@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -16,12 +17,17 @@ func NewProductRepository(log *logrus.Logger) *ProductRepository {
 	}
 }
 
-func (p *ProductRepository) GetAll(db *gorm.DB, entity *entity.Product) error {
-	if err := db.Preload("Gambar").Find(entity).Error; err != nil {
-		return err
+func (p *ProductRepository) GetAll(db *gorm.DB, entityProduct []entity.Product, productReq *model.GetAllProductRequest) (int64, error) {
+	if err := db.Offset((productReq.Page - 1) * productReq.Size).Limit(productReq.Size).Preload("Gambar").Find(entityProduct).Error; err != nil {
+		return 0, err
 	}
 
-	return nil
+	var total int64
+	if err := db.Model(&entity.Product{}).Count(&total).Error; err != nil {
+		return 0, err
+	}
+
+	return total, nil
 }
 
 func (p *ProductRepository) Create(db *gorm.DB, entity *entity.Product) error {
