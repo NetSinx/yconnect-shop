@@ -1,8 +1,15 @@
 package usecase
 
 import (
+	"context"
+	"math"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/model/converter"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/repository"
 	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -10,24 +17,53 @@ import (
 type ProductUseCase struct {
 	DB                *gorm.DB
 	Log               *logrus.Logger
+	RedisClient       *redis.Client
 	productRepository *repository.ProductRepository
 }
 
-func NewProductService(db *gorm.DB, log *logrus.Logger, productRepository *repository.ProductRepository) *ProductUseCase {
+func NewProductUseCase(db *gorm.DB, log *logrus.Logger, redisClient *redis.Client, productRepository *repository.ProductRepository) *ProductUseCase {
 	return &ProductUseCase{
 		DB: db,
 		Log: log,
+		RedisClient: redisClient,
 		productRepository: productRepository,
 	}
 }
 
-func (p *ProductUseCase) GetAllProduct(product []model.Product) ([]model.Product, error) {
-	listProduct, err := p.productRepository.ListProduct(products)
-	if err != nil {
-		return products, err
+func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.GetAllProductRequest) (*model.DataResponse[[]model.ProductResponse], error) {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	if productReq.Page <= 0 {
+		productReq.Page = 1
 	}
 
-	return listProduct, nil
+	if productReq.Size <= 0 {
+		productReq.Size = 20
+	}
+
+	var entityProduct []entity.Product
+	totalProduct, err := p.productRepository.GetAll(tx, entityProduct, productReq)
+	if err != nil {
+		return nil, echo.ErrInternalServerError
+	}
+
+	getAllResponse := make([]model.ProductResponse, len(entityProduct))
+	for i, product := range entityProduct {
+		getAllResponse[i] = *converter.ProductToResponse(&product)
+	}
+
+	response := &model.DataResponse[[]model.ProductResponse]{
+		Data: getAllResponse,
+		PageMetadata: &model.PageMetadataResponse{
+			Page: productReq.Page,
+			Size: productReq.Size,
+			TotalItem: totalProduct,
+			TotalPage: int64(math.Ceil(float64(totalProduct) / float64(productReq.Size))),
+		},
+	}
+
+	return response, nil
 }
 
 func (p *ProductUseCase) CreateProduct(productReq dto.ProductRequest) error {
