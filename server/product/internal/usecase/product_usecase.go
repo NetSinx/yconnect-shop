@@ -2,7 +2,9 @@ package usecase
 
 import (
 	"context"
+	"math"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model/converter"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/repository"
@@ -11,7 +13,6 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"math"
 )
 
 type ProductUseCase struct {
@@ -47,6 +48,8 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 	if productReq.Size <= 0 {
 		productReq.Size = 20
 	}
+
+	p.RedisClient.Get(ctx, "products:%s")
 
 	var entityProduct []entity.Product
 	totalProduct, err := p.productRepository.GetAll(tx, entityProduct, productReq)
@@ -87,8 +90,10 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 		return echo.ErrBadRequest
 	}
 
-	if err := p.productRepository.GetCategoryMirror(tx, productReq.KategoriSlug); err != nil {
-		return err
+	categoryMirror := new(entity.CategoryMirror)
+	if err := p.productRepository.GetCategoryMirror(tx, categoryMirror, productReq.KategoriSlug); err != nil {
+		p.Log.WithError(err).Error("error getting category mirror")
+		return echo.ErrNotFound
 	}
 
 	slug, err := helpers.GenerateSlugByName(productReq.Nama)
@@ -96,7 +101,7 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 		return err
 	}
 
-	product := model.Product{
+	product := &entity.Product{
 		Nama:         productReq.Nama,
 		Deskripsi:    productReq.Deskripsi,
 		Slug:         slug,
@@ -106,20 +111,26 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 		Stok:         productReq.Stok,
 	}
 
-	err = p.productRepository.CreateProduct(product)
-	if err != nil {
-		return err
+	if err = p.productRepository.Create(tx, product); err != nil {
+		p.Log.WithError(err).Error("error creating product")
+		return echo.ErrInternalServerError
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		p.Log.WithError(err).Error("error creating product")
+		return echo.ErrInternalServerError
 	}
 
 	return nil
 }
 
-func (p *ProductUseCase) UpdateProduct(productReq dto.ProductRequest, slug string) error {
-	if err := validator.New().Struct(productReq); err != nil {
-		return err
+func (p *ProductUseCase) UpdateProduct(ctx context.Context, productReq *model.ProductRequest, slug string) error {
+	if err := p.Validator.Struct(productReq); err != nil {
+		p.Log.WithError(err).Error("error validating request body")
+		return echo.ErrBadRequest
 	}
 
-	if err := p.productRepository.GetMirrorCategory(productReq.KategoriSlug); err != nil {
+	if err := p.productRepository.GetCategoryMirror(productReq.KategoriSlug); err != nil {
 		return err
 	}
 

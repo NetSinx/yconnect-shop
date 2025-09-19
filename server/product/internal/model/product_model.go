@@ -15,7 +15,7 @@ type ProductRequest struct {
 	Gambar       []entity.Gambar `json:"gambar" validate:"required"`
 	Deskripsi    string          `json:"deskripsi" validate:"required"`
 	KategoriSlug string          `json:"kategori_slug" validate:"required"`
-	Harga        int             `json:"harga" validate:"required,min=0"`
+	Harga        int64           `json:"harga" validate:"required,min=0"`
 	Stok         int             `json:"stok" validate:"required,min=0"`
 }
 
@@ -25,7 +25,7 @@ type ProductResponse struct {
 	Gambar       []GambarResponse `json:"gambar"`
 	Deskripsi    string           `json:"deskripsi"`
 	KategoriSlug string           `json:"kategori_slug"`
-	Harga        int64              `json:"harga"`
+	Harga        int64            `json:"harga"`
 	Stok         int              `json:"stok"`
 	CreatedAt    time.Time        `json:"created_at"`
 	UpdatedAt    time.Time        `json:"updated_at"`
