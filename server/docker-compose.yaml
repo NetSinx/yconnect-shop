@@ -101,7 +101,7 @@ services:
       - "traefik.http.routers.category-service.entrypoints=websecure"
       - "traefik.http.routers.category-service.tls=true"
       - "traefik.http.routers.category-service.service=category-service"
-      - "traefik.http.routers.category-service-admin.rule=PathPrefix(`/api/admin/category`) && Method(`POST`)"
+      - "traefik.http.routers.category-service-admin.rule=PathPrefix(`/api/admin/category`)"
       - "traefik.http.routers.category-service-admin.entrypoints=websecure"
       - "traefik.http.routers.category-service-admin.tls=true"
       - "traefik.http.routers.category-service-admin.middlewares=auth"
