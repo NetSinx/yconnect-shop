@@ -1,35 +1,27 @@
 package usecase
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/product/handler/dto"
-	"github.com/NetSinx/yconnect-shop/server/product/helpers"
-	"github.com/NetSinx/yconnect-shop/server/product/model"
-	"github.com/NetSinx/yconnect-shop/server/product/repository"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/repository"
 	"github.com/go-playground/validator/v10"
+	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
-type ProductServ interface {
-	ListProduct(products []model.Product) ([]model.Product, error)
-	CreateProduct(productReq dto.ProductRequest) error
-	UpdateProduct(productReq dto.ProductRequest, slug string) error
-	DeleteProduct(product model.Product, slug string) error
-	GetProductByID(product model.Product, id string) (model.Product, error)
-	GetProductBySlug(product model.Product, slug string) (model.Product, error)
-	GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error)
-	GetProductByCategory(products []model.Product, slug string) ([]model.Product, error)
+type ProductUseCase struct {
+	DB                *gorm.DB
+	Log               *logrus.Logger
+	productRepository *repository.ProductRepository
 }
 
-type productService struct {
-	productRepository repository.ProductRepo
-}
-
-func NewProductService(prodRepo repository.ProductRepo) *productService {
-	return &productService{
-		productRepository: prodRepo,
+func NewProductService(db *gorm.DB, log *logrus.Logger, productRepository *repository.ProductRepository) *ProductUseCase {
+	return &ProductUseCase{
+		DB: db,
+		Log: log,
+		productRepository: productRepository,
 	}
 }
 
-func (p *productService) ListProduct(products []model.Product) ([]model.Product, error) {
+func (p *ProductUseCase) GetAllProduct(product []model.Product) ([]model.Product, error) {
 	listProduct, err := p.productRepository.ListProduct(products)
 	if err != nil {
 		return products, err
@@ -38,7 +30,7 @@ func (p *productService) ListProduct(products []model.Product) ([]model.Product,
 	return listProduct, nil
 }
 
-func (p *productService) CreateProduct(productReq dto.ProductRequest) error {
+func (p *ProductUseCase) CreateProduct(productReq dto.ProductRequest) error {
 	if err := validator.New().Struct(productReq); err != nil {
 		return err
 	}
@@ -47,19 +39,19 @@ func (p *productService) CreateProduct(productReq dto.ProductRequest) error {
 		return err
 	}
 
-	slug, err := helpers.GenerateSlugByName(productReq.Nama);
+	slug, err := helpers.GenerateSlugByName(productReq.Nama)
 	if err != nil {
 		return err
 	}
 
 	product := model.Product{
-		Nama: productReq.Nama,
-		Deskripsi: productReq.Deskripsi,
-		Slug: slug,
-		Gambar: productReq.Gambar,
+		Nama:         productReq.Nama,
+		Deskripsi:    productReq.Deskripsi,
+		Slug:         slug,
+		Gambar:       productReq.Gambar,
 		KategoriSlug: productReq.KategoriSlug,
-		Harga: productReq.Harga,
-		Stok: productReq.Stok,
+		Harga:        productReq.Harga,
+		Stok:         productReq.Stok,
 	}
 
 	err = p.productRepository.CreateProduct(product)
@@ -70,7 +62,7 @@ func (p *productService) CreateProduct(productReq dto.ProductRequest) error {
 	return nil
 }
 
-func (p *productService) UpdateProduct(productReq dto.ProductRequest, slug string) error {
+func (p *ProductUseCase) UpdateProduct(productReq dto.ProductRequest, slug string) error {
 	if err := validator.New().Struct(productReq); err != nil {
 		return err
 	}
@@ -80,12 +72,12 @@ func (p *productService) UpdateProduct(productReq dto.ProductRequest, slug strin
 	}
 
 	product := model.Product{
-		Nama: productReq.Nama,
-		Deskripsi: productReq.Deskripsi,
-		Slug: slug,
+		Nama:         productReq.Nama,
+		Deskripsi:    productReq.Deskripsi,
+		Slug:         slug,
 		KategoriSlug: productReq.KategoriSlug,
-		Harga: productReq.Harga,
-		Stok: productReq.Stok,
+		Harga:        productReq.Harga,
+		Stok:         productReq.Stok,
 	}
 
 	gambar := productReq.Gambar
@@ -108,7 +100,7 @@ func (p *productService) UpdateProduct(productReq dto.ProductRequest, slug strin
 	return nil
 }
 
-func (p *productService) DeleteProduct(product model.Product, slug string) error {
+func (p *ProductUseCase) DeleteProduct(product model.Product, slug string) error {
 	err := p.productRepository.DeleteProduct(product, slug)
 	if err != nil {
 		return err
@@ -117,7 +109,7 @@ func (p *productService) DeleteProduct(product model.Product, slug string) error
 	return nil
 }
 
-func (p *productService) GetProductByID(product model.Product, id string) (model.Product, error) {
+func (p *ProductUseCase) GetProductByID(product model.Product, id string) (model.Product, error) {
 	getProduct, err := p.productRepository.GetProductByID(product, id)
 	if err != nil {
 		return getProduct, err
@@ -126,7 +118,7 @@ func (p *productService) GetProductByID(product model.Product, id string) (model
 	return getProduct, nil
 }
 
-func (p *productService) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
+func (p *ProductUseCase) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
 	getProduct, err := p.productRepository.GetProductBySlug(product, slug)
 	if err != nil {
 		return getProduct, err
@@ -135,7 +127,7 @@ func (p *productService) GetProductBySlug(product model.Product, slug string) (m
 	return getProduct, nil
 }
 
-func (p *productService) GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error) {
+func (p *ProductUseCase) GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error) {
 	categoryProduct, err := p.productRepository.GetCategoryProduct(product, slug)
 	if err != nil {
 		return categoryProduct, err
@@ -144,7 +136,7 @@ func (p *productService) GetCategoryProduct(product model.Product, slug string) 
 	return categoryProduct, nil
 }
 
-func (p *productService) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
+func (p *ProductUseCase) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
 	getProductByCategory, err := p.productRepository.GetProductByCategory(products, slug)
 	if err != nil {
 		return getProductByCategory, err
