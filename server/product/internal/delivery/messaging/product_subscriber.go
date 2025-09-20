@@ -79,7 +79,7 @@ func (s *Subscriber) Receive() {
 		for d := range msgs {
 			switch d.RoutingKey {
 			case "category.created":
-
+				s.ProductUseCase.
 			}
 		}
 	}()

@@ -118,3 +118,19 @@ func (p *ProductRepository) GetCategoryMirror(db *gorm.DB, categoryMirror *entit
 
 	return nil
 }
+
+func (p *ProductRepository) CreateCategoryMirror(db *gorm.DB, categoryMirror *entity.CategoryMirror) error {
+	if err := db.Create(categoryMirror).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *ProductRepository) UpdateCategoryMirror(db *gorm.DB, categoryMirror *entity.CategoryMirror) error {
+	if err := db.Save(categoryMirror).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

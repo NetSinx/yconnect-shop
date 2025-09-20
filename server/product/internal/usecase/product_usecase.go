@@ -354,3 +354,10 @@ func (p *ProductUseCase) GetProductByCategory(ctx context.Context, productReq *m
 
 	return response, nil
 }
+
+func (p *ProductUseCase) CreateCategoryMirror(ctx context.Context, categoryEvent *model.CategoryEvent) error {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	
+}
