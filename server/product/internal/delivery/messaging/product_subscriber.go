@@ -1,31 +1,34 @@
-package rabbitmq
+package messaging
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
-	"log"
-	"os"
-	"github.com/NetSinx/yconnect-shop/server/product/db"
-	"github.com/NetSinx/yconnect-shop/server/product/errs"
-	"github.com/NetSinx/yconnect-shop/server/product/model"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/helpers"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/usecase"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"gorm.io/gorm/clause"
+	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
-func ConsumeCategoryEvents() {
-	amqpURL := fmt.Sprintf("amqp://%s:%s@%s:%s",
-		os.Getenv("RABBITMQ_USER"),
-		os.Getenv("RABBITMQ_PASSWORD"),
-		os.Getenv("RABBITMQ_HOST"),
-		os.Getenv("RABBITMQ_PORT"),
-	)
-	conn, err := amqp.Dial(amqpURL)
-	errs.LogOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
+type Subscriber struct {
+	Connection     *amqp.Connection
+	Log            *logrus.Logger
+	DB             *gorm.DB
+	ProductUseCase *usecase.ProductUseCase
+}
 
-	ch, err := conn.Channel()
-	errs.LogOnError(err, "Failed to open a channel")
-	defer ch.Close()
+func NewSubscriber(connection *amqp.Connection, log *logrus.Logger, db *gorm.DB, productUseCase *usecase.ProductUseCase) *Subscriber {
+	return &Subscriber{
+		Connection:     connection,
+		Log:            log,
+		DB:             db,
+		ProductUseCase: productUseCase,
+	}
+}
+
+func (s *Subscriber) Receive() {
+	ch, err := s.Connection.Channel()
+	helpers.PanicError(s.Log, err, "failed to open a channel")
 
 	exchange := "category_events"
 	err = ch.ExchangeDeclare(
@@ -37,49 +40,49 @@ func ConsumeCategoryEvents() {
 		false,
 		nil,
 	)
-	errs.LogOnError(err, "Failed to declare an exchange")
+	helpers.FatalError(s.Log, err, "failed to declare an exchange")
 
 	q, err := ch.QueueDeclare(
-		"product-service-category-mirror", true, false, false, false, nil,
+		"category_queue",
+		true,
+		false,
+		false,
+		false,
+		nil,
 	)
-	errs.LogOnError(err, "Failed to declare a queue")
+	helpers.FatalError(s.Log, err, "failed to declare a queue")
 
-	bindings := []string{"category.created", "category.updated", "category.deleted"}
-	for _, rk := range bindings {
-		err := ch.QueueBind(
+	routingKeys := []string{"category.created", "category.updated", "category.deleted"}
+	for _, key := range routingKeys {
+		err = ch.QueueBind(
 			q.Name,
-			rk,
+			key,
 			exchange,
 			false,
 			nil,
 		)
-		errs.LogOnError(err, "Failed to binding a queue")
+		helpers.FatalError(s.Log, err, "failed to bind a queue")
 	}
 
 	msgs, err := ch.Consume(
-		q.Name, "", true, false, false, false, nil,
+		q.Name,
+		"",
+		false,
+		false,
+		false,
+		false,
+		nil,
 	)
-	errs.LogOnError(err, "Failed to consume messages")
-	log.Println("Consuming category events...")
+	helpers.FatalError(s.Log, err, "failed to register a consumer")
 
-	db := db.ConnectDB()
+	go func() {
+		for d := range msgs {
+			switch d.RoutingKey {
+			case "category.created":
 
-	for d := range msgs {
-		rk := d.RoutingKey
-		var categoryMirror model.CategoryMirror
-		if err := json.Unmarshal(d.Body, &categoryMirror); err != nil {
-			log.Println("Invalid message:", err)
-			continue
+			}
 		}
+	}()
 
-		switch rk {
-		case "category.created":
-			db.Clauses(clause.OnConflict{DoNothing: true}).Create(&categoryMirror)
-		case "category.updated":
-			db.Where("id = ?", categoryMirror.Id).Updates(&categoryMirror)
-		case "category.deleted":
-			db.Delete(&categoryMirror, "slug = ?", categoryMirror.Slug)
-		default:
-		}
-	}
+	s.Log.Info("Waiting for messages from user service...")
 }

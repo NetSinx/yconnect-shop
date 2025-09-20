@@ -17,6 +17,7 @@ func ProductToResponse(product *entity.Product) *model.ProductResponse {
 	return &model.ProductResponse{
 		ID: product.ID,
 		Nama: product.Nama,
+		Slug: product.Slug,
 		Gambar: gambarResponse,
 		Deskripsi: product.Deskripsi,
 		KategoriSlug: product.KategoriSlug,
@@ -24,5 +25,13 @@ func ProductToResponse(product *entity.Product) *model.ProductResponse {
 		Stok: product.Stok,
 		CreatedAt: product.CreatedAt,
 		UpdatedAt: product.UpdatedAt,
+	}
+}
+
+func ProductToEvent(product *entity.Product) *model.CategoryEvent {
+	return &model.CategoryEvent{
+		ID: product.ID,
+		Nama: product.Nama,
+		Slug: product.Slug,
 	}
 }

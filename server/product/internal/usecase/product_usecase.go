@@ -2,8 +2,10 @@ package usecase
 
 import (
 	"context"
-	"math"
+	"encoding/json"
+	"fmt"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model/converter"
@@ -12,23 +14,30 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"math"
+	"time"
 )
 
 type ProductUseCase struct {
+	Config            *viper.Viper
 	DB                *gorm.DB
 	Log               *logrus.Logger
 	Validator         *validator.Validate
 	RedisClient       *redis.Client
-	productRepository *repository.ProductRepository
+	Publisher         *messaging.Publisher
+	ProductRepository *repository.ProductRepository
 }
 
-func NewProductUseCase(db *gorm.DB, log *logrus.Logger, redisClient *redis.Client, productRepository *repository.ProductRepository) *ProductUseCase {
+func NewProductUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, redisClient *redis.Client, publisher *messaging.Publisher, productRepository *repository.ProductRepository) *ProductUseCase {
 	return &ProductUseCase{
+		Config:            config,
 		DB:                db,
 		Log:               log,
 		RedisClient:       redisClient,
-		productRepository: productRepository,
+		Publisher:         publisher,
+		ProductRepository: productRepository,
 	}
 }
 
@@ -49,10 +58,19 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 		productReq.Size = 20
 	}
 
-	p.RedisClient.Get(ctx, "products:%s")
+	result, err := p.RedisClient.Get(ctx, fmt.Sprintf("products:%d:%d", productReq.Page, productReq.Size)).Result()
+	if err == nil {
+		products := new(model.DataResponse[[]model.ProductResponse])
+		if err := json.Unmarshal([]byte(result), products); err != nil {
+			p.Log.WithError(err).Error("error unmarshaling data")
+			return nil, echo.ErrInternalServerError
+		}
 
-	var entityProduct []entity.Product
-	totalProduct, err := p.productRepository.GetAll(tx, entityProduct, productReq)
+		return products, nil
+	}
+
+	entityProduct := new([]entity.Product)
+	totalProduct, err := p.ProductRepository.GetAll(tx, *entityProduct, productReq)
 	if err != nil {
 		p.Log.WithError(err).Error("error getting all products")
 		return nil, echo.ErrInternalServerError
@@ -63,8 +81,8 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 		return nil, echo.ErrInternalServerError
 	}
 
-	getAllResponse := make([]model.ProductResponse, len(entityProduct))
-	for i, product := range entityProduct {
+	getAllResponse := make([]model.ProductResponse, len(*entityProduct))
+	for i, product := range *entityProduct {
 		getAllResponse[i] = *converter.ProductToResponse(&product)
 	}
 
@@ -76,6 +94,17 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 			TotalItem: totalProduct,
 			TotalPage: int64(math.Ceil(float64(totalProduct) / float64(productReq.Size))),
 		},
+	}
+
+	bytesData, err := json.Marshal(response)
+	if err != nil {
+		p.Log.WithError(err).Error("error marshaling data")
+		return nil, echo.ErrInternalServerError
+	}
+
+	if err := p.RedisClient.Set(ctx, fmt.Sprintf("products:%d:%d", productReq.Page, productReq.Size), bytesData, 5*time.Minute).Err(); err != nil {
+		p.Log.WithError(err).Error("error setting cache data in redis")
+		return nil, echo.ErrInternalServerError
 	}
 
 	return response, nil
@@ -91,14 +120,15 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 	}
 
 	categoryMirror := new(entity.CategoryMirror)
-	if err := p.productRepository.GetCategoryMirror(tx, categoryMirror, productReq.KategoriSlug); err != nil {
+	if err := p.ProductRepository.GetCategoryMirror(tx, categoryMirror, productReq.KategoriSlug); err != nil {
 		p.Log.WithError(err).Error("error getting category mirror")
 		return echo.ErrNotFound
 	}
 
 	slug, err := helpers.GenerateSlugByName(productReq.Nama)
 	if err != nil {
-		return err
+		p.Log.WithError(err).Error("error generating slug")
+		return echo.ErrInternalServerError
 	}
 
 	product := &entity.Product{
@@ -111,7 +141,7 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 		Stok:         productReq.Stok,
 	}
 
-	if err = p.productRepository.Create(tx, product); err != nil {
+	if err = p.ProductRepository.Create(tx, product); err != nil {
 		p.Log.WithError(err).Error("error creating product")
 		return echo.ErrInternalServerError
 	}
@@ -121,89 +151,206 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 		return echo.ErrInternalServerError
 	}
 
+	eventCreated := converter.ProductToEvent(product)
+	p.Publisher.Send("product.created", eventCreated)
+
 	return nil
 }
 
 func (p *ProductUseCase) UpdateProduct(ctx context.Context, productReq *model.ProductRequest, slug string) error {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
 	if err := p.Validator.Struct(productReq); err != nil {
 		p.Log.WithError(err).Error("error validating request body")
 		return echo.ErrBadRequest
 	}
 
-	if err := p.productRepository.GetCategoryMirror(productReq.KategoriSlug); err != nil {
-		return err
+	categoryMirror := new(entity.CategoryMirror)
+	if err := p.ProductRepository.GetCategoryMirror(tx, categoryMirror, productReq.KategoriSlug); err != nil {
+		p.Log.WithError(err).Error("error getting category mirror")
+		return echo.ErrNotFound
 	}
 
-	product := model.Product{
-		Nama:         productReq.Nama,
-		Deskripsi:    productReq.Deskripsi,
-		Slug:         slug,
-		KategoriSlug: productReq.KategoriSlug,
-		Harga:        productReq.Harga,
-		Stok:         productReq.Stok,
+	product := new(entity.Product)
+	if err := p.ProductRepository.GetProductName(tx, product, slug); err != nil {
+		p.Log.WithError(err).Error("error getting product name")
+		return echo.ErrNotFound
 	}
 
-	gambar := productReq.Gambar
-
-	getProductName, err := p.productRepository.GetProductName(product, slug)
-	if err != nil {
-		return err
-	}
-
-	if getProductName.Nama != productReq.Nama {
-		newSlug := helpers.ReplaceProductSlug(getProductName.Slug, productReq.Nama)
+	if product.Nama != productReq.Nama {
+		newSlug := helpers.ReplaceProductSlug(product.Slug, productReq.Nama)
+		product.Nama = productReq.Nama
 		product.Slug = newSlug
 	}
 
-	err = p.productRepository.UpdateProduct(product, gambar, slug)
-	if err != nil {
-		return err
+	product.Gambar = productReq.Gambar
+	product.Deskripsi = productReq.Deskripsi
+	product.KategoriSlug = productReq.KategoriSlug
+	product.Harga = productReq.Harga
+	product.Stok = productReq.Stok
+
+	if err := p.ProductRepository.Update(tx, product, slug); err != nil {
+		p.Log.WithError(err).Error("error updating product")
+		return echo.ErrInternalServerError
 	}
+
+	if err := tx.Commit().Error; err != nil {
+		p.Log.WithError(err).Error("error updating product")
+		return echo.ErrInternalServerError
+	}
+
+	eventUpdated := converter.ProductToEvent(product)
+	p.Publisher.Send("product.updated", eventUpdated)
 
 	return nil
 }
 
-func (p *ProductUseCase) DeleteProduct(product model.Product, slug string) error {
-	err := p.productRepository.DeleteProduct(product, slug)
-	if err != nil {
-		return err
+func (p *ProductUseCase) DeleteProduct(ctx context.Context, slug string) error {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	product := new(entity.Product)
+	if err := p.ProductRepository.DeleteProduct(tx, product, slug); err != nil {
+		p.Log.WithError(err).Error("error deleting product")
+		return echo.ErrNotFound
 	}
+
+	if err := tx.Commit().Error; err != nil {
+		p.Log.WithError(err).Error("error deleting product")
+		return echo.ErrInternalServerError
+	}
+
+	eventDeleted := converter.ProductToEvent(product)
+	p.Publisher.Send("product.deleted", eventDeleted)
 
 	return nil
 }
 
-func (p *ProductUseCase) GetProductByID(product model.Product, id string) (model.Product, error) {
-	getProduct, err := p.productRepository.GetProductByID(product, id)
-	if err != nil {
-		return getProduct, err
+func (p *ProductUseCase) GetProductBySlug(ctx context.Context, slug string) (*model.DataResponse[*model.ProductResponse], error) {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	result, err := p.RedisClient.Get(ctx, "product:"+slug).Result()
+	if err == nil {
+		response := new(model.DataResponse[*model.ProductResponse])
+		if err := json.Unmarshal([]byte(result), response); err != nil {
+			p.Log.WithError(err).Error("error unmarshaling data")
+			return nil, echo.ErrInternalServerError
+		}
+
+		return response, nil
 	}
 
-	return getProduct, nil
+	product := new(entity.Product)
+	if err := p.ProductRepository.GetProductBySlug(tx, product, slug); err != nil {
+		p.Log.WithError(err).Error("error getting product")
+		return nil, echo.ErrNotFound
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		p.Log.WithError(err).Error("error getting product")
+		return nil, echo.ErrInternalServerError
+	}
+
+	response := &model.DataResponse[*model.ProductResponse]{
+		Data: converter.ProductToResponse(product),
+	}
+
+	dataBytes, err := json.Marshal(response)
+	if err != nil {
+		p.Log.WithError(err).Error("error marshaling data")
+		return nil, echo.ErrInternalServerError
+	}
+
+	if err := p.RedisClient.Set(ctx, "product:"+slug, dataBytes, 5*time.Minute).Err(); err != nil {
+		p.Log.WithError(err).Error("error setting cache data")
+		return nil, echo.ErrInternalServerError
+	}
+
+	return response, nil
 }
 
-func (p *ProductUseCase) GetProductBySlug(product model.Product, slug string) (model.Product, error) {
-	getProduct, err := p.productRepository.GetProductBySlug(product, slug)
-	if err != nil {
-		return getProduct, err
+func (p *ProductUseCase) GetCategoryProduct(ctx context.Context, slug string) (*model.DataResponse[*model.CategoryMirrorResponse], error) {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	result, err := p.RedisClient.Get(ctx, "category_product:"+slug).Result()
+	if err == nil {
+		response := new(model.DataResponse[*model.CategoryMirrorResponse])
+		if err := json.Unmarshal([]byte(result), response); err != nil {
+			p.Log.WithError(err).Error("error unmarshaling data")
+			return nil, echo.ErrInternalServerError
+		}
+
+		return response, nil
 	}
 
-	return getProduct, nil
+	categoryMirror := new(entity.CategoryMirror)
+	if err := p.ProductRepository.GetCategoryProduct(tx, categoryMirror, slug); err != nil {
+		p.Log.WithError(err).Error("error getting category product")
+		return nil, echo.ErrNotFound
+	}
+
+	response := &model.DataResponse[*model.CategoryMirrorResponse]{
+		Data: converter.CategoryMirrorToResponse(categoryMirror),
+	}
+
+	dataBytes, err := json.Marshal(response)
+	if err != nil {
+		p.Log.WithError(err).Error("error marshaling data")
+		return nil, echo.ErrInternalServerError
+	}
+
+	if err := p.RedisClient.Set(ctx, "category_product:"+slug, dataBytes, 5*time.Minute).Err(); err != nil {
+		p.Log.WithError(err).Error("error setting cache data")
+		return nil, echo.ErrInternalServerError
+	}
+
+	return response, nil
 }
 
-func (p *ProductUseCase) GetCategoryProduct(product model.Product, slug string) (model.CategoryMirror, error) {
-	categoryProduct, err := p.productRepository.GetCategoryProduct(product, slug)
-	if err != nil {
-		return categoryProduct, err
+func (p *ProductUseCase) GetProductByCategory(ctx context.Context, productReq *model.GetAllProductRequest, slug string) (*model.DataResponse[[]model.ProductResponse], error) {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	key := fmt.Sprintf("products:%s:%d:%d", slug, productReq.Page, productReq.Size)
+	result, err := p.RedisClient.Get(ctx, key).Result()
+	if err == nil {
+		response := new(model.DataResponse[[]model.ProductResponse])
+		if err := json.Unmarshal([]byte(result), response); err != nil {
+			p.Log.WithError(err).Error("error unmarshaling data")
+			return nil, echo.ErrInternalServerError
+		}
+
+		return response, nil
 	}
 
-	return categoryProduct, nil
-}
-
-func (p *ProductUseCase) GetProductByCategory(products []model.Product, slug string) ([]model.Product, error) {
-	getProductByCategory, err := p.productRepository.GetProductByCategory(products, slug)
-	if err != nil {
-		return getProductByCategory, err
+	product := new([]entity.Product)
+	if err := p.ProductRepository.GetProductByCategory(tx, *product, productReq, slug); err != nil {
+		p.Log.WithError(err).Error("error getting product")
+		return nil, echo.ErrNotFound
 	}
 
-	return getProductByCategory, nil
+	products := make([]model.ProductResponse, len(*product))
+	for i, p := range *product {
+		products[i] = *converter.ProductToResponse(&p)
+	}
+
+	response := &model.DataResponse[[]model.ProductResponse]{
+		Data: products,
+	}
+
+	dataBytes, err := json.Marshal(response)
+	if err != nil {
+		p.Log.WithError(err).Error("error marshaling data")
+		return nil, echo.ErrInternalServerError
+	}
+
+	if err := p.RedisClient.Set(ctx, key, dataBytes, 5*time.Minute).Err(); err != nil {
+		p.Log.WithError(err).Error("error setting cache data")
+		return nil, echo.ErrInternalServerError
+	}
+
+	return response, nil
 }

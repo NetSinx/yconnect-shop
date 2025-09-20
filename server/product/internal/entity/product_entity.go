@@ -4,7 +4,7 @@ import "time"
 
 type Gambar struct {
 	ID        uint      `json:"id" gorm:"primaryKey"`
-	Path      string    `json:"path" gorm:"type:varchar(255);not null" validate:"required"`
+	Path      string    `json:"path" gorm:"type:varchar(255);not null"`
 	ProductID uint      `json:"product_id" gorm:"not null"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -12,21 +12,21 @@ type Gambar struct {
 
 type Product struct {
 	ID           uint      `json:"id" gorm:"primaryKey"`
-	Nama         string    `json:"nama" gorm:"type:varchar(255);not null" validate:"required,max=255"`
-	Slug         string    `json:"slug" gorm:"type:varchar(255);uniqueIndex;not null" validate:"required"`
-	Gambar       []Gambar  `json:"gambar" gorm:"foreignKey:ProductID" validate:"required"`
-	Deskripsi    string    `json:"deskripsi" gorm:"not null" validate:"required"`
-	KategoriSlug string    `json:"kategori_slug" gorm:"not null" validate:"required"`
-	Harga        int64     `json:"harga" gorm:"not null" validate:"required,min=0"`
-	Stok         int       `json:"stok" gorm:"not null" validate:"required,min=0"`
+	Nama         string    `json:"nama" gorm:"type:varchar(255);not null"`
+	Slug         string    `json:"slug" gorm:"type:varchar(255);uniqueIndex;not null"`
+	Gambar       []Gambar  `json:"gambar" gorm:"foreignKey:ProductID"`
+	Deskripsi    string    `json:"deskripsi" gorm:"not null"`
+	KategoriSlug string    `json:"kategori_slug" gorm:"not null"`
+	Harga        int64     `json:"harga" gorm:"not null"`
+	Stok         int       `json:"stok" gorm:"not null"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type CategoryMirror struct {
 	ID        uint      `json:"id" gorm:"primaryKey"`
-	Name      string    `json:"name" gorm:"not null" validate:"required,min=3"`
-	Slug      string    `json:"slug" gorm:"uniqueIndex;not null" validate:"required,min=3"`
+	Nama      string    `json:"nama" gorm:"not null"`
+	Slug      string    `json:"slug" gorm:"uniqueIndex;not null"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

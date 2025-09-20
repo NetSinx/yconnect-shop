@@ -22,6 +22,7 @@ type ProductRequest struct {
 type ProductResponse struct {
 	ID           uint             `json:"id"`
 	Nama         string           `json:"nama"`
+	Slug         string           `json:"slug"`
 	Gambar       []GambarResponse `json:"gambar"`
 	Deskripsi    string           `json:"deskripsi"`
 	KategoriSlug string           `json:"kategori_slug"`
@@ -48,8 +49,4 @@ type PageMetadataResponse struct {
 type DataResponse[T any] struct {
 	Data         T                     `json:"data"`
 	PageMetadata *PageMetadataResponse `json:"paging,omitempty"`
-}
-
-type MessageResp struct {
-	Message string `json:"message"`
 }
