@@ -7,28 +7,38 @@
         </a>
       </div>
       <h1 class="text-center">Login</h1>
-      <div class="alert alert-danger mt-4" role="alert" *ngIf="errorLogin">
-        {{ errorLogin }}
-      </div>
+      @if (errorLogin) {
+        <div class="alert alert-danger mt-4" role="alert">
+          {{ errorLogin }}
+        </div>
+      }
       <div class="form-login mt-4">
         <form [formGroup]="formGroup"(ngSubmit)="userLogin()">
           <div class="form-floating mb-3">
             <input type="text" class="form-control" formControlName="UsernameorEmail" id="UsernameorEmail" placeholder="Email / Username" autofocus>
             <label for="UsernameorEmail">Email / Username</label>
-            <div *ngIf="f['UsernameorEmail'].invalid && (f['UsernameorEmail'].dirty || f['UsernameorEmail'].touched)">
-              <p class="text-danger" *ngIf="f['UsernameorEmail'].errors?.['required']">
-                *Username / Email wajib diisi!
-              </p>
-            </div>
+            @if (f['UsernameorEmail'].invalid && (f['UsernameorEmail'].dirty || f['UsernameorEmail'].touched)) {
+              <div>
+                @if (f['UsernameorEmail'].errors?.['required']) {
+                  <p class="text-danger">
+                    *Username / Email wajib diisi!
+                  </p>
+                }
+              </div>
+            }
           </div>
           <div class="form-floating mb-3">
             <input type="password" class="form-control" formControlName="password" id="password" placeholder="Password">
             <label for="password">Password</label>
-            <div *ngIf="f['password']?.invalid && (f['password'].dirty || f['password'].touched)">
-              <p class="text-danger" *ngIf="f['password'].errors?.['required']">
-                *Password wajib diisi!
-              </p>
-            </div>
+            @if (f['password']?.invalid && (f['password'].dirty || f['password'].touched)) {
+              <div>
+                @if (f['password'].errors?.['required']) {
+                  <p class="text-danger">
+                    *Password wajib diisi!
+                  </p>
+                }
+              </div>
+            }
           </div>
           <p class="text-center">Tidak punya akun? <a routerLink="/register">Daftar</a></p>
           <div class="row mt-4 px-2">

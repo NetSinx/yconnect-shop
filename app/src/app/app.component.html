@@ -1,24 +1,28 @@
-<div class="overlay" *ngIf="isLoading | async">
-  <div class="loading">
-    <span class="loader"></span>
-    <p class="fs-3">Mohon Tunggu...</p>
+@if (isLoading | async) {
+  <div class="overlay">
+    <div class="loading">
+      <span class="loader"></span>
+      <p class="fs-3">Mohon Tunggu...</p>
+    </div>
   </div>
-</div>
-<div *ngIf="errors else no_error">
-  <div class="container-fluid">
-    <div class="row justify-content-center align-items-center" style="height: 100vh;">
-      <div class="col-lg text-center">
-        <h1>Upss maaf...</h1>
-        <p class="fs-2">Server sedang dalam perbaikan</p>
+}
+@if (errors) {
+  <div>
+    <div class="container-fluid">
+      <div class="row justify-content-center align-items-center" style="height: 100vh;">
+        <div class="col-lg text-center">
+          <h1>Upss maaf...</h1>
+          <p class="fs-2">Server sedang dalam perbaikan</p>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-<ng-template #no_error>
-  <div *ngIf="showNavbar">
-    <app-category></app-category>
-  </div>
-
+} @else {
+  @if (showNavbar) {
+    <div>
+      <app-category></app-category>
+    </div>
+  }
   <router-outlet></router-outlet>
-</ng-template>
+}
+

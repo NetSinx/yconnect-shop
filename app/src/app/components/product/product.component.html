@@ -42,7 +42,7 @@
   <div class="text-center my-4">
     <h2 class="title-menu font-sans fw-bold mt-4">Promo Seru!</h2>
   </div>
-  
+
   <div class="row pt-3 justify-content-start">
     <div class="col-lg-3 col-6 mb-4">
       <div class="border rounded-3 overflow-hidden shadow">
@@ -55,9 +55,11 @@
             <p class="fs-5">Baju Muslim Keren & Kekinian</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -74,9 +76,11 @@
             <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -93,9 +97,11 @@
             <p class="fs-5">Baju Muslim Premium</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -112,9 +118,11 @@
             <p class="fs-5">Koko Pria Murah Berkualitas</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -125,7 +133,7 @@
   <div class="text-center my-4">
     <h2 class="title-menu font-sans fw-bold mt-4">Flash Sale!</h2>
   </div>
-  
+
   <div class="row pt-3 justify-content-start">
     <div class="col-lg-3 col-6 mb-4">
       <div class="border rounded-3 overflow-hidden shadow">
@@ -138,9 +146,11 @@
             <p class="fs-5">Baju Muslim Keren & Kekinian</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -157,9 +167,11 @@
             <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -176,9 +188,11 @@
             <p class="fs-5">Baju Muslim Premium</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -195,9 +209,11 @@
             <p class="fs-5">Koko Pria Murah Berkualitas</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -214,9 +230,11 @@
             <p class="fs-5">Baju Muslim Keren & Kekinian</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -233,9 +251,11 @@
             <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -252,9 +272,11 @@
             <p class="fs-5">Baju Muslim Premium</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -271,9 +293,11 @@
             <p class="fs-5">Koko Pria Murah Berkualitas</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -284,7 +308,7 @@
   <div class="text-center my-4">
     <h2 class="title-menu font-sans fw-bold mt-4">Diskon sampai 40%!</h2>
   </div>
-  
+
   <div class="row pt-3 justify-content-start">
     <div class="col-lg-3 col-6 mb-4">
       <div class="border rounded-3 overflow-hidden shadow">
@@ -297,9 +321,11 @@
             <p class="fs-5">Baju Muslim Keren & Kekinian</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -316,9 +342,11 @@
             <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -335,9 +363,11 @@
             <p class="fs-5">Baju Muslim Premium</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -354,9 +384,11 @@
             <p class="fs-5">Koko Pria Murah Berkualitas</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -373,9 +405,11 @@
             <p class="fs-5">Baju Muslim Keren & Kekinian</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -392,9 +426,11 @@
             <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -411,9 +447,11 @@
             <p class="fs-5">Baju Muslim Premium</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 4">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 4">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>
@@ -430,9 +468,11 @@
             <p class="fs-5">Koko Pria Murah Berkualitas</p>
             <h4>Rp 17.000,00</h4>
             <div class="rating">
-              <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star" [class.filled]="star <= 5">
-                &#9733;
-              </span>
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span class="star" [class.filled]="star <= 5">
+                  &#9733;
+                </span>
+              }
             </div>
           </div>
         </a>

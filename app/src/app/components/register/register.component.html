@@ -7,12 +7,16 @@
         </a>
       </div>
       <h1 class="text-center mb-5">Registrasi Akun</h1>
-      <div class="alert alert-danger" role="alert" *ngIf="errorRegister">
-        {{ errorRegister }}
-      </div>
-      <div class="alert alert-success" role="alert" *ngIf="successRegister">
-        {{ successRegister }}
-      </div>
+      @if (errorRegister) {
+        <div class="alert alert-danger" role="alert">
+          {{ errorRegister }}
+        </div>
+      }
+      @if (successRegister) {
+        <div class="alert alert-success" role="alert">
+          {{ successRegister }}
+        </div>
+      }
       <div class="form-register">
         <form [formGroup]="formGroup" (ngSubmit)="registerUser()">
           <div class="row">
@@ -20,91 +24,133 @@
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="name" placeholder="Nama Lengkap" autofocus minlength="3" formControlName="name">
                 <label for="name">Nama Lengkap</label>
-                <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)">
-                  <p class="text-danger" *ngIf="f['name'].errors?.['required']">
-                    *Nama lengkap wajib diisi!
-                  </p>
-                  <p class="text-danger" *ngIf="f['name'].errors?.['minlength']">
-                    *Nama lengkap minimal 3 karakter!
-                  </p>
-                </div>
+                @if (f['name'].invalid && (f['name'].dirty || f['name'].touched)) {
+                  <div>
+                    @if (f['name'].errors?.['required']) {
+                      <p class="text-danger">
+                        *Nama lengkap wajib diisi!
+                      </p>
+                    }
+                    @if (f['name'].errors?.['minlength']) {
+                      <p class="text-danger">
+                        *Nama lengkap minimal 3 karakter!
+                      </p>
+                    }
+                  </div>
+                }
               </div>
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="username" placeholder="Username" formControlName="username">
-                <div *ngIf="f['username']?.invalid && (f['username'].dirty || f['username'].touched)">
-                  <p class="text-danger" *ngIf="f['username'].errors?.['required']">
-                    *Username wajib diisi!
-                  </p>
-                  <p class="text-danger" *ngIf="f['username'].errors?.['minlength']">
-                    *Username minimal 3 karakter!
-                  </p>
-                </div>
+                @if (f['username']?.invalid && (f['username'].dirty || f['username'].touched)) {
+                  <div>
+                    @if (f['username'].errors?.['required']) {
+                      <p class="text-danger">
+                        *Username wajib diisi!
+                      </p>
+                    }
+                    @if (f['username'].errors?.['minlength']) {
+                      <p class="text-danger">
+                        *Username minimal 3 karakter!
+                      </p>
+                    }
+                  </div>
+                }
                 <label for="username">Username</label>
               </div>
             </div>
-            
+
             <div class="col-md">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="email" placeholder="Email" formControlName="email">
                 <label for="email">Email</label>
-                <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)">
-                  <p class="text-danger" *ngIf="f['email'].errors?.['required']">
-                    *Email wajib diisi!
-                  </p>
-                  <p class="text-danger" *ngIf="f['email'].errors?.['email']">
-                    *Email harus menggunakan '&#64;' dan domain seperti '.com'!
-                  </p>
-                </div>
+                @if (f['email'].invalid && (f['email'].dirty || f['email'].touched)) {
+                  <div>
+                    @if (f['email'].errors?.['required']) {
+                      <p class="text-danger">
+                        *Email wajib diisi!
+                      </p>
+                    }
+                    @if (f['email'].errors?.['email']) {
+                      <p class="text-danger">
+                        *Email harus menggunakan '&#64;' dan domain seperti '.com'!
+                      </p>
+                    }
+                  </div>
+                }
               </div>
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="alamat" placeholder="Alamat Rumah" formControlName="alamat">
                 <label for="alamat">Alamat Rumah</label>
-                <div *ngIf="f['alamat'].invalid && (f['alamat'].dirty || f['alamat'].touched)">
-                  <p class="text-danger" *ngIf="f['alamat'].errors?.['required']">
-                    *Alamat rumah wajib diisi!
-                  </p>
-                  <p class="text-danger" *ngIf="f['alamat'].errors?.['minlength']">
-                    *Alamat rumah minimal 5 karakter!
-                  </p>
-                </div>
+                @if (f['alamat'].invalid && (f['alamat'].dirty || f['alamat'].touched)) {
+                  <div>
+                    @if (f['alamat'].errors?.['required']) {
+                      <p class="text-danger">
+                        *Alamat rumah wajib diisi!
+                      </p>
+                    }
+                    @if (f['alamat'].errors?.['minlength']) {
+                      <p class="text-danger">
+                        *Alamat rumah minimal 5 karakter!
+                      </p>
+                    }
+                  </div>
+                }
               </div>
             </div>
 
             <div class="form-floating mb-3">
               <input type="text" class="form-control" id="no_tlp" placeholder="No. HP" formControlName="no_tlp">
               <label for="no_tlp" class="ms-3">No. HP</label>
-              <div *ngIf="f['no_telp']?.invalid && (f['no_telp'].dirty || f['no_telp'].touched)">
-                <p class="text-danger" *ngIf="f['no_telp'].errors?.['required']">
-                  *No.Telepon wajib diisi!
-                </p>
-                <p class="text-danger" *ngIf="f['no_telp'].errors?.['minlength']">
-                  *No.Telepon minimal 8 karakter!
-                </p>
-              </div>
+              @if (f['no_telp']?.invalid && (f['no_telp'].dirty || f['no_telp'].touched)) {
+                <div>
+                  @if (f['no_telp'].errors?.['required']) {
+                    <p class="text-danger">
+                      *No.Telepon wajib diisi!
+                    </p>
+                  }
+                  @if (f['no_telp'].errors?.['minlength']) {
+                    <p class="text-danger">
+                      *No.Telepon minimal 8 karakter!
+                    </p>
+                  }
+                </div>
+              }
             </div>
             <div class="form-floating mb-3">
               <input type="password" class="form-control" id="password" placeholder="Password" formControlName="password">
               <label for="password" class="ms-3">Password</label>
-              <div *ngIf="f['password']?.invalid && (f['password'].dirty || f['password'].touched)">
-                <p class="text-danger" *ngIf="f['password'].errors?.['required']">
-                  *Password wajib diisi!
-                </p>
-                <p class="text-danger" *ngIf="f['password'].errors?.['minlength']">
-                  *Password minimal 5 karakter!
-                </p>
-              </div>
+              @if (f['password']?.invalid && (f['password'].dirty || f['password'].touched)) {
+                <div>
+                  @if (f['password'].errors?.['required']) {
+                    <p class="text-danger">
+                      *Password wajib diisi!
+                    </p>
+                  }
+                  @if (f['password'].errors?.['minlength']) {
+                    <p class="text-danger">
+                      *Password minimal 5 karakter!
+                    </p>
+                  }
+                </div>
+              }
             </div>
             <div class="form-floating mb-3">
               <input type="password" class="form-control" id="confirmpassword" placeholder="Konfirmasi Password" formControlName="confirmpassword">
               <label for="confirmpassword" class="ms-3">Konfirmasi Password</label>
-              <div *ngIf="f['confirmpassword']?.invalid && (f['confirmpassword'].dirty || f['confirmpassword'].touched)">
-                <p class="text-danger" *ngIf="f['confirmpassword'].errors?.['required']">
-                  *Konfirmasi password wajib diisi!
-                </p>
-                <p class="text-danger" *ngIf="f['confirmpassword'].errors?.['matchPassword']">
-                  *Konfirmasi password harus sesuai dengan password yang dimasukkan sebelumnya!
-                </p>
-              </div>
+              @if (f['confirmpassword']?.invalid && (f['confirmpassword'].dirty || f['confirmpassword'].touched)) {
+                <div>
+                  @if (f['confirmpassword'].errors?.['required']) {
+                    <p class="text-danger">
+                      *Konfirmasi password wajib diisi!
+                    </p>
+                  }
+                  @if (f['confirmpassword'].errors?.['matchPassword']) {
+                    <p class="text-danger">
+                      *Konfirmasi password harus sesuai dengan password yang dimasukkan sebelumnya!
+                    </p>
+                  }
+                </div>
+              }
             </div>
           </div>
           <div class="row mt-4 px-2">
