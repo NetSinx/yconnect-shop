@@ -8,9 +8,10 @@ import { LoginService } from 'src/app/services/login/login.service';
 import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
-  selector: 'app-category',
-  templateUrl: './category.component.html',
-  styleUrls: ['./category.component.css']
+    selector: 'app-category',
+    templateUrl: './category.component.html',
+    styleUrls: ['./category.component.css'],
+    standalone: false
 })
 export class CategoryComponent implements OnInit {
   categories: Category[] = []

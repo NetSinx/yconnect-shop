@@ -8,9 +8,10 @@ import { LoginService } from 'src/app/services/login/login.service';
 import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    standalone: false
 })
 export class LoginComponent implements OnInit {
   formGroup: FormGroup = new FormGroup({})

@@ -5,9 +5,10 @@ import { LoadingService } from 'src/app/services/loading/loading.service';
 import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css'],
+    standalone: false
 })
 export class DashboardComponent implements OnInit {
   user_id: string | null

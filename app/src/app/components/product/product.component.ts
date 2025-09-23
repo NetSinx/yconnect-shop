@@ -4,9 +4,10 @@ import { Product } from 'src/app/interfaces/product';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 
 @Component({
-  selector: 'app-product',
-  templateUrl: './product.component.html',
-  styleUrls: ['./product.component.css']
+    selector: 'app-product',
+    templateUrl: './product.component.html',
+    styleUrls: ['./product.component.css'],
+    standalone: false
 })
 
 export class ProductComponent implements OnInit {

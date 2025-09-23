@@ -7,9 +7,10 @@ import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.css'],
+    standalone: false
 })
 
 export class RegisterComponent implements OnInit {
