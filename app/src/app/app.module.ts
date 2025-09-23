@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { AppComponent } from './app.component';
@@ -34,7 +34,8 @@ import { NgOptimizedImage } from '@angular/common';
         RegisterComponent,
         ProductDetailComponent,
         { provide: HTTP_INTERCEPTORS, useClass: CustomInterceptor, multi: true },
-        provideHttpClient(withInterceptorsFromDi())
+        provideHttpClient(withInterceptorsFromDi()),
+        provideClientHydration(withEventReplay())
     ] })
 
 export class AppModule { }
