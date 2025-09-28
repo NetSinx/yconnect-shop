@@ -2,9 +2,13 @@ package http
 
 import (
 	"errors"
+	"io"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 
+	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/usecase"
 	"github.com/go-playground/validator/v10"
@@ -18,62 +22,78 @@ type ProductController struct {
 	ProductUseCase *usecase.ProductUseCase
 }
 
-func NewProductHandler(log *logrus.Logger, productUseCase *usecase.ProductUseCase) *ProductController {
+func NewProductController(log *logrus.Logger, productUseCase *usecase.ProductUseCase) *ProductController {
 	return &ProductController{
 		Log:            log,
 		ProductUseCase: productUseCase,
 	}
 }
 
-func (p *productHandler) ListProduct(c echo.Context) error {
-	var products []model.Product
+func (p *ProductController) GetAllProduct(c echo.Context) error {
+	productRequest := new(model.GetAllProductRequest)
+	if err := c.Bind(productRequest); err != nil {
+		p.Log.WithError(err).Error("error binding request")
+		return err
+	}
 
-	listProducts, err := p.productService.ListProduct(products)
+	response, err := p.ProductUseCase.GetAllProduct(c.Request().Context(), productRequest)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
-			Message: errs.ErrInternalServer,
-		})
+		p.Log.WithError(err).Error("error getting all products")
+		return err
 	}
 
-	return c.JSON(http.StatusOK, dto.RespData{
-		Data: listProducts,
-	})
+	return c.JSON(http.StatusOK, response)
 }
 
-func (p *productHandler) CreateProduct(c echo.Context) error {
-	var productReq dto.ProductRequest
+func (p *ProductController) CreateProduct(c echo.Context) error {
+	productRequest := new(model.ProductRequest)
+	if err := c.Bind(productRequest); err != nil {
+		p.Log.WithError(err).Error("error binding request")
+		return err
+	}
 
-	if err := c.Bind(&productReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
-			Message: err.Error(),
+	form, err := c.MultipartForm()
+	if err != nil {
+		p.Log.WithError(err).Error("error uploading file")
+		return err
+	}
+	files := form.File["gambar"]
+
+	for _, file := range files {
+		src, err := file.Open()
+		if err != nil {
+			p.Log.WithError(err).Error("error opening file")
+			return err
+		}
+		defer src.Close()
+	
+		dst, err := os.Create(file.Filename)
+		if err != nil {
+			p.Log.WithError(err).Error("error creating file")
+			return err
+		}
+		defer dst.Close()
+	
+		if _, err := io.Copy(dst, src); err != nil {
+			p.Log.WithError(err).Error("error copying file to destination")
+			return err
+		}
+
+		productRequest.Gambar = append(productRequest.Gambar, entity.Gambar{
+			Path: file.Filename,
 		})
 	}
 
-	err := p.productService.CreateProduct(productReq)
-	if err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
-		return echo.NewHTTPError(http.StatusConflict, dto.MessageResp{
-			Message: errs.ErrDuplicatedKey,
-		})
-	} else if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: errs.ErrNotFound,
-		})
-	} else if err != nil && strings.Contains(err.Error(), validator.ValidationErrors{}.Error()) {
-		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
-			Message: err.Error(),
-		})
-	} else if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, dto.MessageResp{
-			Message: err.Error(),
-		})
+	response, err := p.ProductUseCase.CreateProduct(c.Request().Context(), productRequest)
+	if err != nil {
+		p.Log.WithError(err).Error("error creating product")
+		return err
 	}
 
-	return c.JSON(http.StatusOK, dto.MessageResp{
-		Message: dto.CreateResponse,
-	})
+	return c.JSON(http.StatusOK, response)
 }
 
-func (p *productHandler) UpdateProduct(c echo.Context) error {
+func (p *ProductController) UpdateProduct(c echo.Context) error {
 	var productReq dto.ProductRequest
 
 	slug := c.Param("slug")
@@ -108,7 +128,7 @@ func (p *productHandler) UpdateProduct(c echo.Context) error {
 	})
 }
 
-func (p *productHandler) DeleteProduct(c echo.Context) error {
+func (p *ProductController) DeleteProduct(c echo.Context) error {
 	var product model.Product
 
 	slug := c.Param("slug")
@@ -129,7 +149,7 @@ func (p *productHandler) DeleteProduct(c echo.Context) error {
 	})
 }
 
-func (p *productHandler) GetProductByID(c echo.Context) error {
+func (p *ProductController) GetProductByID(c echo.Context) error {
 	var product model.Product
 
 	id := c.Param("id")
@@ -146,7 +166,7 @@ func (p *productHandler) GetProductByID(c echo.Context) error {
 	})
 }
 
-func (p *productHandler) GetProductBySlug(c echo.Context) error {
+func (p *ProductController) GetProductBySlug(c echo.Context) error {
 	var product model.Product
 
 	slug := c.Param("slug")
@@ -163,7 +183,7 @@ func (p *productHandler) GetProductBySlug(c echo.Context) error {
 	})
 }
 
-func (p *productHandler) GetCategoryProduct(c echo.Context) error {
+func (p *ProductController) GetCategoryProduct(c echo.Context) error {
 	var product model.Product
 
 	slug := c.Param("slug")
@@ -180,7 +200,7 @@ func (p *productHandler) GetCategoryProduct(c echo.Context) error {
 	})
 }
 
-func (p *productHandler) GetProductByCategory(c echo.Context) error {
+func (p *ProductController) GetProductByCategory(c echo.Context) error {
 	var product []model.Product
 
 	slug := c.Param("slug")

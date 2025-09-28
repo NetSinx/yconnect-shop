@@ -6,17 +6,17 @@ import (
 )
 
 type GetAllProductRequest struct {
-	Page int `json:"page" validate:"min=1"`
-	Size int `json:"size" validate:"min=1,max=100"`
+	Page int `query:"page" validate:"min=1"`
+	Size int `query:"size" validate:"min=1,max=100"`
 }
 
 type ProductRequest struct {
-	Nama         string          `json:"nama" validate:"required,max=255"`
-	Gambar       []entity.Gambar `json:"gambar" validate:"required"`
-	Deskripsi    string          `json:"deskripsi" validate:"required"`
-	KategoriSlug string          `json:"kategori_slug" validate:"required"`
-	Harga        int64           `json:"harga" validate:"required,min=0"`
-	Stok         int             `json:"stok" validate:"required,min=0"`
+	Nama         string          `form:"nama" validate:"required,max=255"`
+	Gambar       []entity.Gambar `form:"gambar" validate:"required"`
+	Deskripsi    string          `form:"deskripsi" validate:"required"`
+	KategoriSlug string          `form:"kategori_slug" validate:"required"`
+	Harga        int64           `form:"harga" validate:"required,min=0"`
+	Stok         int             `form:"stok" validate:"required,min=0"`
 }
 
 type ProductResponse struct {

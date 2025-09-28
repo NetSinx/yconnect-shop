@@ -45,17 +45,17 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 	tx := p.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
-	if err := p.Validator.Struct(productReq); err != nil {
-		p.Log.WithError(err).Error("error validating request")
-		return nil, echo.ErrBadRequest
-	}
-
 	if productReq.Page <= 0 {
 		productReq.Page = 1
 	}
 
 	if productReq.Size <= 0 {
 		productReq.Size = 20
+	}
+	
+	if err := p.Validator.Struct(productReq); err != nil {
+		p.Log.WithError(err).Error("error validating request")
+		return nil, echo.ErrBadRequest
 	}
 
 	result, err := p.RedisClient.Get(ctx, fmt.Sprintf("products:%d:%d", productReq.Page, productReq.Size)).Result()
@@ -110,25 +110,25 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 	return response, nil
 }
 
-func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.ProductRequest) error {
+func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.ProductRequest) (*model.DataResponse[*model.ProductResponse], error) {
 	tx := p.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
 	if err := validator.New().Struct(productReq); err != nil {
 		p.Log.WithError(err).Error("error validating request body")
-		return echo.ErrBadRequest
+		return nil, echo.ErrBadRequest
 	}
 
 	categoryMirror := new(entity.CategoryMirror)
 	if err := p.ProductRepository.GetCategoryMirror(tx, categoryMirror, productReq.KategoriSlug); err != nil {
 		p.Log.WithError(err).Error("error getting category mirror")
-		return echo.ErrNotFound
+		return nil, echo.ErrNotFound
 	}
 
 	slug, err := helpers.GenerateSlugByName(productReq.Nama)
 	if err != nil {
 		p.Log.WithError(err).Error("error generating slug")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	product := &entity.Product{
@@ -143,18 +143,22 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 
 	if err = p.ProductRepository.Create(tx, product); err != nil {
 		p.Log.WithError(err).Error("error creating product")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		p.Log.WithError(err).Error("error creating product")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	eventCreated := converter.ProductToEvent(product)
 	p.Publisher.Send("product.created", eventCreated)
 
-	return nil
+	response := &model.DataResponse[*model.ProductResponse]{
+		Data: converter.ProductToResponse(product),
+	}
+
+	return response, nil
 }
 
 func (p *ProductUseCase) UpdateProduct(ctx context.Context, productReq *model.ProductRequest, slug string) error {
