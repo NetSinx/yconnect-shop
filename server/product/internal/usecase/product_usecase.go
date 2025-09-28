@@ -355,9 +355,53 @@ func (p *ProductUseCase) GetProductByCategory(ctx context.Context, productReq *m
 	return response, nil
 }
 
-func (p *ProductUseCase) CreateCategoryMirror(ctx context.Context, categoryEvent *model.CategoryEvent) error {
+func (p *ProductUseCase) CreateCategoryMirror(ctx context.Context, categoryEvent *model.CategoryEvent) {
 	tx := p.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
+	categoryMirror := new(entity.CategoryMirror)
+	categoryMirror.ID = categoryEvent.ID
+	categoryMirror.Nama = categoryEvent.Nama
+	categoryMirror.Slug = categoryEvent.Slug
+	if err := p.ProductRepository.CreateCategoryMirror(tx, categoryMirror); err != nil {
+		p.Log.WithError(err).Error("error creating category mirror")
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		p.Log.WithError(err).Error("error creating category mirror")
+	}
+}
+
+func (p *ProductUseCase) UpdateCategoryMirror(ctx context.Context, categoryEvent *model.CategoryEvent) {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	categoryMirror := new(entity.CategoryMirror)
+	categoryMirror.ID = categoryEvent.ID
+	categoryMirror.Nama = categoryEvent.Nama
+	categoryMirror.Slug = categoryEvent.Slug
+	if err := p.ProductRepository.UpdateCategoryMirror(tx, categoryMirror); err != nil {
+		p.Log.WithError(err).Error("error updating category mirror")
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		p.Log.WithError(err).Error("error updating category mirror")
+	}
+}
+
+func (p *ProductUseCase) DeleteCategoryMirror(ctx context.Context, categoryEvent *model.CategoryEvent) {
+	tx := p.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	categoryMirror := new(entity.CategoryMirror)
+	categoryMirror.ID = categoryEvent.ID
+	categoryMirror.Nama = categoryEvent.Nama
+	categoryMirror.Slug = categoryEvent.Slug
+	if err := p.ProductRepository.DeleteCategoryMirror(tx, categoryMirror); err != nil {
+		p.Log.WithError(err).Error("error deleting category mirror")
+	}
 	
+	if err := tx.Commit().Error; err != nil {
+		p.Log.WithError(err).Error("error deleting category mirror")
+	}
 }

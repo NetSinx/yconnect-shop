@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/helpers"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/usecase"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/sirupsen/logrus"
@@ -77,9 +78,20 @@ func (s *Subscriber) Receive() {
 
 	go func() {
 		for d := range msgs {
+			ctx := context.Background()
+			categoryEvent := new(model.CategoryEvent)
+			if err := json.Unmarshal(d.Body, categoryEvent); err != nil {
+				s.Log.WithError(err).Error("error unmarshaling data")
+				break
+			}
+
 			switch d.RoutingKey {
 			case "category.created":
-				s.ProductUseCase.
+				s.ProductUseCase.CreateCategoryMirror(ctx, categoryEvent)
+			case "category.updated":
+				s.ProductUseCase.UpdateCategoryMirror(ctx, categoryEvent)
+			case "category.deleted":
+				s.ProductUseCase.DeleteCategoryMirror(ctx, categoryEvent)
 			}
 		}
 	}()

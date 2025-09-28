@@ -4,18 +4,24 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/usecase"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
+type ProductController struct {
+	Log            *logrus.Logger
+	ProductUseCase *usecase.ProductUseCase
+}
 
-
-func NewProductHandler(prodService service.ProductServ) *productHandler {
-	return &productHandler{
-		productService: prodService,
+func NewProductHandler(log *logrus.Logger, productUseCase *usecase.ProductUseCase) *ProductController {
+	return &ProductController{
+		Log:            log,
+		ProductUseCase: productUseCase,
 	}
 }
 
@@ -95,7 +101,7 @@ func (p *productHandler) UpdateProduct(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, dto.MessageResp{
 			Message: err.Error(),
 		})
-	} 
+	}
 
 	return c.JSON(http.StatusOK, dto.MessageResp{
 		Message: dto.UpdateResponse,
@@ -134,7 +140,7 @@ func (p *productHandler) GetProductByID(c echo.Context) error {
 			Message: errs.ErrNotFound,
 		})
 	}
-	
+
 	return c.JSON(http.StatusOK, dto.RespData{
 		Data: getProduct,
 	})
@@ -151,7 +157,7 @@ func (p *productHandler) GetProductBySlug(c echo.Context) error {
 			Message: errs.ErrNotFound,
 		})
 	}
-	
+
 	return c.JSON(http.StatusOK, dto.RespData{
 		Data: getProduct,
 	})

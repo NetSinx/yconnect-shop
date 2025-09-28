@@ -134,3 +134,15 @@ func (p *ProductRepository) UpdateCategoryMirror(db *gorm.DB, categoryMirror *en
 
 	return nil
 }
+
+func (p *ProductRepository) DeleteCategoryMirror(db *gorm.DB, categoryMirror *entity.CategoryMirror) error {
+	if err := db.First(categoryMirror).Error; err != nil {
+		return err
+	}
+
+	if err := db.Delete(&entity.CategoryMirror{}, "slug = ?", categoryMirror.Slug).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
