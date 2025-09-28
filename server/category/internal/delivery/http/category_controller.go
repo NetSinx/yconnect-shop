@@ -6,7 +6,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"strconv"
 )
 
 type CategoryController struct {
@@ -22,20 +21,10 @@ func NewCategoryController(categoryUseCase *usecase.CategoryUseCase, log *logrus
 }
 
 func (c *CategoryController) ListCategory(ctx echo.Context) error {
-	page, _ := strconv.Atoi(ctx.QueryParam("page"))
-	pageSize, _ := strconv.Atoi(ctx.QueryParam("page_size"))
-
-	if page <= 0 {
-		page = 1
-	}
-
-	if pageSize <= 0 {
-		pageSize = 20
-	}
-
-	categoryRequest := &model.ListCategoryRequest{
-		Page: page,
-		Size: pageSize,
+	categoryRequest := new(model.ListCategoryRequest)
+	if err := ctx.Bind(categoryRequest); err != nil {
+		c.Log.WithError(err).Error("error binding request")
+		return err
 	}
 
 	response, err := c.CategoryUseCase.ListCategory(ctx.Request().Context(), categoryRequest)

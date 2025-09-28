@@ -16,8 +16,8 @@ type DeleteCategoryRequest struct {
 }
 
 type ListCategoryRequest struct {
-	Page int `json:"page" validate:"min=1"`
-	Size int `json:"size" validate:"min=1,max=100"`
+	Page int `query:"page" validate:"min=1"`
+	Size int `query:"size" validate:"min=1,max=100"`
 }
 
 type GetCategoryIDRequest struct {

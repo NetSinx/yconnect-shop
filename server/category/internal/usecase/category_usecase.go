@@ -44,6 +44,13 @@ func NewCategoryUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, re
 }
 
 func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) (*model.DataResponse[[]model.CategoryResponse], error) {
+	if categoryRequest.Page <= 0 {
+		categoryRequest.Page = 0
+	}
+	if categoryRequest.Size <= 0 {
+		categoryRequest.Size = 0
+	}
+
 	if err := c.Validator.Struct(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")
 		return nil, echo.ErrBadRequest
