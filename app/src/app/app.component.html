@@ -5,8 +5,8 @@
       <p class="fs-3">Mohon Tunggu...</p>
     </div>
   </div>
-}
-@if (errors) {
+} else 
+<!-- @if (errors) {
   <div>
     <div class="container-fluid">
       <div class="row justify-content-center align-items-center" style="height: 100vh;">
@@ -17,12 +17,11 @@
       </div>
     </div>
   </div>
-} @else {
+} @else { -->
   @if (showNavbar) {
     <div>
       <app-category></app-category>
     </div>
   }
   <router-outlet></router-outlet>
-}
-
+<!-- } -->

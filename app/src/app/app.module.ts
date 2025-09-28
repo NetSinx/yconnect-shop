@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { CategoryComponent } from './components/category/category.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
@@ -11,10 +11,11 @@ import { RegisterComponent } from './components/register/register.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ProductComponent } from './components/product/product.component';
-import { CustomInterceptor } from './interceptor/auth/custom.interceptor';
 import { NgOptimizedImage } from '@angular/common';
+import { loadingInterceptor } from './interceptor/loading/loading.interceptor';
 
-@NgModule({ declarations: [
+@NgModule({
+    declarations: [
         AppComponent,
         ProductComponent,
         CategoryComponent,
@@ -28,14 +29,14 @@ import { NgOptimizedImage } from '@angular/common';
         AppRoutingModule,
         ReactiveFormsModule,
         NgOptimizedImage], providers: [
-        ProductComponent,
-        CategoryComponent,
-        LoginComponent,
-        RegisterComponent,
-        ProductDetailComponent,
-        { provide: HTTP_INTERCEPTORS, useClass: CustomInterceptor, multi: true },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideClientHydration(withEventReplay())
-    ] })
+            ProductComponent,
+            CategoryComponent,
+            LoginComponent,
+            RegisterComponent,
+            ProductDetailComponent,
+            provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor])),
+            provideClientHydration(withEventReplay())
+        ]
+})
 
 export class AppModule { }

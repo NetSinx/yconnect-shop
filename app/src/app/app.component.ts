@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductService } from './services/product/product.service';
-import { filter, Observable } from 'rxjs';
-import { LoadingService } from './services/loading/loading.service';
-import { CategoryService } from './services/category/category.service';
 import { NavigationEnd, Router } from '@angular/router';
+import { LoadingService } from './services/loading/loading.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -14,22 +12,14 @@ import { NavigationEnd, Router } from '@angular/router';
 
 export class AppComponent implements OnInit {
   errors: any
-  isLoading: Observable<boolean>
   showNavbar: boolean = true
+  isLoading: Observable<boolean> = new Observable<boolean>()
 
-  constructor(
-    private productService: ProductService,
-    private categoryService: CategoryService,
-    private loadingService: LoadingService,
-    private router: Router
-  ) {
+  constructor(private router: Router, private loadingService: LoadingService) {
     this.isLoading = this.loadingService.loading
   }
 
   ngOnInit(): void {
-    this.loadingService.setLoading(true)
-    this.getErrorCategories()
-    this.getErrorProducts()
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         if (event.urlAfterRedirects === '/login' || event.urlAfterRedirects === '/register') {
@@ -39,25 +29,5 @@ export class AppComponent implements OnInit {
         }
       }
     })
-  }
-
-  public getErrorProducts(): void {
-    this.productService.getProducts().subscribe(
-      () => this.loadingService.setLoading(false),
-      error => {
-        this.loadingService.setLoading(false)
-        this.errors = error
-      }
-    )
-  }
-
-  public getErrorCategories(): void {
-    this.categoryService.getCategories().subscribe(
-      () => this.loadingService.setLoading(false),
-      error => {
-        this.loadingService.setLoading(false)
-        this.errors = error
-      }
-    )
   }
 }
