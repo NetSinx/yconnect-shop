@@ -52,10 +52,10 @@ services:
     restart: always
     pull_policy: if_not_present
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: "12345678"
       MYSQL_USER: "test"
       MYSQL_PASSWORD: "test123"
-      MYSQL_DATABASE: "yconnect_shop_product"
+      MYSQL_DATABASE: "db_product"
 
   product:
     container_name: product-service
@@ -64,15 +64,21 @@ services:
     pull_policy: if_not_present
     depends_on:
       - product-db
-    environment:
-      - DB_USER=test
-      - DB_PASS=test123
-      - DB_HOST=db-product
-      - DB_PORT=3306
-      - DB_DBNAME=yconnect_shop_product
-      - BASE_URL=http://localhost
-      - JWT_KEY_ADMIN=adminjwtkey
-      - JWT_KEY_CUSTOMER=customerjwtkey
+    networks:
+      - netsinx_default
+      - server_default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.product-service.rule=PathPrefix(`/api/products`) && Method(`GET`)"
+      - "traefik.http.routers.product-service.entrypoints=websecure"
+      - "traefik.http.routers.product-service.tls=true"
+      - "traefik.http.routers.product-service.service=product-service"
+      - "traefik.http.routers.product-service-admin.rule=PathPrefix(`/api/admin/products`)"
+      - "traefik.http.routers.product-service-admin.entrypoints=websecure"
+      - "traefik.http.routers.product-service-admin.tls=true"
+      - "traefik.http.routers.product-service-admin.middlewares=auth"
+      - "traefik.http.routers.product-service-admin.service=product-service"
+      - "traefik.http.services.product-service.loadbalancer.server.port=8081"
 
   category-db:
     container_name: db-category
@@ -220,7 +226,7 @@ services:
       - "traefik.http.routers.auth-service-post.tls=true"
       - "traefik.http.routers.auth-service-post.service=auth-service"
       - "traefik.http.services.auth-service.loadbalancer.server.port=8086"
-      - "traefik.http.middlewares.auth.forwardauth.address=http://auth-service:8086/api/auth/verify"
+      - "traefik.http.middlewares.auth.forwardauth.address=https://auth-service:8086/api/auth/verify"
       - "traefik.http.middlewares.auth.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.auth.forwardauth.authResponseHeaders=X-User-ID,X-User-Role"
 
