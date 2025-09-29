@@ -1,4 +1,4 @@
-FROM golang:1.25.0-alpine
+FROM golang:alpine
 
 WORKDIR /usr/src/app
 
@@ -8,7 +8,7 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN go build -v -o /usr/local/bin/product .
+RUN go build -v -o /usr/local/bin/product ./cmd/
 
 EXPOSE 8081
 

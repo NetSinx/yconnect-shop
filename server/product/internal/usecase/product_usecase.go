@@ -61,15 +61,17 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 		return nil, echo.ErrBadRequest
 	}
 
-	result, err := p.RedisClient.Get(ctx, fmt.Sprintf("products:%d:%d", productReq.Page, productReq.Size)).Result()
-	if err == nil {
-		products := new(model.DataResponse[[]model.ProductResponse])
-		if err := json.Unmarshal([]byte(result), products); err != nil {
-			p.Log.WithError(err).Error("error unmarshaling data")
-			return nil, echo.ErrInternalServerError
+	if p.Config.GetBool("redis.enabled") {
+		result, err := p.RedisClient.Get(ctx, fmt.Sprintf("products:%d:%d", productReq.Page, productReq.Size)).Result()
+		if err == nil {
+			products := new(model.DataResponse[[]model.ProductResponse])
+			if err := json.Unmarshal([]byte(result), products); err != nil {
+				p.Log.WithError(err).Error("error unmarshaling data")
+				return nil, echo.ErrInternalServerError
+			}
+	
+			return products, nil
 		}
-
-		return products, nil
 	}
 
 	entityProduct := new([]entity.Product)
@@ -105,9 +107,11 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 		return nil, echo.ErrInternalServerError
 	}
 
-	if err := p.RedisClient.Set(ctx, fmt.Sprintf("products:%d:%d", productReq.Page, productReq.Size), bytesData, 5*time.Minute).Err(); err != nil {
-		p.Log.WithError(err).Error("error setting cache data in redis")
-		return nil, echo.ErrInternalServerError
+	if p.Config.GetBool("redis.enabled") {
+		if err := p.RedisClient.Set(ctx, fmt.Sprintf("products:%d:%d", productReq.Page, productReq.Size), bytesData, 5*time.Minute).Err(); err != nil {
+			p.Log.WithError(err).Error("error setting cache data in redis")
+			return nil, echo.ErrInternalServerError
+		}
 	}
 
 	return response, nil
@@ -154,8 +158,10 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 		return nil, echo.ErrInternalServerError
 	}
 
-	eventCreated := converter.ProductToEvent(product)
-	p.Publisher.Send("product.created", eventCreated)
+	if p.Config.GetBool("rabbitmq.enabled") {
+		eventCreated := converter.ProductToEvent(product)
+		p.Publisher.Send("product.created", eventCreated)
+	}
 
 	response := &model.DataResponse[*model.ProductResponse]{
 		Data: converter.ProductToResponse(product),
@@ -230,8 +236,10 @@ func (p *ProductUseCase) UpdateProduct(ctx context.Context, productReq *model.Pr
 		return nil, echo.ErrInternalServerError
 	}
 
-	eventUpdated := converter.ProductToEvent(product)
-	p.Publisher.Send("product.updated", eventUpdated)
+	if p.Config.GetBool("rabbitmq.enabled") {
+		eventUpdated := converter.ProductToEvent(product)
+		p.Publisher.Send("product.updated", eventUpdated)
+	}
 
 	response := &model.DataResponse[*model.ProductResponse]{
 		Data: converter.ProductToResponse(product),
@@ -283,8 +291,10 @@ func (p *ProductUseCase) DeleteProduct(ctx context.Context, slug string) error {
 		return echo.ErrInternalServerError
 	}
 
-	eventDeleted := converter.ProductToEvent(product)
-	p.Publisher.Send("product.deleted", eventDeleted)
+	if p.Config.GetBool("rabbitmq.enabled") {
+		eventDeleted := converter.ProductToEvent(product)
+		p.Publisher.Send("product.deleted", eventDeleted)
+	}
 
 	return nil
 }
@@ -293,15 +303,17 @@ func (p *ProductUseCase) GetProductBySlug(ctx context.Context, slug string) (*mo
 	tx := p.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
-	result, err := p.RedisClient.Get(ctx, "product:"+slug).Result()
-	if err == nil {
-		response := new(model.DataResponse[*model.ProductResponse])
-		if err := json.Unmarshal([]byte(result), response); err != nil {
-			p.Log.WithError(err).Error("error unmarshaling data")
-			return nil, echo.ErrInternalServerError
+	if p.Config.GetBool("redis.enabled") {
+		result, err := p.RedisClient.Get(ctx, "product:"+slug).Result()
+		if err == nil {
+			response := new(model.DataResponse[*model.ProductResponse])
+			if err := json.Unmarshal([]byte(result), response); err != nil {
+				p.Log.WithError(err).Error("error unmarshaling data")
+				return nil, echo.ErrInternalServerError
+			}
+	
+			return response, nil
 		}
-
-		return response, nil
 	}
 
 	product := new(entity.Product)
@@ -325,9 +337,11 @@ func (p *ProductUseCase) GetProductBySlug(ctx context.Context, slug string) (*mo
 		return nil, echo.ErrInternalServerError
 	}
 
-	if err := p.RedisClient.Set(ctx, "product:"+slug, dataBytes, 5*time.Minute).Err(); err != nil {
-		p.Log.WithError(err).Error("error setting cache data")
-		return nil, echo.ErrInternalServerError
+	if p.Config.GetBool("redis.enabled") {
+		if err := p.RedisClient.Set(ctx, "product:"+slug, dataBytes, 5*time.Minute).Err(); err != nil {
+			p.Log.WithError(err).Error("error setting cache data")
+			return nil, echo.ErrInternalServerError
+		}
 	}
 
 	return response, nil
@@ -337,15 +351,17 @@ func (p *ProductUseCase) GetCategoryProduct(ctx context.Context, slug string) (*
 	tx := p.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
-	result, err := p.RedisClient.Get(ctx, "category_product:"+slug).Result()
-	if err == nil {
-		response := new(model.DataResponse[*model.CategoryMirrorResponse])
-		if err := json.Unmarshal([]byte(result), response); err != nil {
-			p.Log.WithError(err).Error("error unmarshaling data")
-			return nil, echo.ErrInternalServerError
+	if p.Config.GetBool("redis.enabled") {
+		result, err := p.RedisClient.Get(ctx, "category_product:"+slug).Result()
+		if err == nil {
+			response := new(model.DataResponse[*model.CategoryMirrorResponse])
+			if err := json.Unmarshal([]byte(result), response); err != nil {
+				p.Log.WithError(err).Error("error unmarshaling data")
+				return nil, echo.ErrInternalServerError
+			}
+	
+			return response, nil
 		}
-
-		return response, nil
 	}
 
 	categoryMirror := new(entity.CategoryMirror)
@@ -364,9 +380,11 @@ func (p *ProductUseCase) GetCategoryProduct(ctx context.Context, slug string) (*
 		return nil, echo.ErrInternalServerError
 	}
 
-	if err := p.RedisClient.Set(ctx, "category_product:"+slug, dataBytes, 5*time.Minute).Err(); err != nil {
-		p.Log.WithError(err).Error("error setting cache data")
-		return nil, echo.ErrInternalServerError
+	if p.Config.GetBool("redis.enabled") {
+		if err := p.RedisClient.Set(ctx, "category_product:"+slug, dataBytes, 5*time.Minute).Err(); err != nil {
+			p.Log.WithError(err).Error("error setting cache data")
+			return nil, echo.ErrInternalServerError
+		}
 	}
 
 	return response, nil
@@ -389,16 +407,19 @@ func (p *ProductUseCase) GetProductByCategory(ctx context.Context, productReq *m
 		return nil, echo.ErrBadRequest
 	}
 
-	key := fmt.Sprintf("products:%s:%d:%d", slug, productReq.Page, productReq.Size)
-	result, err := p.RedisClient.Get(ctx, key).Result()
-	if err == nil {
-		response := new(model.DataResponse[[]model.ProductResponse])
-		if err := json.Unmarshal([]byte(result), response); err != nil {
-			p.Log.WithError(err).Error("error unmarshaling data")
-			return nil, echo.ErrInternalServerError
+	var key string
+	if p.Config.GetBool("redis.enabled") {
+		key = fmt.Sprintf("products:%s:%d:%d", slug, productReq.Page, productReq.Size)
+		result, err := p.RedisClient.Get(ctx, key).Result()
+		if err == nil {
+			response := new(model.DataResponse[[]model.ProductResponse])
+			if err := json.Unmarshal([]byte(result), response); err != nil {
+				p.Log.WithError(err).Error("error unmarshaling data")
+				return nil, echo.ErrInternalServerError
+			}
+	
+			return response, nil
 		}
-
-		return response, nil
 	}
 
 	product := new([]entity.Product)
@@ -422,9 +443,11 @@ func (p *ProductUseCase) GetProductByCategory(ctx context.Context, productReq *m
 		return nil, echo.ErrInternalServerError
 	}
 
-	if err := p.RedisClient.Set(ctx, key, dataBytes, 5*time.Minute).Err(); err != nil {
-		p.Log.WithError(err).Error("error setting cache data")
-		return nil, echo.ErrInternalServerError
+	if p.Config.GetBool("redis.enabled") {
+		if err := p.RedisClient.Set(ctx, key, dataBytes, 5*time.Minute).Err(); err != nil {
+			p.Log.WithError(err).Error("error setting cache data")
+			return nil, echo.ErrInternalServerError
+		}
 	}
 
 	return response, nil

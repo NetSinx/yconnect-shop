@@ -53,31 +53,48 @@ func (p *ProductController) CreateProduct(c echo.Context) error {
 		p.Log.WithError(err).Error("error uploading file")
 		return err
 	}
+	var wg sync.WaitGroup
+	errCh := make(chan error, 1)
 	files := form.File["gambar"]
-
 	for _, file := range files {
-		src, err := file.Open()
-		if err != nil {
-			p.Log.WithError(err).Error("error opening file")
-			return err
-		}
-		defer src.Close()
+		wg.Add(1)
+		go func(f *multipart.FileHeader) {
+			defer wg.Done()
+			src, err := file.Open()
+			if err != nil {
+				p.Log.WithError(err).Error("error opening file")
+				errCh <- err
+				return
+			}
+			defer src.Close()
+	
+			dst, err := os.Create(file.Filename)
+			if err != nil {
+				p.Log.WithError(err).Error("error creating file")
+				errCh <- err
+				return
+			}
+			defer dst.Close()
+	
+			if _, err := io.Copy(dst, src); err != nil {
+				p.Log.WithError(err).Error("error copying file to destination")
+				errCh <- err
+				return
+			}
+	
+			productRequest.Gambar = append(productRequest.Gambar, entity.Gambar{
+				Path: file.Filename,
+			})
+		}(file)
+	}
 
-		dst, err := os.Create(file.Filename)
-		if err != nil {
-			p.Log.WithError(err).Error("error creating file")
-			return err
-		}
-		defer dst.Close()
+	go func() {
+		wg.Wait()
+		close(errCh)	
+	}()
 
-		if _, err := io.Copy(dst, src); err != nil {
-			p.Log.WithError(err).Error("error copying file to destination")
-			return err
-		}
-
-		productRequest.Gambar = append(productRequest.Gambar, entity.Gambar{
-			Path: file.Filename,
-		})
+	if err := <-errCh; err != nil {
+		return err
 	}
 
 	response, err := p.ProductUseCase.CreateProduct(c.Request().Context(), productRequest)

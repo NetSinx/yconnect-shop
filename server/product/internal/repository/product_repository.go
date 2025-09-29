@@ -18,7 +18,7 @@ func NewProductRepository(log *logrus.Logger) *ProductRepository {
 }
 
 func (p *ProductRepository) GetAll(db *gorm.DB, entityProduct []entity.Product, productReq *model.GetAllProductRequest) (int64, error) {
-	if err := db.Offset((productReq.Page - 1) * productReq.Size).Limit(productReq.Size).Preload("Gambar").Find(entityProduct).Error; err != nil {
+	if err := db.Offset((productReq.Page - 1) * productReq.Size).Limit(productReq.Size).Preload("Gambar").Find(&entityProduct).Error; err != nil {
 		return 0, err
 	}
 
