@@ -4,6 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
+	"os"
+	"sync"
+	"time"
+
 	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/helpers"
@@ -16,8 +21,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
-	"math"
-	"time"
 )
 
 type ProductUseCase struct {
@@ -161,31 +164,54 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 	return response, nil
 }
 
-func (p *ProductUseCase) UpdateProduct(ctx context.Context, productReq *model.ProductRequest, slug string) error {
+func (p *ProductUseCase) UpdateProduct(ctx context.Context, productReq *model.ProductRequest, slug string) (*model.DataResponse[*model.ProductResponse], error) {
 	tx := p.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
 	if err := p.Validator.Struct(productReq); err != nil {
 		p.Log.WithError(err).Error("error validating request body")
-		return echo.ErrBadRequest
+		return nil, echo.ErrBadRequest
 	}
 
 	categoryMirror := new(entity.CategoryMirror)
 	if err := p.ProductRepository.GetCategoryMirror(tx, categoryMirror, productReq.KategoriSlug); err != nil {
 		p.Log.WithError(err).Error("error getting category mirror")
-		return echo.ErrNotFound
+		return nil, echo.ErrNotFound
 	}
 
 	product := new(entity.Product)
-	if err := p.ProductRepository.GetProductName(tx, product, slug); err != nil {
-		p.Log.WithError(err).Error("error getting product name")
-		return echo.ErrNotFound
+	if err := p.ProductRepository.GetProductBySlug(tx, product, slug); err != nil {
+		p.Log.WithError(err).Error("error getting product")
+		return nil, echo.ErrNotFound
 	}
 
 	if product.Nama != productReq.Nama {
 		newSlug := helpers.ReplaceProductSlug(product.Slug, productReq.Nama)
 		product.Nama = productReq.Nama
 		product.Slug = newSlug
+	}
+
+	errCh := make(chan error, 1)
+	var wg sync.WaitGroup
+	for _, gambar := range product.Gambar {
+		wg.Add(1)
+		go func(g entity.Gambar) {
+			defer wg.Done()
+			if err := os.Remove(g.Path); err != nil {
+				p.Log.WithError(err).Error("error removing file")
+				errCh <- err
+				return
+			}
+		}(gambar)
+	}
+
+	go func() {
+		wg.Wait()
+		close(errCh)
+	}()
+
+	if err := <-errCh; err != nil {
+		return nil, echo.ErrInternalServerError
 	}
 
 	product.Gambar = productReq.Gambar
@@ -196,18 +222,22 @@ func (p *ProductUseCase) UpdateProduct(ctx context.Context, productReq *model.Pr
 
 	if err := p.ProductRepository.Update(tx, product, slug); err != nil {
 		p.Log.WithError(err).Error("error updating product")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		p.Log.WithError(err).Error("error updating product")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	eventUpdated := converter.ProductToEvent(product)
 	p.Publisher.Send("product.updated", eventUpdated)
 
-	return nil
+	response := &model.DataResponse[*model.ProductResponse]{
+		Data: converter.ProductToResponse(product),
+	}
+
+	return response, nil
 }
 
 func (p *ProductUseCase) DeleteProduct(ctx context.Context, slug string) error {
@@ -215,6 +245,34 @@ func (p *ProductUseCase) DeleteProduct(ctx context.Context, slug string) error {
 	defer tx.Rollback()
 
 	product := new(entity.Product)
+	if err := p.ProductRepository.GetProductBySlug(tx, product, slug); err != nil {
+		p.Log.WithError(err).Error("error getting product")
+		return echo.ErrInternalServerError
+	}
+
+	errCh := make(chan error, 1)
+	var wg sync.WaitGroup
+	for _, gambar := range product.Gambar {
+		wg.Add(1)
+		go func(g entity.Gambar) {
+			defer wg.Done()
+			if err := os.Remove(g.Path); err != nil {
+				p.Log.WithError(err).Error("error removing file")
+				errCh <- err
+				return
+			}
+		}(gambar)
+	}
+
+	go func() {
+		wg.Wait()
+		close(errCh)
+	}()
+
+	if err := <-errCh; err != nil {
+		return echo.ErrInternalServerError
+	}
+
 	if err := p.ProductRepository.DeleteProduct(tx, product, slug); err != nil {
 		p.Log.WithError(err).Error("error deleting product")
 		return echo.ErrNotFound
