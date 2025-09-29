@@ -2,10 +2,16 @@ package route
 
 import (
 	"net/http"
-	"github.com/NetSinx/yconnect-shop/server/product/internal/delivery/http"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+type RouteConfig struct {
+	App *echo.Echo
+	Produc
+}
+
+func NewRoutes()
 
 func ApiRoutes(e *echo.Echo, productHandler *productHandler) {
 	apiGroup := e.Group("/api")

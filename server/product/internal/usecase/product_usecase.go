@@ -376,6 +376,14 @@ func (p *ProductUseCase) GetProductByCategory(ctx context.Context, productReq *m
 	tx := p.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
+	if productReq.Page <= 0 {
+		productReq.Page = 1
+	}
+
+	if productReq.Size <= 0 {
+		productReq.Size = 20
+	}
+
 	key := fmt.Sprintf("products:%s:%d:%d", slug, productReq.Page, productReq.Size)
 	result, err := p.RedisClient.Get(ctx, key).Result()
 	if err == nil {

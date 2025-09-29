@@ -1,7 +1,6 @@
 package http
 
 import (
-	"errors"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -12,7 +11,6 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/product/internal/usecase"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 )
 
 type ProductController struct {
@@ -162,73 +160,47 @@ func (p *ProductController) UpdateProduct(c echo.Context) error {
 func (p *ProductController) DeleteProduct(c echo.Context) error {
 	slug := c.Param("slug")
 
-	
-}
-
-func (p *ProductController) GetProductByID(c echo.Context) error {
-	var product model.Product
-
-	id := c.Param("id")
-
-	getProduct, err := p.productService.GetProductByID(product, id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: errs.ErrNotFound,
-		})
+	if err := p.ProductUseCase.DeleteProduct(c.Request().Context(), slug); err != nil {
+		p.Log.WithError(err).Error("error deleting product")
+		return echo.ErrInternalServerError
 	}
 
-	return c.JSON(http.StatusOK, dto.RespData{
-		Data: getProduct,
-	})
+	return c.NoContent(http.StatusNoContent)
 }
 
 func (p *ProductController) GetProductBySlug(c echo.Context) error {
-	var product model.Product
-
 	slug := c.Param("slug")
 
-	getProduct, err := p.productService.GetProductBySlug(product, slug)
+	response, err := p.ProductUseCase.GetProductBySlug(c.Request().Context(), slug)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: errs.ErrNotFound,
-		})
+		p.Log.WithError(err).Error("error getting product")
+		return echo.ErrInternalServerError
 	}
 
-	return c.JSON(http.StatusOK, dto.RespData{
-		Data: getProduct,
-	})
+	return c.JSON(http.StatusOK, response)
 }
 
 func (p *ProductController) GetCategoryProduct(c echo.Context) error {
-	var product model.Product
-
 	slug := c.Param("slug")
 
-	getCategoryProduct, err := p.productService.GetCategoryProduct(product, slug)
-	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: errs.ErrNotFound,
-		})
+	response, err := p.ProductUseCase.GetCategoryProduct(c.Request().Context(), slug)
+	if err != nil {
+		p.Log.WithError(err).Error("error getting product")
+		return echo.ErrInternalServerError
 	}
 
-	return c.JSON(http.StatusOK, dto.RespData{
-		Data: getCategoryProduct,
-	})
+	return c.JSON(http.StatusOK, response)
 }
 
 func (p *ProductController) GetProductByCategory(c echo.Context) error {
-	var product []model.Product
-
 	slug := c.Param("slug")
 
-	getProductByCategory, err := p.productService.GetProductByCategory(product, slug)
-	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return echo.NewHTTPError(http.StatusNotFound, dto.MessageResp{
-			Message: errs.ErrNotFound,
-		})
+	productRequest := new(model.GetAllProductRequest)
+	response, err := p.ProductUseCase.GetProductByCategory(c.Request().Context(), productRequest, slug)
+	if err != nil {
+		p.Log.WithError(err).Error("error getting product")
+		return echo.ErrInternalServerError
 	}
 
-	return c.JSON(http.StatusOK, dto.RespData{
-		Data: getProductByCategory,
-	})
+	return c.JSON(http.StatusOK, response)
 }
