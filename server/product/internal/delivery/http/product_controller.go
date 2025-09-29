@@ -1,16 +1,19 @@
 package http
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
-	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
-	"github.com/NetSinx/yconnect-shop/server/product/internal/usecase"
-	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
+	"crypto/md5"
+	"encoding/hex"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"sync"
+
+	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
+	"github.com/NetSinx/yconnect-shop/server/product/internal/usecase"
+	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 type ProductController struct {
@@ -67,8 +70,11 @@ func (p *ProductController) CreateProduct(c echo.Context) error {
 				return
 			}
 			defer src.Close()
+
+			hash := md5.Sum([]byte(file.Filename))
+			hashString := hex.EncodeToString(hash[:])
 	
-			dst, err := os.Create(file.Filename)
+			dst, err := os.Create("public/"+hashString+".png")
 			if err != nil {
 				p.Log.WithError(err).Error("error creating file")
 				errCh <- err
