@@ -1,16 +1,16 @@
 package http
 
 import (
-	"io"
-	"mime/multipart"
-	"net/http"
-	"os"
-	"sync"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/usecase"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"sync"
 )
 
 type ProductController struct {
@@ -62,14 +62,14 @@ func (p *ProductController) CreateProduct(c echo.Context) error {
 			return err
 		}
 		defer src.Close()
-	
+
 		dst, err := os.Create(file.Filename)
 		if err != nil {
 			p.Log.WithError(err).Error("error creating file")
 			return err
 		}
 		defer dst.Close()
-	
+
 		if _, err := io.Copy(dst, src); err != nil {
 			p.Log.WithError(err).Error("error copying file to destination")
 			return err
@@ -118,7 +118,7 @@ func (p *ProductController) UpdateProduct(c echo.Context) error {
 				return
 			}
 			defer src.Close()
-	
+
 			dst, err := os.Create(file.Filename)
 			if err != nil {
 				p.Log.WithError(err).Error("error creating uploaded file")
@@ -126,13 +126,13 @@ func (p *ProductController) UpdateProduct(c echo.Context) error {
 				return
 			}
 			defer dst.Close()
-	
+
 			if _, err := io.Copy(dst, src); err != nil {
 				p.Log.WithError(err).Error("error copying file to destination")
 				errCh <- err
 				return
 			}
-	
+
 			productRequest.Gambar = append(productRequest.Gambar, entity.Gambar{
 				Path: file.Filename,
 			})
@@ -141,7 +141,7 @@ func (p *ProductController) UpdateProduct(c echo.Context) error {
 
 	go func() {
 		wg.Wait()
-		close(errCh)	
+		close(errCh)
 	}()
 
 	if err := <-errCh; err != nil {
@@ -158,9 +158,13 @@ func (p *ProductController) UpdateProduct(c echo.Context) error {
 }
 
 func (p *ProductController) DeleteProduct(c echo.Context) error {
-	slug := c.Param("slug")
+	productRequest := new(model.ParamRequest)
+	if err := c.Bind(productRequest); err != nil {
+		p.Log.WithError(err).Error("error binding request")
+		return err
+	}
 
-	if err := p.ProductUseCase.DeleteProduct(c.Request().Context(), slug); err != nil {
+	if err := p.ProductUseCase.DeleteProduct(c.Request().Context(), productRequest.Slug); err != nil {
 		p.Log.WithError(err).Error("error deleting product")
 		return echo.ErrInternalServerError
 	}
@@ -169,9 +173,13 @@ func (p *ProductController) DeleteProduct(c echo.Context) error {
 }
 
 func (p *ProductController) GetProductBySlug(c echo.Context) error {
-	slug := c.Param("slug")
+	productRequest := new(model.ParamRequest)
+	if err := c.Bind(productRequest); err != nil {
+		p.Log.WithError(err).Error("error binding request")
+		return err
+	}
 
-	response, err := p.ProductUseCase.GetProductBySlug(c.Request().Context(), slug)
+	response, err := p.ProductUseCase.GetProductBySlug(c.Request().Context(), productRequest.Slug)
 	if err != nil {
 		p.Log.WithError(err).Error("error getting product")
 		return echo.ErrInternalServerError
@@ -181,9 +189,13 @@ func (p *ProductController) GetProductBySlug(c echo.Context) error {
 }
 
 func (p *ProductController) GetCategoryProduct(c echo.Context) error {
-	slug := c.Param("slug")
+	productRequest := new(model.ParamRequest)
+	if err := c.Bind(productRequest); err != nil {
+		p.Log.WithError(err).Error("error binding request")
+		return err
+	}
 
-	response, err := p.ProductUseCase.GetCategoryProduct(c.Request().Context(), slug)
+	response, err := p.ProductUseCase.GetCategoryProduct(c.Request().Context(), productRequest.Slug)
 	if err != nil {
 		p.Log.WithError(err).Error("error getting product")
 		return echo.ErrInternalServerError
@@ -193,10 +205,19 @@ func (p *ProductController) GetCategoryProduct(c echo.Context) error {
 }
 
 func (p *ProductController) GetProductByCategory(c echo.Context) error {
-	slug := c.Param("slug")
+	productRequestParam := new(model.ParamRequest)
+	if err := c.Bind(productRequestParam); err != nil {
+		p.Log.WithError(err).Error("error binding request")
+		return err
+	}
 
 	productRequest := new(model.GetAllProductRequest)
-	response, err := p.ProductUseCase.GetProductByCategory(c.Request().Context(), productRequest, slug)
+	if err := c.Bind(productRequest); err != nil {
+		p.Log.WithError(err).Error("error binding request")
+		return err
+	}
+
+	response, err := p.ProductUseCase.GetProductByCategory(c.Request().Context(), productRequest, productRequestParam.Slug)
 	if err != nil {
 		p.Log.WithError(err).Error("error getting product")
 		return echo.ErrInternalServerError

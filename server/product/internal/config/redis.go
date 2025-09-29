@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/helpers"
-	"github.com/go-redis/redis"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )

@@ -8,7 +8,6 @@ import (
 	"os"
 	"sync"
 	"time"
-
 	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/helpers"
@@ -16,8 +15,8 @@ import (
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model/converter"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/repository"
 	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo/v4"
 	"github.com/redis/go-redis/v9"
+	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -33,11 +32,12 @@ type ProductUseCase struct {
 	ProductRepository *repository.ProductRepository
 }
 
-func NewProductUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, redisClient *redis.Client, publisher *messaging.Publisher, productRepository *repository.ProductRepository) *ProductUseCase {
+func NewProductUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, validator *validator.Validate, redisClient *redis.Client, publisher *messaging.Publisher, productRepository *repository.ProductRepository) *ProductUseCase {
 	return &ProductUseCase{
 		Config:            config,
 		DB:                db,
 		Log:               log,
+		Validator:         validator,
 		RedisClient:       redisClient,
 		Publisher:         publisher,
 		ProductRepository: productRepository,
@@ -55,7 +55,7 @@ func (p *ProductUseCase) GetAllProduct(ctx context.Context, productReq *model.Ge
 	if productReq.Size <= 0 {
 		productReq.Size = 20
 	}
-	
+
 	if err := p.Validator.Struct(productReq); err != nil {
 		p.Log.WithError(err).Error("error validating request")
 		return nil, echo.ErrBadRequest
@@ -117,7 +117,7 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, productReq *model.Pr
 	tx := p.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
-	if err := validator.New().Struct(productReq); err != nil {
+	if err := p.Validator.Struct(productReq); err != nil {
 		p.Log.WithError(err).Error("error validating request body")
 		return nil, echo.ErrBadRequest
 	}
@@ -384,6 +384,11 @@ func (p *ProductUseCase) GetProductByCategory(ctx context.Context, productReq *m
 		productReq.Size = 20
 	}
 
+	if err := p.Validator.Struct(productReq); err != nil {
+		p.Log.WithError(err).Error("error validating request")
+		return nil, echo.ErrBadRequest
+	}
+
 	key := fmt.Sprintf("products:%s:%d:%d", slug, productReq.Page, productReq.Size)
 	result, err := p.RedisClient.Get(ctx, key).Result()
 	if err == nil {
@@ -470,7 +475,7 @@ func (p *ProductUseCase) DeleteCategoryMirror(ctx context.Context, categoryEvent
 	if err := p.ProductRepository.DeleteCategoryMirror(tx, categoryMirror); err != nil {
 		p.Log.WithError(err).Error("error deleting category mirror")
 	}
-	
+
 	if err := tx.Commit().Error; err != nil {
 		p.Log.WithError(err).Error("error deleting category mirror")
 	}

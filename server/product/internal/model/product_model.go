@@ -10,6 +10,10 @@ type GetAllProductRequest struct {
 	Size int `query:"size" validate:"min=1,max=100"`
 }
 
+type ParamRequest struct {
+	Slug string `param:"slug"`
+}
+
 type ProductRequest struct {
 	Nama         string          `form:"nama" validate:"required,max=255"`
 	Gambar       []entity.Gambar `form:"gambar" validate:"required"`

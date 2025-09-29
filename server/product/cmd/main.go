@@ -1,27 +1,33 @@
 package main
 
 import (
-	"github.com/NetSinx/yconnect-shop/server/product/db"
-	"github.com/NetSinx/yconnect-shop/server/product/handler/http"
-	"github.com/NetSinx/yconnect-shop/server/product/repository"
-	"github.com/NetSinx/yconnect-shop/server/product/service"
-	"github.com/NetSinx/yconnect-shop/server/product/service/rabbitmq"
-	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4"
+	"fmt"
+
+	"github.com/NetSinx/yconnect-shop/server/product/internal/config"
 )
 
 func main() {
-	godotenv.Load()
+	viperConfig := config.NewViper()
+	log := config.NewLogger(viperConfig)
+	db := config.NewDatabase(viperConfig, log)
+	redis := config.NewRedis(viperConfig, log)
+	rabbitmq := config.NewRabbitMQ(viperConfig, log)
+	validator := config.NewValidator()
+	app := config.NewEcho()
 
-	db := db.ConnectDB()
-	productRepository := repository.NewProductRepository(db)
-	productService := service.NewProductService(productRepository)
-	productHandler := http.NewProductHandler(productService)
-	
-	go rabbitmq.ConsumeCategoryEvents()
+	config.NewAppBootstrap(&config.AppBootstrap{
+		DB: db,
+		App: app,
+		Config: viperConfig,
+		Log: log,
+		RedisClient: redis,
+		Validator: validator,
+		RabbitMQ: rabbitmq,
+	})
 
-	e := echo.New()
-	http.ApiRoutes(e, productHandler)
-
-	e.Logger.Fatal(e.Start(":8081"))
+	host := viperConfig.GetString("host")
+	port := viperConfig.GetInt("port")
+	if err := app.Start(fmt.Sprintf("%s:%d", host, port)); err != nil {
+		log.Fatalf("failed to start server: %v", err)
+	}
 }
