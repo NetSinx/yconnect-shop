@@ -23,6 +23,7 @@ func (r *RouteConfig) GuestRoutes() {
 	apiGroup.GET("/products/:slug", r.ProductController.GetProductBySlug)
 	apiGroup.GET("/products/:slug/category", r.ProductController.GetCategoryProduct)
 	apiGroup.GET("/products/category/:slug", r.ProductController.GetProductByCategory)
+	apiGroup.Static("/images", "../public")
 }
 
 func (r *RouteConfig) AdminRoutes() {

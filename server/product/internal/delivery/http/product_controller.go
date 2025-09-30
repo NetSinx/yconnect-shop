@@ -1,13 +1,13 @@
 package http
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
+	"time"
 
 	"github.com/NetSinx/yconnect-shop/server/product/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/product/internal/model"
@@ -56,6 +56,7 @@ func (p *ProductController) CreateProduct(c echo.Context) error {
 		p.Log.WithError(err).Error("error uploading file")
 		return err
 	}
+
 	var wg sync.WaitGroup
 	errCh := make(chan error, 1)
 	files := form.File["gambar"]
@@ -71,10 +72,8 @@ func (p *ProductController) CreateProduct(c echo.Context) error {
 			}
 			defer src.Close()
 
-			hash := md5.Sum([]byte(file.Filename))
-			hashString := hex.EncodeToString(hash[:])
-	
-			dst, err := os.Create("public/"+hashString+".png")
+			unixFile := strconv.Itoa(int(time.Now().Unix()))
+			dst, err := os.Create("../public/"+string(unixFile)+".png")
 			if err != nil {
 				p.Log.WithError(err).Error("error creating file")
 				errCh <- err
