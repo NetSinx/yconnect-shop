@@ -6,6 +6,6 @@ export function matchingPasswordValidator(): ValidatorFn {
     const password = control.get("password")
     const confirmPassword = control.get("confirmpassword")
 
-    return password === confirmPassword ? { matchedPassword: true } : null
+    return password && confirmPassword && password.value !== confirmPassword.value ? { passwordMismatch: true } : null
   }
 }

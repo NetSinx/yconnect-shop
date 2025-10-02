@@ -78,37 +78,37 @@
                   </div>
                 }
               </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="no_hp" placeholder="No. HP" formControlName="no_hp">
+                <label for="no_hp">No. HP</label>
+                @if (no_hp.invalid && (no_hp.dirty || no_hp.touched)) {
+                  <div>
+                    @if (no_hp.hasError('required')) {
+                      <p class="text-danger">
+                        *No.Telepon wajib diisi!
+                      </p>
+                    }
+                    @if (no_hp.hasError('minlength')) {
+                      <p class="text-danger">
+                        *No.Telepon minimal 8 karakter!
+                      </p>
+                    }
+                  </div>
+                }
+              </div>
             </div>
 
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="no_tlp" placeholder="No. HP" formControlName="no_tlp">
-              <label for="no_tlp" class="ms-3">No. HP</label>
-              @if (no_telp.invalid && (no_telp.dirty || no_telp.touched)) {
-                <div>
-                  @if (no_telp.hasError('required')) {
-                    <p class="text-danger">
-                      *No.Telepon wajib diisi!
-                    </p>
-                  }
-                  @if (no_telp.hasError('minlength')) {
-                    <p class="text-danger">
-                      *No.Telepon minimal 8 karakter!
-                    </p>
-                  }
-                </div>
-              }
-            </div>
-            <div class="form-floating mb-3">
               <input type="password" class="form-control" id="password" placeholder="Password" formControlName="password">
               <label for="password" class="ms-3">Password</label>
-              @if (f['password']?.invalid && (f['password'].dirty || f['password'].touched)) {
+              @if (password.invalid && (password.dirty || password.touched)) {
                 <div>
-                  @if (f['password'].errors?.['required']) {
+                  @if (password.hasError('required')) {
                     <p class="text-danger">
                       *Password wajib diisi!
                     </p>
                   }
-                  @if (f['password'].errors?.['minlength']) {
+                  @if (password.hasError('minlength')) {
                     <p class="text-danger">
                       *Password minimal 5 karakter!
                     </p>
@@ -119,14 +119,19 @@
             <div class="form-floating mb-3">
               <input type="password" class="form-control" id="confirmpassword" placeholder="Konfirmasi Password" formControlName="confirmpassword">
               <label for="confirmpassword" class="ms-3">Konfirmasi Password</label>
-              @if (f['confirmpassword']?.invalid && (f['confirmpassword'].dirty || f['confirmpassword'].touched)) {
+              @if (confirmpassword.dirty || confirmpassword.touched) {
                 <div>
-                  @if (f['confirmpassword'].errors?.['required']) {
+                  @if (confirmpassword.hasError('required')) {
                     <p class="text-danger">
                       *Konfirmasi password wajib diisi!
                     </p>
                   }
-                  @if (f['confirmpassword'].errors?.['matchPassword']) {
+                  @if (confirmpassword.hasError('minlength')) {
+                    <p class="text-danger">
+                      *Konfirmasi password minimal 5 karakter!
+                    </p>
+                  }
+                  @if (userProfileForm.hasError('passwordMismatch') && confirmpassword.dirty) {
                     <p class="text-danger">
                       *Konfirmasi password harus sesuai dengan password yang dimasukkan sebelumnya!
                     </p>
@@ -137,7 +142,7 @@
           </div>
           <div class="row mt-4 px-2">
             <p class="text-center">Sudah punya akun? <a routerLink="/login">Login</a></p>
-            <button type="submit" class="btn btn-success" [disabled]="formGroup.invalid">Daftar Akun</button>
+            <button type="submit" class="btn btn-success" [disabled]="userProfileForm.invalid">Daftar Akun</button>
           </div>
         </form>
       </div>
