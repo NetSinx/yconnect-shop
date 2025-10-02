@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { matchPassword } from './confirmpassword.validator';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { matchingPasswordValidator } from './confirmpassword.validator';
 import { RegisterService } from 'src/app/services/register/register.service';
 import { User } from 'src/app/interfaces/user';
 import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
@@ -14,8 +14,7 @@ import { LoadingService } from 'src/app/services/loading/loading.service';
 })
 
 export class RegisterComponent implements OnInit {
-  formGroup: FormGroup = new FormGroup({})
-  formBuilder: FormBuilder = new FormBuilder
+  userProfileForm: FormGroup
   errorRegister: string | undefined
   successRegister: string | undefined
 
@@ -28,20 +27,32 @@ export class RegisterComponent implements OnInit {
     private csrfService: GenCsrfService,
     private loadingService: LoadingService
   ) {
-    this.formGroup = this.formBuilder.group({
-      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      username: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    this.userProfileForm = new FormGroup({
+      nama_lengkap: new FormControl('', [Validators.required]),
+      username: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
-      alamat: new FormControl('', [Validators.required, Validators.minLength(5)]),
-      no_tlp: new FormControl('', [Validators.required, Validators.minLength(8)]),
+      alamat: new FormGroup({
+        nama_jalan: new FormControl('', [Validators.required]),
+        rt: new FormControl(0, [Validators.required, Validators.min(1)]),
+        rw: new FormControl(0, [Validators.required, Validators.min(1)]),
+        kelurahan: new FormControl('', [Validators.required]),
+        kecamatan: new FormControl('', [Validators.required]),
+        kota: new FormControl('', [Validators.required]),
+        kode_pos: new FormControl(0, [Validators.required, Validators.minLength(5)])
+      }),
+      no_telp: new FormControl('', [Validators.required, Validators.minLength(8)]),
       password: new FormControl('', [Validators.required, Validators.minLength(5)]),
-      confirmpassword: new FormControl('', [Validators.required])
-    }, {
-      validator: matchPassword('password', 'confirmpassword')
-    })
+      confirmpassword: new FormControl('', [Validators.required, Validators.minLength(5)])
+    }, { validators: matchingPasswordValidator })
   }
 
-  get f() {return this.formGroup.controls}
+  get nama_lengkap() {return this.userProfileForm.get("nama_lengkap")}
+  get username() {return this.userProfileForm.get("username")}
+  get email() {return this.userProfileForm.get("email")}
+  get alamat() {return this.userProfileForm.get("alamat")}
+  get no_telp() {return this.userProfileForm.get("no_telp")}
+  get password() {return this.userProfileForm.get("password")}
+  get confirmpassword() {return this.userProfileForm.get("confirmpassword")}
 
   public registerUser(): void {
     this.csrfService.getCSRF().subscribe()
@@ -56,12 +67,12 @@ export class RegisterComponent implements OnInit {
       password: ""
     }
 
-    dataUser.name = this.formGroup.value.name
-    dataUser.username = this.formGroup.value.username
-    dataUser.email = this.formGroup.value.email
-    dataUser.alamat = this.formGroup.value.alamat
-    dataUser.no_telp = this.formGroup.value.no_tlp
-    dataUser.password = this.formGroup.value.password
+    dataUser.name = this.userProfileForm.value.name
+    dataUser.username = this.userProfileForm.value.username
+    dataUser.email = this.userProfileForm.value.email
+    dataUser.alamat = this.userProfileForm.value.alamat
+    dataUser.no_telp = this.userProfileForm.value.no_tlp
+    dataUser.password = this.userProfileForm.value.password
 
     this.registerService.registerUser(dataUser).subscribe(
       () => {

@@ -18,20 +18,20 @@
         </div>
       }
       <div class="form-register">
-        <form [formGroup]="formGroup" (ngSubmit)="registerUser()">
+        <form [formGroup]="userProfileForm" (ngSubmit)="registerUser()">
           <div class="row">
             <div class="col-md">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="name" placeholder="Nama Lengkap" autofocus minlength="3" formControlName="name">
-                <label for="name">Nama Lengkap</label>
-                @if (f['name'].invalid && (f['name'].dirty || f['name'].touched)) {
+                <input type="text" class="form-control" id="nama_lengkap" placeholder="Nama Lengkap" autofocus formControlName="nama_lengkap">
+                <label for="nama_lengkap">Nama Lengkap</label>
+                @if (nama_lengkap.invalid && (nama_lengkap.dirty || nama_lengkap.touched)) {
                   <div>
-                    @if (f['name'].errors?.['required']) {
+                    @if (nama_lengkap.hasError('required')) {
                       <p class="text-danger">
                         *Nama lengkap wajib diisi!
                       </p>
                     }
-                    @if (f['name'].errors?.['minlength']) {
+                    @if (nama_lengkap.hasError('minlength')) {
                       <p class="text-danger">
                         *Nama lengkap minimal 3 karakter!
                       </p>
@@ -41,14 +41,14 @@
               </div>
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="username" placeholder="Username" formControlName="username">
-                @if (f['username']?.invalid && (f['username'].dirty || f['username'].touched)) {
+                @if (username.invalid && (username.dirty || username.touched)) {
                   <div>
-                    @if (f['username'].errors?.['required']) {
+                    @if (username.hasError('required')) {
                       <p class="text-danger">
                         *Username wajib diisi!
                       </p>
                     }
-                    @if (f['username'].errors?.['minlength']) {
+                    @if (username.hasError('minlength')) {
                       <p class="text-danger">
                         *Username minimal 3 karakter!
                       </p>
@@ -63,34 +63,16 @@
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="email" placeholder="Email" formControlName="email">
                 <label for="email">Email</label>
-                @if (f['email'].invalid && (f['email'].dirty || f['email'].touched)) {
+                @if (email.invalid && (email.dirty || email.touched)) {
                   <div>
-                    @if (f['email'].errors?.['required']) {
+                    @if (email.hasError('required')) {
                       <p class="text-danger">
                         *Email wajib diisi!
                       </p>
                     }
-                    @if (f['email'].errors?.['email']) {
+                    @if (email.hasError('email')) {
                       <p class="text-danger">
                         *Email harus menggunakan '&#64;' dan domain seperti '.com'!
-                      </p>
-                    }
-                  </div>
-                }
-              </div>
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="alamat" placeholder="Alamat Rumah" formControlName="alamat">
-                <label for="alamat">Alamat Rumah</label>
-                @if (f['alamat'].invalid && (f['alamat'].dirty || f['alamat'].touched)) {
-                  <div>
-                    @if (f['alamat'].errors?.['required']) {
-                      <p class="text-danger">
-                        *Alamat rumah wajib diisi!
-                      </p>
-                    }
-                    @if (f['alamat'].errors?.['minlength']) {
-                      <p class="text-danger">
-                        *Alamat rumah minimal 5 karakter!
                       </p>
                     }
                   </div>
@@ -101,14 +83,14 @@
             <div class="form-floating mb-3">
               <input type="text" class="form-control" id="no_tlp" placeholder="No. HP" formControlName="no_tlp">
               <label for="no_tlp" class="ms-3">No. HP</label>
-              @if (f['no_telp']?.invalid && (f['no_telp'].dirty || f['no_telp'].touched)) {
+              @if (no_telp.invalid && (no_telp.dirty || no_telp.touched)) {
                 <div>
-                  @if (f['no_telp'].errors?.['required']) {
+                  @if (no_telp.hasError('required')) {
                     <p class="text-danger">
                       *No.Telepon wajib diisi!
                     </p>
                   }
-                  @if (f['no_telp'].errors?.['minlength']) {
+                  @if (no_telp.hasError('minlength')) {
                     <p class="text-danger">
                       *No.Telepon minimal 8 karakter!
                     </p>
