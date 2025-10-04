@@ -8,12 +8,12 @@ import { LoginService } from 'src/app/services/login/login.service';
 import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
-    selector: 'app-category',
-    templateUrl: './category.component.html',
-    styleUrls: ['./category.component.css'],
+    selector: 'app-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.css'],
     standalone: false
 })
-export class CategoryComponent implements OnInit {
+export class NavbarComponent implements OnInit {
   categories: Category[] = []
   currentRoute: string = ""
   isLoggedIn: boolean | null = null

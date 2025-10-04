@@ -39,6 +39,8 @@
                   </div>
                 }
               </div>
+            </div>
+            <div class="col-md">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="username" placeholder="Username" formControlName="username">
                 @if (username.invalid && (username.dirty || username.touched)) {
@@ -58,7 +60,9 @@
                 <label for="username">Username</label>
               </div>
             </div>
+          </div>
 
+          <div class="row">
             <div class="col-md">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="email" placeholder="Email" formControlName="email">
@@ -78,6 +82,8 @@
                   </div>
                 }
               </div>
+            </div>
+            <div class="col-md">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="no_hp" placeholder="No. HP" formControlName="no_hp">
                 <label for="no_hp">No. HP</label>
@@ -97,7 +103,9 @@
                 }
               </div>
             </div>
+          </div>
 
+          <div class="row">
             <div class="form-floating mb-3">
               <input type="password" class="form-control" id="password" placeholder="Password" formControlName="password">
               <label for="password" class="ms-3">Password</label>

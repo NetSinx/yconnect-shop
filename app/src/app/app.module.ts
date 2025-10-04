@@ -3,7 +3,7 @@ import { BrowserModule, provideClientHydration, withEventReplay } from '@angular
 import { AppRoutingModule } from './app-routing.module';
 import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { AppComponent } from './app.component';
-import { CategoryComponent } from './components/category/category.component';
+import { NavbarComponent } from './components/navbar/navbar.component'
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
@@ -18,7 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     declarations: [
         AppComponent,
         ProductComponent,
-        CategoryComponent,
+        NavbarComponent,
         ProductDetailComponent,
         LoginComponent,
         RegisterComponent,
@@ -34,7 +34,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     ],
     providers: [
         ProductComponent,
-        CategoryComponent,
+        NavbarComponent,
         LoginComponent,
         RegisterComponent,
         ProductDetailComponent,
