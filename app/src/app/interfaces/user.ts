@@ -4,4 +4,5 @@ export interface User {
   email: string;
   no_hp: string;
   password: string;
+  konfirmasi_password: string;
 }

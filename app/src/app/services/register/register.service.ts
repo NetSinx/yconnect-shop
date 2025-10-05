@@ -18,6 +18,6 @@ export class RegisterService {
       throw new Error('CSRF token is not available.');
     }
 
-    return this.http.post(`${environment.API_URL}/user/sign-up`, data, {headers: {'xsrf': this.csrfService.csrfToken}, withCredentials: true})
+    return this.http.post("http://localhost:8086/api/auth/register", data, {headers: {'X-CSRF-Token': this.csrfService.csrfToken}, withCredentials: true})
   }
 }

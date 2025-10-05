@@ -1,29 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter, Observable } from 'rxjs';
 import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 import { LoginService } from 'src/app/services/login/login.service';
 import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css'],
-    standalone: false
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
+  standalone: false
 })
 export class LoginComponent implements OnInit {
   formGroup: FormGroup = new FormGroup({})
   formBuilder: FormBuilder = new FormBuilder
   errorLogin: string | undefined
+  successMessage: string = ""
   dataLogin: {
     UsernameorEmail: string,
     password: string
   } = {
-    UsernameorEmail: "",
-    password: ""
-  }
+      UsernameorEmail: "",
+      password: ""
+    }
 
   constructor(
     private loginService: LoginService,
@@ -40,9 +41,11 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // this.csrfService.getCSRF().subscribe()
+    const nav = this.router.events.pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => this.successMessage = history.state['success'])
   }
 
-  get f() {return this.formGroup.controls}
+  get f() { return this.formGroup.controls }
 
   public userLogin(): void {
     this.dataLogin.UsernameorEmail = this.formGroup.value.UsernameorEmail
