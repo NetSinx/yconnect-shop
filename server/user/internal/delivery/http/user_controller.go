@@ -22,8 +22,32 @@ func NewUserController(log *logrus.Logger, userUseCase *usecase.UserUseCase) *Us
 	}
 }
 
+func (u *UserController) RegisterUser(c echo.Context) error {
+	userRequest := new(model.RegisterUserRequest)
+	if err := c.Bind(userRequest); err != nil {
+		u.Log.WithError(err).Error("error binding request to JSON")
+		return err
+	}
+	
+	userRegister := &model.RegisterUserEvent{
+		NamaLengkap: userRequest.NamaLengkap,
+		Username: userRequest.Username,
+		Email: userRequest.Email,
+		NoHP: userRequest.NoHP,
+		Role: userRequest.Role,
+	}
+
+	response, err := u.UserUseCase.RegisterUser(c.Request().Context(), userRegister)
+	if err != nil {
+		u.Log.WithError(err).Error("error registering user")
+		return err
+	}
+
+	return c.JSON(http.StatusOK, response)
+}
+
 func (u *UserController) UpdateUser(c echo.Context) error {
-	userRequest := new(model.UserRequest)
+	userRequest := new(model.UpdateUserRequest)
 	if err := c.Bind(userRequest); err != nil {
 		u.Log.WithError(err).Error("error binding request to JSON")
 		return err

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../services/product/product.service';
 import { Product } from 'src/app/interfaces/product';
 import { LoadingService } from 'src/app/services/loading/loading.service';

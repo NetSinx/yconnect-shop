@@ -1,11 +1,11 @@
 {
     "app": {
         "name": "yconnect_shop_user_service",
-        "host": "0.0.0.0",
+        "host": "localhost",
         "port": 8082
     },
     "database": {
-        "host": "db-user",
+        "host": "localhost",
         "port": 3306,
         "username": "test",
         "password": "test123",
@@ -17,7 +17,7 @@
         }
     },
     "rabbitmq": {
-        "enabled": true,
+        "enabled": false,
         "host": "rabbitmq",
         "port": 5672,
         "username": "guest",
@@ -27,7 +27,7 @@
         "level": 6
     },
     "redis": {
-        "enabled": true,
+        "enabled": false,
         "host": "redis",
         "port": 6379,
         "password": "",

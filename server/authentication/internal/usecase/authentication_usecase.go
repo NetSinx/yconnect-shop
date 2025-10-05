@@ -1,9 +1,12 @@
 package usecase
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"net/http"
 	"time"
+
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
@@ -87,6 +90,17 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 
 	if a.Config.GetBool("rabbitmq.enabled") {
 		a.Publisher.Send(ctx, registerUserEvent)
+	} else {
+		dataByte, err := json.Marshal(registerUserEvent)
+		if err != nil {
+			a.Log.WithError(err).Error("error marshaling data")
+			return nil, echo.ErrInternalServerError
+		}
+
+		if _, err = http.Post("http://localhost:8082/user/register", http.DetectContentType(dataByte), bytes.NewReader(dataByte)); err != nil {
+			a.Log.WithError(err).Error("error getting response from user service")
+			return nil, echo.ErrInternalServerError
+		}
 	}
 
 	response := &model.DataResponse[*model.RegisterResponse]{

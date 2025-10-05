@@ -8,12 +8,14 @@ import (
 )
 
 type APIRoutes struct {
-	AppGroup       *echo.Group
+	App       *echo.Echo
 	UserController *httpController.UserController
 }
 
 func NewApiRoutes(apiRoutes *APIRoutes) {
-	apiGroup := apiRoutes.AppGroup
+	apiRoutes.App.POST("/user/register", apiRoutes.UserController.RegisterUser)
+
+	apiGroup := apiRoutes.App.Group("/api")
 	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookieName: "csrf_token",
 		TokenLookup: "header:X-CSRF-Token",

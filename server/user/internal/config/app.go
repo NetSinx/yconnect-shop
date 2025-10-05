@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/delivery/http/route"
-	subscribeMsg "github.com/NetSinx/yconnect-shop/server/user/internal/delivery/messaging"
+	// subscribeMsg "github.com/NetSinx/yconnect-shop/server/user/internal/delivery/messaging"
 	publishMsg "github.com/NetSinx/yconnect-shop/server/user/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/repository"
 	"github.com/NetSinx/yconnect-shop/server/user/internal/usecase"
@@ -33,11 +33,11 @@ func BootstrapApp(config *AppConfig) {
 	usecase := usecase.NewUserUseCase(config.Config, config.DB, config.Log, config.Validator, config.RedisClient, repository, publisher)
 	controller := http.NewUserController(config.Log, usecase)
 
-	subscriber := subscribeMsg.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
-	subscriber.Receive()
+	// subscriber := subscribeMsg.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
+	// subscriber.Receive()
 
 	route.NewApiRoutes(&route.APIRoutes{
-		AppGroup:       config.App.Group("/api"),
+		App:            config.App,
 		UserController: controller,
 	})
 }

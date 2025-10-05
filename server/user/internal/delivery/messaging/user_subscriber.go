@@ -84,7 +84,7 @@ func (s *Subscriber) Receive() {
 				continue
 			}
 
-			if err := s.UserUseCase.RegisterUser(ctx, userEvent); err != nil {
+			if _, err := s.UserUseCase.RegisterUser(ctx, userEvent); err != nil {
 				s.Log.WithError(err).Error("error registering user")
 			}
 		}

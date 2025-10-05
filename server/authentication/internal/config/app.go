@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/delivery/http"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/delivery/http/route"
-	subscribeMsg "github.com/NetSinx/yconnect-shop/server/authentication/internal/delivery/messaging"
+	// subscribeMsg "github.com/NetSinx/yconnect-shop/server/authentication/internal/delivery/messaging"
 	publishMsg "github.com/NetSinx/yconnect-shop/server/authentication/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/repository"
@@ -35,8 +35,8 @@ func BootstrapApp(config *AppConfig) {
 	usecase := usecase.NewAuthUseCase(config.Config, config.DB, config.Log, config.Validator, publisher, config.RedisClient, repository, tokenUtil)
 	controller := http.NewAuthController(config.Log, usecase)
 
-	subscriber := subscribeMsg.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
-	subscriber.Receive()
+	// subscriber := subscribeMsg.NewSubscriber(config.RabbitMQ, config.Log, config.DB, usecase)
+	// subscriber.Receive()
 
 	route.NewAPIRoutes(&route.APIRoutes{
 		AppGroup:       config.App.Group("/api"),

@@ -1,12 +1,13 @@
 <div class="container">
-  <div class="row justify-content-center align-items-center form">
+  <div class="row justify-content-center align-items-center vh-100">
     <div class="col-lg-8 col-md-8 col-9 bg-light rounded shadow px-5 pt-4 pb-5 mb-4">
+      <a routerLink="/"><i class="bi bi-arrow-left fs-3 text-black"></i></a>
       <div class="d-flex justify-content-center">
         <a routerLink="/">
           <img src="../../../assets/img/y-logo.png" width="70" class="rounded-circle">
         </a>
       </div>
-      <h1 class="text-center mb-5">Registrasi Akun</h1>
+      <h3 class="text-center mt-3">Register | Y-Connect Shop</h3>
       @if (errorRegister) {
         <div class="alert alert-danger" role="alert">
           {{ errorRegister }}
@@ -17,7 +18,7 @@
           {{ successRegister }}
         </div>
       }
-      <div class="form-register">
+      <div class="form-register mt-5">
         <form [formGroup]="userProfileForm" (ngSubmit)="registerUser()">
           <div class="row">
             <div class="col-md">
@@ -150,7 +151,7 @@
           </div>
           <div class="row mt-4 px-2">
             <p class="text-center">Sudah punya akun? <a routerLink="/login">Login</a></p>
-            <button type="submit" class="btn btn-success" [disabled]="userProfileForm.invalid">Daftar Akun</button>
+            <button type="submit" class="btn btn-brown text-white" [disabled]="userProfileForm.invalid">Daftar Akun</button>
           </div>
         </form>
       </div>

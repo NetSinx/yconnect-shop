@@ -2,7 +2,6 @@ import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular
 import { NavigationEnd, Router } from '@angular/router';
 import { Category } from 'src/app/interfaces/category';
 import { CategoryService } from 'src/app/services/category/category.service';
-import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 import { LoginService } from 'src/app/services/login/login.service';
 import { UserService } from 'src/app/services/user/user.service';
@@ -27,7 +26,6 @@ export class NavbarComponent implements OnInit {
     private loginService: LoginService,
     private loadingService: LoadingService,
     private userService: UserService,
-    private csrfService: GenCsrfService
   ) {
     this.router.events.subscribe(
       nav => {
@@ -40,7 +38,6 @@ export class NavbarComponent implements OnInit {
   
   ngOnInit(): void {
     this.getCategories()
-    this.csrfService.getCSRF().subscribe()
     this.router.events.subscribe(
       nav => {
         if (nav instanceof NavigationEnd) {

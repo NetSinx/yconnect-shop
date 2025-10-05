@@ -1,12 +1,13 @@
 <div class="container">
-  <div class="row justify-content-center align-items-center" style="height: 90vh;">
-    <div class="col-lg-4 col-md-8 col-9 bg-light rounded shadow px-5 pt-3 pb-5">
+  <div class="row justify-content-center align-items-center vh-100">
+    <div class="col-lg-5 col-md-8 col-9 bg-light rounded shadow px-5 pt-3 pb-5">
+      <a routerLink="/"><i class="bi bi-arrow-left fs-3 text-black"></i></a>
       <div class="d-flex justify-content-center">
         <a routerLink="/">
           <img src="../../../assets/img/y-logo.png" width="70" class="rounded-circle">
         </a>
       </div>
-      <h1 class="text-center">Login</h1>
+      <h3 class="text-center mt-3">Login | Y-Connect Shop</h3>
       @if (errorLogin) {
         <div class="alert alert-danger mt-4" role="alert">
           {{ errorLogin }}
@@ -42,7 +43,7 @@
           </div>
           <p class="text-center">Tidak punya akun? <a routerLink="/register">Daftar</a></p>
           <div class="row mt-4 px-2">
-            <button type="submit" class="btn btn-primary" [disabled]="formGroup.invalid">Login</button>
+            <button type="submit" class="btn btn-brown text-white" [disabled]="formGroup.invalid">Login</button>
           </div>
         </form>
       </div>

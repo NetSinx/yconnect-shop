@@ -120,6 +120,10 @@ nav .category a:hover {
     justify-content: space-between;
   }
 
+  nav .preferensi a.login {
+    width: 100%;
+  }
+
   nav .category {
     order: unset;
     width: 100%;

@@ -40,7 +40,7 @@ func NewUserUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, valida
 	}
 }
 
-func (u *UserUseCase) RegisterUser(ctx context.Context, userEvent *model.RegisterUserEvent) error {
+func (u *UserUseCase) RegisterUser(ctx context.Context, userEvent *model.RegisterUserEvent) (*model.DataResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -54,18 +54,22 @@ func (u *UserUseCase) RegisterUser(ctx context.Context, userEvent *model.Registe
 
 	if err := u.UserRepository.RegisterUser(tx, entity); err != nil {
 		u.Log.WithError(err).Error("error registering user")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		u.Log.WithError(err).Error("error registering user")
-		return echo.ErrInternalServerError
+		return nil, echo.ErrInternalServerError
 	}
 
-	return nil
+	response := &model.DataResponse{
+		Data: converter.UserToResponse(entity),
+	}
+
+	return response, nil
 }
 
-func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UserRequest, id uint) (*model.DataResponse, error) {
+func (u *UserUseCase) UpdateUser(ctx context.Context, userRequest *model.UpdateUserRequest, id uint) (*model.DataResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 

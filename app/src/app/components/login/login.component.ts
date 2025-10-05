@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private loadingService: LoadingService,
     private userService: UserService,
-    private csrfService: GenCsrfService
+    // private csrfService: GenCsrfService
   ) {
     this.formGroup = this.formBuilder.group({
       UsernameorEmail: new FormControl('', [Validators.required]),
@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.csrfService.getCSRF().subscribe()
+    // this.csrfService.getCSRF().subscribe()
   }
 
   get f() {return this.formGroup.controls}

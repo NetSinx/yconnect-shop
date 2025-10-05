@@ -14,6 +14,10 @@ type APIRoutes struct {
 
 func NewAPIRoutes(apiRoutes *APIRoutes) {
 	apiGroup := apiRoutes.AppGroup
+	apiGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:4200"},
+		AllowCredentials: true,
+	}))
 	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookieName: "csrf_token",
 		TokenLookup: "header:X-CSRF-Token",
