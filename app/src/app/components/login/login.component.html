@@ -12,6 +12,10 @@
         <div class="alert alert-danger mt-4" role="alert">
           {{ errorLogin }}
         </div>
+      } @else if (successMessage) {
+        <div class="alert alert-success mt-4" role="alert">
+          {{ successMessage }}
+        </div>
       }
       <div class="form-login mt-4">
         <form [formGroup]="formGroup"(ngSubmit)="userLogin()">

@@ -6,13 +6,13 @@ import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component'
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ProductComponent } from './components/product/product.component';
 import { NgOptimizedImage } from '@angular/common';
 import { loadingInterceptor } from './interceptor/loading/loading.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RegisterComponent } from './components/register/register.component';
 
 @NgModule({
     declarations: [
@@ -20,8 +20,8 @@ import { ReactiveFormsModule } from '@angular/forms';
         ProductComponent,
         NavbarComponent,
         ProductDetailComponent,
-        LoginComponent,
         RegisterComponent,
+        LoginComponent,
         PageNotFoundComponent,
         DashboardComponent,
     ],
@@ -36,7 +36,6 @@ import { ReactiveFormsModule } from '@angular/forms';
         ProductComponent,
         NavbarComponent,
         LoginComponent,
-        RegisterComponent,
         ProductDetailComponent,
         provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor]), withFetch()),
         // provideClientHydration(withEventReplay())

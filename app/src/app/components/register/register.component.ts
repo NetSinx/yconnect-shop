@@ -59,9 +59,9 @@ export class RegisterComponent implements OnInit {
     dataUser.nama_lengkap = this.userProfileForm.value.nama_lengkap
     dataUser.username = this.userProfileForm.value.username
     dataUser.email = this.userProfileForm.value.email
-    dataUser.no_hp = this.userProfileForm.value.no_tlp
+    dataUser.no_hp = this.userProfileForm.value.no_hp
     dataUser.password = this.userProfileForm.value.password
-    dataUser.konfirmasi_password = this.userProfileForm.value.konfirmasi_password
+    dataUser.konfirmasi_password = this.userProfileForm.value.confirmpassword
 
     this.registerService.registerUser(dataUser).subscribe(
       () => {

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { filter, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 import { LoginService } from 'src/app/services/login/login.service';
@@ -31,7 +30,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private loadingService: LoadingService,
     private userService: UserService,
-    // private csrfService: GenCsrfService
+    private csrfService: GenCsrfService
   ) {
     this.formGroup = this.formBuilder.group({
       UsernameorEmail: new FormControl('', [Validators.required]),
@@ -40,9 +39,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.csrfService.getCSRF().subscribe()
-    const nav = this.router.events.pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => this.successMessage = history.state['success'])
+    this.csrfService.getCSRF().subscribe()
+    if (history.state.success) {
+      this.successMessage = history.state.success
+    }
   }
 
   get f() { return this.formGroup.controls }
