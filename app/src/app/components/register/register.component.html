@@ -13,11 +13,6 @@
           {{ errorRegister }}
         </div>
       }
-      @if (successRegister) {
-        <div class="alert alert-success" role="alert">
-          {{ successRegister }}
-        </div>
-      }
       <div class="form-register mt-5">
         <form [formGroup]="userProfileForm" (ngSubmit)="registerUser()">
           <div class="row">

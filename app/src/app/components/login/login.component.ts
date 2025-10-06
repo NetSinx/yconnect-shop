@@ -13,17 +13,10 @@ import { UserService } from 'src/app/services/user/user.service';
   standalone: false
 })
 export class LoginComponent implements OnInit {
-  formGroup: FormGroup = new FormGroup({})
-  formBuilder: FormBuilder = new FormBuilder
+  formGroup: FormGroup
+  formBuilder: FormBuilder = new FormBuilder()
   errorLogin: string | undefined
   successMessage: string = ""
-  dataLogin: {
-    UsernameorEmail: string,
-    password: string
-  } = {
-      UsernameorEmail: "",
-      password: ""
-    }
 
   constructor(
     private loginService: LoginService,
@@ -33,37 +26,40 @@ export class LoginComponent implements OnInit {
     private csrfService: GenCsrfService
   ) {
     this.formGroup = this.formBuilder.group({
-      UsernameorEmail: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.required]),
       password: new FormControl('', [Validators.required]),
     })
   }
 
   ngOnInit(): void {
     this.csrfService.getCSRF().subscribe()
-    if (history.state.success) {
+    if (history.state && history.state.success) {
       this.successMessage = history.state.success
+    }
+
+    if (this.successMessage) {
+      history.replaceState({}, "")
     }
   }
 
   get f() { return this.formGroup.controls }
 
   public userLogin(): void {
-    this.dataLogin.UsernameorEmail = this.formGroup.value.UsernameorEmail
-    this.dataLogin.password = this.formGroup.value.password
-    const timezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone
+    let dataLogin = {
+      email: "",
+      password: ""
+    }
 
-    this.loginService.userLogin(this.dataLogin).subscribe(() => {
-      this.userService.setTimeZone(timezone).subscribe(
-        () => {
-          this.userService.getUserInfo().subscribe(resp => {
-            this.loadingService.setLoading(false)
-            this.router.navigate([`/dashboard/${resp.data.user_id}`])
-          })
-        }
-      )
-    }, () => {
-      this.loadingService.setLoading(false)
-      this.errorLogin = "Email / password Anda salah!"
-    })
+    dataLogin.email = this.formGroup.value.email
+    dataLogin.password = this.formGroup.value.password
+
+    this.loginService.userLogin(dataLogin).subscribe(
+      () => {
+        this.router.navigate(["/dashboard/"])
+      }, () => {
+        this.loadingService.setLoading(false)
+        this.errorLogin = "Email / password Anda salah!"
+      }
+    )
   }
 }

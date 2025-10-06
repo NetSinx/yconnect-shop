@@ -12,7 +12,7 @@ export class LoginService {
   constructor(private httpClient: HttpClient, private csrfService: GenCsrfService) {}
 
   public userLogin(data: any): Observable<any> {
-    return this.httpClient.post<{token: string}>(`${environment.API_URL}/user/sign-in`, data, {headers: {'xsrf': this.csrfService.csrfToken!}, withCredentials: true})
+    return this.httpClient.post<{token: string}>(`http://localhost:8086/api/auth/login`, data, {headers: {'X-CSRF-Token': this.csrfService.csrfToken}, withCredentials: true})
   }
 
   public verifyUser(): Observable<any> {

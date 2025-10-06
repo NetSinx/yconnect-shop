@@ -24,7 +24,6 @@ export class RegisterComponent implements OnInit {
       confirmpassword: new FormControl('', [Validators.required, Validators.minLength(5)])
     }, { validators: matchingPasswordValidator() })
   errorRegister: string | undefined
-  successRegister: string | undefined
 
   ngOnInit(): void {
     this.csrfService.getCSRF().subscribe()
@@ -66,21 +65,14 @@ export class RegisterComponent implements OnInit {
     this.registerService.registerUser(dataUser).subscribe(
       () => {
         this.loadingService.setLoading(false)
-        this.successRegister = "Registrasi akun berhasil!"
-        this.errorRegister = ""
         this.router.navigate(['/login'], {
           state: { success: "Akun berhasil dibuat, silahkan login." }
         })
       },
       error => {
         this.loadingService.setLoading(false)
-        
-        if (error.status === 409) {
-          this.errorRegister = "Registrasi akun gagal! User sudah pernah dibuat."
-          this.successRegister = ""
-        } else {
+        if (error) {
           this.errorRegister = "Registrasi akun gagal!"
-          this.successRegister = ""
         }
       }
     )
