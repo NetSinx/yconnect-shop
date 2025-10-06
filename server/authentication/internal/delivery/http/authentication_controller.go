@@ -53,10 +53,10 @@ func (a *AuthController) LoginUser(ctx echo.Context) error {
 		return err
 	}
 
-	helpers.SetCookie(ctx, "user_session", response.RefreshToken, time.Now().Add(30*24*time.Hour))
+	helpers.SetCookie(ctx, "user_session", response.Data.RefreshToken, time.Now().Add(30*24*time.Hour))
 
-	return ctx.JSON(http.StatusOK, &model.DataResponse[string]{
-		Data: response.AccessToken,
+	return ctx.JSON(http.StatusOK, map[string]string{
+		"access_token": response.Data.AccessToken,
 	})
 }
 

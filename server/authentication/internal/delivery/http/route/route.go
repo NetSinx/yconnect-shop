@@ -16,6 +16,7 @@ func NewAPIRoutes(apiRoutes *APIRoutes) {
 	apiGroup := apiRoutes.AppGroup
 	apiGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:4200"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
 		AllowCredentials: true,
 	}))
 	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{

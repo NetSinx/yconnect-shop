@@ -4,9 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"net/http"
-	"time"
-
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/authentication/internal/helpers"
@@ -20,6 +17,8 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"net/http"
+	"time"
 )
 
 type AuthUseCase struct {
@@ -110,7 +109,7 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 	return response, nil
 }
 
-func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRequest) (*model.TokenResponse, error) {
+func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRequest) (*model.DataResponse[*model.TokenResponse], error) {
 	tx := a.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -147,17 +146,21 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, loginRequest *model.LoginRe
 		return nil, echo.ErrInternalServerError
 	}
 
-	valueAuth := map[string]any{"id": authEntity.ID, "role": authEntity.Role}
-	byteValue, err := json.Marshal(valueAuth)
-	if err != nil {
-		a.Log.WithError(err).Error("error marshaling json data")
-		return nil, echo.ErrInternalServerError
+	if a.Config.GetBool("redis.enabled") {
+		valueAuth := map[string]any{"id": authEntity.ID, "role": authEntity.Role}
+		byteValue, err := json.Marshal(valueAuth)
+		if err != nil {
+			a.Log.WithError(err).Error("error marshaling json data")
+			return nil, echo.ErrInternalServerError
+		}
+		a.RedisClient.Set(ctx, "refresh_token:"+jwtRefresh, byteValue, 30*24*time.Hour)
 	}
-	a.RedisClient.Set(ctx, "refresh_token:"+jwtRefresh, byteValue, 30*24*time.Hour)
 
-	response := &model.TokenResponse{
-		AccessToken:  jwtAccess,
-		RefreshToken: jwtRefresh,
+	response := &model.DataResponse[*model.TokenResponse]{
+		Data: &model.TokenResponse{
+			AccessToken:  jwtAccess,
+			RefreshToken: jwtRefresh,
+		},
 	}
 
 	return response, nil
