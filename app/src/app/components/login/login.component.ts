@@ -42,7 +42,8 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  get f() { return this.formGroup.controls }
+  get email() { return this.formGroup.get("email")! }
+  get password() { return this.formGroup.get("password")! }
 
   public userLogin(): void {
     let dataLogin = {

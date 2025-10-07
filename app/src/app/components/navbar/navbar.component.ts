@@ -44,12 +44,6 @@ export class NavbarComponent implements OnInit {
           this.loginService.verifyUser().subscribe(
             () => {
               this.isLoggedIn = true
-              this.userService.getUserInfo().subscribe(
-                resp => {
-                  this.loadingService.setLoading(false)
-                  this.username = resp.data.user_id
-                }
-              )
             },
             () => {
               this.loadingService.setLoading(false)
@@ -61,17 +55,9 @@ export class NavbarComponent implements OnInit {
       }
     )
       
-    const timezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone
-    this.userService.setTimeZone(timezone).subscribe()
     this.loginService.verifyUser().subscribe(
       () => {
         this.isLoggedIn = true
-        this.userService.getUserInfo().subscribe(
-          resp => {
-            this.loadingService.setLoading(false)
-            this.username = resp.data.user_id
-          }
-        )
       },
       () => {
         this.loadingService.setLoading(false)

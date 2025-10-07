@@ -20,13 +20,13 @@
       <div class="form-login mt-4">
         <form [formGroup]="formGroup"(ngSubmit)="userLogin()">
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" formControlName="UsernameorEmail" id="UsernameorEmail" placeholder="Email / Username" autofocus>
-            <label for="UsernameorEmail">Email / Username</label>
-            @if (f['UsernameorEmail'].invalid && (f['UsernameorEmail'].dirty || f['UsernameorEmail'].touched)) {
+            <input type="text" class="form-control" formControlName="email" id="email" placeholder="Email" autofocus>
+            <label for="email">Email</label>
+            @if (email.invalid && (email.dirty || email.touched)) {
               <div>
-                @if (f['UsernameorEmail'].errors?.['required']) {
+                @if (email.hasError("required")) {
                   <p class="text-danger">
-                    *Username / Email wajib diisi!
+                    *Email wajib diisi!
                   </p>
                 }
               </div>
@@ -35,9 +35,9 @@
           <div class="form-floating mb-3">
             <input type="password" class="form-control" formControlName="password" id="password" placeholder="Password">
             <label for="password">Password</label>
-            @if (f['password']?.invalid && (f['password'].dirty || f['password'].touched)) {
+            @if (password.invalid && (password.dirty || password.touched)) {
               <div>
-                @if (f['password'].errors?.['required']) {
+                @if (password.hasError('required')) {
                   <p class="text-danger">
                     *Password wajib diisi!
                   </p>
