@@ -8,8 +8,8 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { authGuardGuard } from './guard/auth-guard/auth-guard.guard';
-import { loginGuard } from './guard/login/login.guard';
+import { authGuard } from './guard/auth/auth.guard';
+import { PageForbiddenComponent } from './components/page-forbidden/page-forbidden.component';
 
 const productDetailRoute: ResolveFn<string> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): string | Observable<string> | Promise<string> => {
   return inject(ProductService).getDetailProduct(route.paramMap.get("slug")!).pipe(
@@ -22,7 +22,8 @@ const routes: Routes = [
   {path: 'product', component: ProductDetailComponent, title: productDetailRoute},
   {path: 'register', component: RegisterComponent, title: "Register | Y-Connect Shop"},
   {path: 'login', component: LoginComponent, title: "Login | Y-Connect Shop"},
-  {path: 'dashboard/:userId', component: DashboardComponent, title: "Dashboard | Y-Connect Shop", canActivate: [authGuardGuard], pathMatch: 'full'},
+  {path: 'dashboard', component: DashboardComponent, title: "Dashboard | Y-Connect Shop", canActivate: [authGuard]},
+  {path: 'forbidden', component: PageForbiddenComponent, title: "Forbidden | Y-Connect Shop"},
   {path: '**', component: PageNotFoundComponent, title: "Upss... | Y-Connect Shop"}
 ];
 

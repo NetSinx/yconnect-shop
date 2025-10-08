@@ -3,7 +3,6 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Category } from 'src/app/interfaces/category';
 import { CategoryService } from 'src/app/services/category/category.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
-import { LoginService } from 'src/app/services/login/login.service';
 import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
@@ -23,7 +22,6 @@ export class NavbarComponent implements OnInit {
   constructor(
     private categoryService: CategoryService,
     private router: Router,
-    private loginService: LoginService,
     private loadingService: LoadingService,
     private userService: UserService,
   ) {
@@ -38,33 +36,6 @@ export class NavbarComponent implements OnInit {
   
   ngOnInit(): void {
     this.getCategories()
-    this.router.events.subscribe(
-      nav => {
-        if (nav instanceof NavigationEnd) {
-          this.loginService.verifyUser().subscribe(
-            () => {
-              this.isLoggedIn = true
-            },
-            () => {
-              this.loadingService.setLoading(false)
-              this.isLoggedIn = false
-              this.username = null
-            }
-            )
-        }
-      }
-    )
-      
-    this.loginService.verifyUser().subscribe(
-      () => {
-        this.isLoggedIn = true
-      },
-      () => {
-        this.loadingService.setLoading(false)
-        this.isLoggedIn = false
-        this.username = null
-      }
-    )
   }
   
   public getCategories(): void {

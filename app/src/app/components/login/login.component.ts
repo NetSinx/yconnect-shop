@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth/auth.service';
 import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
-import { LoginService } from 'src/app/services/login/login.service';
-import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
   selector: 'app-login',
@@ -19,10 +18,9 @@ export class LoginComponent implements OnInit {
   successMessage: string = ""
 
   constructor(
-    private loginService: LoginService,
     private router: Router,
     private loadingService: LoadingService,
-    private userService: UserService,
+    private authService: AuthService,
     private csrfService: GenCsrfService
   ) {
     this.formGroup = this.formBuilder.group({
@@ -33,6 +31,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.csrfService.getCSRF().subscribe()
+
     if (history.state && history.state.success) {
       this.successMessage = history.state.success
     }
@@ -54,9 +53,19 @@ export class LoginComponent implements OnInit {
     dataLogin.email = this.formGroup.value.email
     dataLogin.password = this.formGroup.value.password
 
-    this.loginService.userLogin(dataLogin).subscribe(
-      () => {
-        this.router.navigate(["/dashboard/"])
+    this.authService.loginUser(dataLogin).subscribe(
+      resp => {
+        this.authService.accessToken = resp.access_token
+        this.authService.verifyUser().subscribe(
+          () => {
+            this.loadingService.setLoading(false)
+            this.router.navigate(["/dashboard"])
+          },
+          () => {
+            this.loadingService.setLoading(false)
+            this.router.navigate(["/forbidden"])
+          }
+        )
       }, () => {
         this.loadingService.setLoading(false)
         this.errorLogin = "Email / password Anda salah!"
