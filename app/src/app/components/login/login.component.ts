@@ -55,8 +55,7 @@ export class LoginComponent implements OnInit {
 
     this.authService.loginUser(dataLogin).subscribe(
       resp => {
-        this.authService.accessToken = resp.access_token
-        this.authService.verifyUser().subscribe(
+        this.authService.verifyUser(resp.access_token).subscribe(
           () => {
             this.loadingService.setLoading(false)
             this.router.navigate(["/dashboard"])

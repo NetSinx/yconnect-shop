@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/interfaces/user';
+import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 import { UserService } from 'src/app/services/user/user.service';
 
@@ -17,12 +18,14 @@ export class DashboardComponent implements OnInit {
   constructor(
     private userService: UserService,
     private route: ActivatedRoute,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private genCSRFService: GenCsrfService
   ) {
     this.user_id = this.route.snapshot.paramMap.get("userId")
   }
 
   ngOnInit(): void {
+    this.genCSRFService.getCSRF()
     this.getUser(this.user_id!)
   }
 

@@ -4,10 +4,10 @@ import { LoadingService } from './services/loading/loading.service';
 import { Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css'],
-    standalone: false
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+  standalone: false
 })
 
 export class AppComponent implements OnInit {
