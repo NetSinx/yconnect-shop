@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { User } from 'src/app/interfaces/user';
+import { Observable } from 'rxjs';
 import { UserLogin } from 'src/app/interfaces/user-login';
 import { GenCsrfService } from '../gen-csrf/gen-csrf.service';
 
@@ -28,7 +27,9 @@ export class AuthService {
     })
   }
 
-  public refreshToken(): Observable<any> {
-    return this.http.post("http://localhost:8086/api/auth/refresh", null)
+  public refreshToken(): any {
+    this.http.post<{access_token: string}>("http://localhost:8086/api/auth/refresh", null).subscribe(
+      resp => this.accessToken = resp.access_token
+    )
   }
 }
