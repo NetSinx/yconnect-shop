@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/interfaces/user';
+import { AuthService } from 'src/app/services/auth/auth.service';
 import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 import { UserService } from 'src/app/services/user/user.service';
@@ -16,7 +17,7 @@ export class DashboardComponent implements OnInit {
   user: User | undefined
 
   constructor(
-    private userService: UserService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private loadingService: LoadingService,
     private genCSRFService: GenCsrfService
@@ -25,16 +26,15 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.genCSRFService.getCSRF()
-    this.getUser(this.user_id!)
+    // this.getUser(this.user_id!)
   }
 
-  public getUser(user_id: string): void {
-    this.userService.getUser(user_id).subscribe(
-      resp => {
-        this.loadingService.setLoading(false)
-        this.user = resp.data
-      }
-    )
-  }
+  // public getUser(user_id: string): void {
+  //   this.userService.getUser(user_id).subscribe(
+  //     resp => {
+  //       this.loadingService.setLoading(false)
+  //       this.user = resp.data
+  //     }
+  //   )
+  // }
 }

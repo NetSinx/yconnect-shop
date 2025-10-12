@@ -35,7 +35,7 @@ export class NavbarComponent implements OnInit {
   }
   
   ngOnInit(): void {
-    this.getCategories()
+    // this.getCategories()
   }
   
   public getCategories(): void {

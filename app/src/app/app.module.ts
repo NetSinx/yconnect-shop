@@ -13,6 +13,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { loadingInterceptor } from './interceptor/loading/loading.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './components/register/register.component';
+import { authInterceptor } from './interceptor/auth/auth.interceptor';
 
 @NgModule({
     declarations: [
@@ -37,7 +38,7 @@ import { RegisterComponent } from './components/register/register.component';
         NavbarComponent,
         LoginComponent,
         ProductDetailComponent,
-        provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor]), withFetch()),
+        provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor, authInterceptor]), withFetch()),
         // provideClientHydration(withEventReplay())
     ]
 })

@@ -26,7 +26,6 @@ export class RegisterComponent implements OnInit {
   errorRegister: string | undefined
 
   ngOnInit(): void {
-    this.csrfService.getCSRF().subscribe()
   }
 
   constructor(

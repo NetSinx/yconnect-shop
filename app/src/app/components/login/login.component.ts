@@ -30,8 +30,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.csrfService.getCSRF().subscribe()
-
     if (history.state && history.state.success) {
       this.successMessage = history.state.success
     }
@@ -54,8 +52,8 @@ export class LoginComponent implements OnInit {
     dataLogin.password = this.formGroup.value.password
 
     this.authService.loginUser(dataLogin).subscribe(
-      resp => {
-        this.authService.verifyUser(resp.access_token).subscribe(
+      () => {
+        this.authService.verifyUser().subscribe(
           () => {
             this.loadingService.setLoading(false)
             this.router.navigate(["/dashboard"])
