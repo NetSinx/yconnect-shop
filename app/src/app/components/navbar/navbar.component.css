@@ -4,7 +4,6 @@ nav {
   position: fixed;
   z-index: 99;
   top: 0;
-  height: 110px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
   padding-bottom: 5px;
 }

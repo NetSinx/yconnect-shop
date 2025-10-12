@@ -1,6 +1,5 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { map, switchMap, tap } from 'rxjs';
 import { Category } from 'src/app/interfaces/category';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CategoryService } from 'src/app/services/category/category.service';
@@ -60,6 +59,7 @@ export class NavbarComponent implements OnInit {
   public toggleDropdown(event: MouseEvent): void {
     event.stopPropagation()
     this.isDropDownOpen = !this.isDropDownOpen
+    console.log(this.isDropDownOpen)
   }
 
   @HostListener('document:click', ['$event'])
