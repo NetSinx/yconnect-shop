@@ -39,7 +39,7 @@ import { authInterceptor } from './interceptor/auth/auth.interceptor';
         LoginComponent,
         ProductDetailComponent,
         provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor, authInterceptor]), withFetch()),
-        // provideClientHydration(withEventReplay())
+        provideClientHydration(withEventReplay())
     ]
 })
 

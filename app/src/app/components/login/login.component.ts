@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
-import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 
 @Component({
@@ -21,7 +20,6 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private loadingService: LoadingService,
     private authService: AuthService,
-    private csrfService: GenCsrfService
   ) {
     this.formGroup = this.formBuilder.group({
       email: new FormControl('', [Validators.required]),

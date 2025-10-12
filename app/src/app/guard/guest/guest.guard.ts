@@ -10,7 +10,7 @@ export const guestGuard: CanActivateFn = (route, state) => {
     const genCSRFService: GenCsrfService = inject(GenCsrfService)
     return genCSRFService.getCSRF().pipe(
       switchMap(() => {
-        return authService.getToken().pipe(
+        return authService.refreshToken().pipe(
           map(() => {
             router.navigate(["/dashboard"])
             return false

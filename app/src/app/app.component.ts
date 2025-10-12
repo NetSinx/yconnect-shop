@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { LoadingService } from './services/loading/loading.service';
 import { Observable } from 'rxjs';
-import { GenCsrfService } from './services/gen-csrf/gen-csrf.service';
-import { AuthService } from './services/auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -20,19 +18,11 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private loadingService: LoadingService,
-    private genCSRFService: GenCsrfService,
-    private authService: AuthService
   ) {
     this.isLoading = this.loadingService.loading
   }
 
   ngOnInit(): void {
-    // this.genCSRFService.getCSRF().subscribe(
-    //   () => {
-    //     this.authService.getToken().subscribe()
-    //   }
-    // )
-    
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         if (event.urlAfterRedirects === '/login' || event.urlAfterRedirects === '/register') {

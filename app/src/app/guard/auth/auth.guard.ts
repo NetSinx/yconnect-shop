@@ -10,7 +10,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const genCSRFService: GenCsrfService = inject(GenCsrfService)
   return genCSRFService.getCSRF().pipe(
     switchMap(() => {
-      return authService.getToken().pipe(
+      return authService.refreshToken().pipe(
         map(() => true),
         catchError(() => {
           router.navigate(["/login"])

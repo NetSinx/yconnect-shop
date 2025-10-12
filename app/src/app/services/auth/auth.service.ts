@@ -38,7 +38,7 @@ export class AuthService {
     )
   }
 
-  public getToken(): Observable<string> {
+  public refreshToken(): Observable<string> {
     return this.http.post<{ auth_token: string }>("http://localhost:8086/api/auth/refresh", null, {
       headers: {
         "X-CSRF-Token": this.genCSRFService.csrfToken
