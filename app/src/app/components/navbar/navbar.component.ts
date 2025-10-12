@@ -1,9 +1,11 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { map, switchMap, tap } from 'rxjs';
 import { Category } from 'src/app/interfaces/category';
+import { AuthService } from 'src/app/services/auth/auth.service';
 import { CategoryService } from 'src/app/services/category/category.service';
+import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
-import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
     selector: 'app-navbar',
@@ -23,7 +25,8 @@ export class NavbarComponent implements OnInit {
     private categoryService: CategoryService,
     private router: Router,
     private loadingService: LoadingService,
-    private userService: UserService,
+    private authService: AuthService,
+    private csrfService: GenCsrfService
   ) {
     this.router.events.subscribe(
       nav => {
@@ -35,6 +38,13 @@ export class NavbarComponent implements OnInit {
   }
   
   ngOnInit(): void {
+    this.csrfService.getCSRF().subscribe(
+      () => {
+        this.authService.refreshToken().subscribe(
+          () => this.isLoggedIn = true
+        )
+      }
+    )
     // this.getCategories()
   }
   
@@ -59,16 +69,16 @@ export class NavbarComponent implements OnInit {
     }
   }
 
-  public userLogout(): void {
-    this.userService.userLogout().subscribe(
-      () => {
-        this.isLoggedIn = false
-        this.username = null
-        this.router.navigate(['/'])
-        this.loadingService.setLoading(false)
-      }
-    )
-  }
+  // public userLogout(): void {
+  //   this.userService.userLogout().subscribe(
+  //     () => {
+  //       this.isLoggedIn = false
+  //       this.username = null
+  //       this.router.navigate(['/'])
+  //       this.loadingService.setLoading(false)
+  //     }
+  //   )
+  // }
 
   public hamburgerMenu(el1: HTMLElement, el2: HTMLElement): void {
     el1.classList.toggle('active')

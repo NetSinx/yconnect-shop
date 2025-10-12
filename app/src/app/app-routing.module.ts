@@ -21,7 +21,7 @@ const productDetailRoute: ResolveFn<string> = (route: ActivatedRouteSnapshot, st
 const routes: Routes = [
   {path: '', component: ProductComponent, title: 'Y-Connect Shop'},
   {path: 'product', component: ProductDetailComponent, title: productDetailRoute},
-  {path: 'register', component: RegisterComponent, title: "Register | Y-Connect Shop"},
+  {path: 'register', component: RegisterComponent, title: "Register | Y-Connect Shop", canActivate: [guestGuard]},
   {path: 'login', component: LoginComponent, title: "Login | Y-Connect Shop", canActivate: [guestGuard]},
   {path: 'dashboard', component: DashboardComponent, title: "Dashboard | Y-Connect Shop", canActivate: [authGuard]},
   {path: 'forbidden', component: PageForbiddenComponent, title: "Forbidden | Y-Connect Shop"},

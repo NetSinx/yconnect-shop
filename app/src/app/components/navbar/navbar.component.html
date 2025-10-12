@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg w-100 bg-light" #nav>
-  <div class="container">
+  <div class="container-xl">
     <div class="row align-items-center justify-content-between">
       <div class="col-lg navbar-brand">
         <a href="#" class="text-decoration-none text-dark d-flex logo">
@@ -39,12 +39,12 @@
         }
         @if (isLoggedIn) {
           <div class="dropdown">
-            <a class="text-decoration-none text-dark dropdown-toggle fs-5 rounded" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="text-decoration-none text-dark dropdown-toggle fs-5 rounded" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <img ngSrc="favicon.ico" width="30" height="30" priority>
               netsinx_15
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#"><i class="bi bi-graph-up"></i> Dashboard</a></li>
+              <li><a class="dropdown-item" routerLink="/dashboard"><i class="bi bi-graph-up"></i> Dashboard</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
             </ul>
