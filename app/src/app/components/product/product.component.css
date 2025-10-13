@@ -1,31 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Playwrite+DK+Loopet:wght@100..400&display=swap');
-
-.hero-bg .content {
-  height: 86vh;
-}
-
-.hero-bg .overlay h1 {
-  font-family: "Playwrite DK Loopet", cursive;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 50px;
-}
-
-.hero-bg .overlay {
-  margin-top: 92px;
-  background-color: rgba(0, 0, 0, 0.5);
-  position: relative;
-  height: inherit;
-  z-index: 2;
-}
-
-.title-menu {
-  border-bottom: 2px solid #0099ff;
-  display: inline;
-}
-
-.banner-info {
-  height: 300px;
+.sidebar {
+  top: 87px;
 }
 
 .card-product {

@@ -1,526 +1,545 @@
-<div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img ngSrc="assets/img/banner1.jpeg" class="d-block w-fill" width="1000" height="400" priority>
+<div class="container-xxl mt-4">
+  <div class="row">
+    <div class="col-lg-3 sidebar overflow-auto position-sticky vh-100">
+      <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+          The current link item
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">A second link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A third link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fourth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+      </div>
     </div>
-    <div class="carousel-item">
-      <img src="..." class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="..." class="d-block w-100" alt="...">
+    <div class="col-lg-9 content">
+      <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img ngSrc="assets/img/banner1.jpeg" class="d-block w-100 rounded-3" width="1000" height="400" priority>
+          </div>
+          <div class="carousel-item">
+            <img ngSrc="assets/img/banner2.jpeg" class="d-block w-100 rounded-3" width="1000" height="400">
+          </div>
+          <div class="carousel-item">
+            <img ngSrc="assets/img/banner3.jpeg" class="d-block w-100 rounded-3" width="1000" height="400">
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
+          data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying"
+          data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+      <div class="container pb-5">
+        <div class="row justify-content-evenly mt-5 event">
+          <div class="card banner-info col-lg-4 bg-primary text-white mb-3">
+            <h3 class="card-header">Promo Seru!</h3>
+            <div class="card-body">
+              <h5 class="card-title">Special title treatment</h5>
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <button class="btn btn-warning" (click)="scrollToProduct($event)">Go somewhere</button>
+            </div>
+          </div>
+          <div class="card banner-info col-lg-3 bg-danger text-white mb-3">
+            <h3 class="card-header">Flash Sale!</h3>
+            <div class="card-body">
+              <h5 class="card-title">Special title treatment</h5>
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <button class="btn btn-warning" (click)="scrollToFlashSale($event)">Go somewhere</button>
+            </div>
+          </div>
+          <div class="card banner-info col-lg-3 bg-success text-white">
+            <h3 class="card-header">Diskon sampai 40%!</h3>
+            <div class="card-body">
+              <h5 class="card-title">Special title treatment</h5>
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <button class="btn btn-warning" (click)="scrollToDiskon($event)">Go somewhere</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center my-4">
+          <h2 class="title-menu font-sans fw-bold mt-4">Promo Seru!</h2>
+        </div>
+
+        <div class="row pt-3 justify-content-start">
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim1.jpg" width="300" height="300" priority>
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim3.jpg" width="300" height="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Premium</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Koko Pria Murah Berkualitas</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center my-4">
+          <h2 class="title-menu font-sans fw-bold mt-4">Flash Sale!</h2>
+        </div>
+
+        <div class="row pt-3 justify-content-start">
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim1.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Premium</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Koko Pria Murah Berkualitas</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim1.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Premium</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Koko Pria Murah Berkualitas</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center my-4">
+          <h2 class="title-menu font-sans fw-bold mt-4">Diskon sampai 40%!</h2>
+        </div>
+
+        <div class="row pt-3 justify-content-start">
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim1.jpg" width="300" height="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Premium</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Koko Pria Murah Berkualitas</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim1.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Baju Muslim Premium</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 4">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6 mb-4">
+            <div class="border rounded-3 overflow-hidden shadow">
+              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                </div>
+                <div class="card-body">
+                  <p class="fs-5">Koko Pria Murah Berkualitas</p>
+                  <h4>Rp 17.000,00</h4>
+                  <div class="rating">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <span class="star" [class.filled]="star <= 5">
+                      &#9733;
+                    </span>
+                    }
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
 </div>
-
-<div class="container pb-5">
-  <div class="row justify-content-evenly mt-5 event">
-    <div class="card banner-info col-lg-4 bg-primary text-white mb-3">
-      <h3 class="card-header">Promo Seru!</h3>
-      <div class="card-body">
-        <h5 class="card-title">Special title treatment</h5>
-        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        <button class="btn btn-warning" (click)="scrollToProduct($event)">Go somewhere</button>
-      </div>
-    </div>
-    <div class="card banner-info col-lg-3 bg-danger text-white mb-3">
-      <h3 class="card-header">Flash Sale!</h3>
-      <div class="card-body">
-        <h5 class="card-title">Special title treatment</h5>
-        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        <button class="btn btn-warning" (click)="scrollToFlashSale($event)">Go somewhere</button>
-      </div>
-    </div>
-    <div class="card banner-info col-lg-3 bg-success text-white">
-      <h3 class="card-header">Diskon sampai 40%!</h3>
-      <div class="card-body">
-        <h5 class="card-title">Special title treatment</h5>
-        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        <button class="btn btn-warning" (click)="scrollToDiskon($event)">Go somewhere</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="text-center my-4">
-    <h2 class="title-menu font-sans fw-bold mt-4">Promo Seru!</h2>
-  </div>
-
-  <div class="row pt-3 justify-content-start">
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim1.jpg" width="300" height="300" priority>
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim3.jpg" width="300" height="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Premium</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Koko Pria Murah Berkualitas</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <div class="text-center my-4">
-    <h2 class="title-menu font-sans fw-bold mt-4">Flash Sale!</h2>
-  </div>
-
-  <div class="row pt-3 justify-content-start">
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim1.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Premium</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Koko Pria Murah Berkualitas</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim1.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Premium</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Koko Pria Murah Berkualitas</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <div class="text-center my-4">
-    <h2 class="title-menu font-sans fw-bold mt-4">Diskon sampai 40%!</h2>
-  </div>
-
-  <div class="row pt-3 justify-content-start">
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim1.jpg" width="300" height="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Premium</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Koko Pria Murah Berkualitas</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim1.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Keren & Kekinian</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Baju Muslim Premium</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 4">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-    <div class="col-lg-3 col-6 mb-4">
-      <div class="border rounded-3 overflow-hidden shadow">
-        <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-          <div class="image overflow-hidden">
-            <div class="cover"></div>
-            <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
-          </div>
-          <div class="card-body">
-            <p class="fs-5">Koko Pria Murah Berkualitas</p>
-            <h4>Rp 17.000,00</h4>
-            <div class="rating">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <span class="star" [class.filled]="star <= 5">
-                  &#9733;
-                </span>
-              }
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<footer class="bg-dark w-100">
-  <div class="container h-100 w-100">
-    <div class="row h-100 justify-content-evenly align-items-center m-auto">
-      <div class="col-3">
-        <ul>
-          <li><a href="#">Beranda</a></li>
-          <li><a href="#">Blog</a></li>
-          <li><a href="#">Tentang Kami</a></li>
-          <li><a href="#">Kontak Kami</a></li>
-        </ul>
-      </div>
-      <div class="col-3">
-        <ul>
-          <li><a href="#">Berita</a></li>
-          <li><a href="#">Tanya Jawab</a></li>
-          <li><a href="#">Testimoni</a></li>
-          <li><a href="#">Syarat & Ketentuan</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-1 text-center fs-2">
-        <a href="#"><i class="bi bi-instagram"></i></a>
-      </div>
-      <div class="col-1 text-center fs-2">
-        <a href="#"><i class="bi bi-facebook"></i></a>
-      </div>
-      <div class="col-1 text-center fs-2">
-        <a href="#"><i class="bi bi-twitter"></i></a>
-      </div>
-      <p class="fs-6 text-center mt-3 text-white">Copyright©2024 by Yasin A.H.</p>
-    </div>
-  </div>
-</footer>
+<app-footer />
