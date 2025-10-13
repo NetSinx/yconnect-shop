@@ -80,8 +80,10 @@ export class NavbarComponent implements OnInit {
   //   )
   // }
 
-  public hamburgerMenu(el1: HTMLElement, el2: HTMLElement): void {
+  public hamburgerMenu(el1: HTMLElement, el2: HTMLElement, el3: HTMLElement, el4: HTMLElement): void {
     el1.classList.toggle('active')
     el2.classList.toggle('active')
+    el3.classList.toggle('active')
+    el4.classList.toggle('active')
   }
 }

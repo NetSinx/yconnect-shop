@@ -1,9 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Playwrite+DK+Loopet:wght@100..400&display=swap');
 
 nav {
-  position: fixed;
-  z-index: 99;
-  top: 0;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
   padding-bottom: 5px;
 }
@@ -13,6 +10,10 @@ nav a.logo {
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
+}
+
+nav .preferensi a {
+  padding: 10px;
 }
 
 nav .preferensi a:hover {
@@ -48,15 +49,12 @@ nav .category a:hover {
 }
 
 @media (max-width: 920px) {
-  nav {
-    padding-top: 5px;
-    height: 55px !important;
-    overflow: hidden;
-    transition: all ease-in-out .3s;
+  nav .dropdown-category {
+    display: none;
   }
 
-  nav.active {
-    height: 400px !important;
+  nav .dropdown-category.active {
+    display: block;
   }
 
   nav .search {
@@ -88,11 +86,11 @@ nav .category a:hover {
   nav .navbar-brand button.active span:first-child {
     transform: rotate(45deg);
   }
-  
+
   nav .navbar-brand button span:last-child {
     margin-top: 8px;
   }
-  
+
   nav .navbar-brand button.active span:last-child {
     transform: rotate(-45deg);
   }
@@ -102,15 +100,15 @@ nav .category a:hover {
   }
 
   nav .preferensi {
+    display: none;
+  }
+
+  nav .preferensi.active {
     display: flex;
+    justify-content: end;
   }
 
   nav .preferensi a.login {
-    width: 100%;
-  }
-
-  nav .category {
-    order: unset;
     width: 100%;
   }
 
@@ -118,10 +116,6 @@ nav .category a:hover {
     flex-direction: column;
     width: 100%;
     padding-left: 0px;
-  }
-
-  nav .category li {
-    width: 100%;
   }
 
   nav .category a {
