@@ -14,6 +14,7 @@ import { loadingInterceptor } from './interceptor/loading/loading.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './components/register/register.component';
 import { authInterceptor } from './interceptor/auth/auth.interceptor';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
     declarations: [
@@ -25,19 +26,21 @@ import { authInterceptor } from './interceptor/auth/auth.interceptor';
         LoginComponent,
         PageNotFoundComponent,
         DashboardComponent,
+        HomeComponent
     ],
     bootstrap: [AppComponent],
     imports: [
         BrowserModule,
         AppRoutingModule,
         NgOptimizedImage,
-        ReactiveFormsModule
+        ReactiveFormsModule,
     ],
     providers: [
         ProductComponent,
         NavbarComponent,
         LoginComponent,
         ProductDetailComponent,
+        HomeComponent,
         provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor, authInterceptor]), withFetch()),
         provideClientHydration(withEventReplay())
     ]

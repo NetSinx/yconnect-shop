@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg w-100 bg-light" #nav>
   <div class="container-xl">
-    <div class="row align-items-center justify-content-between">
-      <div class="col-lg navbar-brand">
+    <div class="row align-items-center justify-content-between w-100">
+      <div class="col-lg-3 navbar-brand">
         <a href="#" class="text-decoration-none text-dark d-flex logo">
           <img ngSrc="assets/img/y-logo.png" width="40" height="40" priority>
           <h3 class="m-auto ms-2">Y-Connect Shop</h3>
@@ -12,32 +12,26 @@
           <span></span>
         </button>
       </div>
-      <div class="col-lg-5">
+      <div class="col-lg-6">
         <div class="input-group search">
           <input type="text" class="form-control" placeholder="Cari..." aria-label="Cari..." aria-describedby="button-addon2">
           <button class="btn btn-dark" type="button" id="button-addon2">Cari</button>
         </div>
+        <div class="category row justify-content-center">
+          <ul class="d-flex">
+            <li><a href="#">Luxury</a></li>
+            <li><a href="#">Pria</a></li>
+            <li><a href="#">Wanita</a></li>
+            <li><a href="#">Stylist</a></li>
+            <li><a href="#">Fashion</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="category">
-        <ul class="d-flex justify-content-center">
-          <li><a href="#">Luxury</a></li>
-          <li><a href="#">Pria</a></li>
-          <li><a href="#">Wanita</a></li>
-          <li><a href="#">Stylist</a></li>
-          <li><a href="#">Fashion</a></li>
-        </ul>
-      </div>
-      <div class="col-lg preferensi">
+      <div class="col-lg-2 preferensi">
         @if (!isLoggedIn) {
-          <div>
-            <button class="btn btn-dark me-2"><i class="bi bi-heart-fill"></i></button>
-            <button class="btn btn-dark me-2"><i class="bi bi-cart4"></i></button>
-          </div>
-        }
-        @if (isLoggedIn) {
           <a routerLink="/login" routerLinkActive="showLogin" class="text-decoration-none text-dark fs-5 rounded login p-2">Login <i class="bi bi-box-arrow-in-right"></i></a>
         }
-        @if (!isLoggedIn) {
+        @if (isLoggedIn) {
           <div class="dropdown-center">
             <a class="text-decoration-none text-dark dropdown-toggle fs-6 rounded" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <img ngSrc="favicon.ico" width="30" height="30" priority>

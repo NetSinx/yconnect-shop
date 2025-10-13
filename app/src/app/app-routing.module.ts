@@ -11,6 +11,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { authGuard } from './guard/auth/auth.guard';
 import { PageForbiddenComponent } from './components/page-forbidden/page-forbidden.component';
 import { guestGuard } from './guard/guest/guest.guard';
+import { HomeComponent } from './components/home/home.component';
 
 const productDetailRoute: ResolveFn<string> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): string | Observable<string> | Promise<string> => {
   return inject(ProductService).getDetailProduct(route.paramMap.get("slug")!).pipe(
@@ -19,7 +20,7 @@ const productDetailRoute: ResolveFn<string> = (route: ActivatedRouteSnapshot, st
 }
 
 const routes: Routes = [
-  {path: '', component: ProductComponent, title: 'Y-Connect Shop'},
+  {path: '', component: HomeComponent, title: 'Y-Connect Shop'},
   {path: 'product', component: ProductDetailComponent, title: productDetailRoute},
   {path: 'register', component: RegisterComponent, title: "Register | Y-Connect Shop", canActivate: [guestGuard]},
   {path: 'login', component: LoginComponent, title: "Login | Y-Connect Shop", canActivate: [guestGuard]},

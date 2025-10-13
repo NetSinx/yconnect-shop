@@ -15,20 +15,8 @@ nav a.logo {
   font-style: normal;
 }
 
-nav .preferensi a {
-  transition: all .3s;
-  padding: 5px 10px 8px 10px;
-}
-
 nav .preferensi a:hover {
   background-color: #cfcfcf;
-}
-
-nav .preferensi {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
 }
 
 nav .navbar-brand button {
@@ -114,9 +102,7 @@ nav .category a:hover {
   }
 
   nav .preferensi {
-    margin-top: 5px;
     display: flex;
-    justify-content: space-between;
   }
 
   nav .preferensi a.login {
