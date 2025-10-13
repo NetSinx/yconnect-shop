@@ -14,10 +14,35 @@ export class ProductComponent implements OnInit {
   products: Product[] = []
   activeSidebar: string = ""
 
-  constructor(private productService: ProductService, private loadingService: LoadingService) {}
+  constructor(private productService: ProductService, private loadingService: LoadingService) {
+    this.products = [
+      {
+        id: 1,
+        nama: "Baju Muslim Keren & Kekinian",
+        images: "assets/img/baju_muslim1.jpg",
+        slug: 'baju-muslim-keren-kekinian',
+        deskripsi: 'Baju Muslim Keren & Kekinian',
+        kategori_id: 1,
+        harga: 17000,
+        stok: 25,
+        rating: 5.0
+      },
+      {
+        id: 2,
+        nama: "Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL",
+        images: "assets/img/baju_muslim2.jpg",
+        slug: 'baju-koko-pria-beragam-ukuran',
+        deskripsi: 'Baju Koko Pria Beragam Ukuran',
+        kategori_id: 1,
+        harga: 17000,
+        stok: 12,
+        rating: 5.0
+      }
+    ]
+  }
   
   ngOnInit(): void {
-    // this.getProducts()
+
   }
   
   public getProducts(): void {

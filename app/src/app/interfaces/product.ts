@@ -1,12 +1,11 @@
 export interface Product {
   id: number;
-  name: string;
-  images: any;
+  nama: string;
+  images: string;
   slug: string;
-  description: string;
-  category_id: number;
-  seller: number;
-  price: number;
-  stock: number;
+  deskripsi: string;
+  kategori_id: number;
+  harga: number;
+  stok: number;
   rating: number;
 }

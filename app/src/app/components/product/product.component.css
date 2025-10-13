@@ -7,14 +7,12 @@
 }
 
 .card-product {
-  display: inline-block;
   color: black;
   width: 100%;
   background-color: #fff;
   box-sizing: border-box;
   transition: all ease-in-out;
   transition-duration: 300ms;
-  height: 450px;
 }
 
 .card-product:hover {
@@ -22,13 +20,11 @@
 }
 
 .card-product .image {
-  position: relative;
-  height: 40vh;
+  height: 200px;
 }
 
 .card-product .image img {
   background-size: cover;
-  position: absolute;
   transition: all ease-in-out;
   transition-duration: 300ms;
 }
@@ -47,7 +43,7 @@
   z-index: 5;
   background-color: #e7e7e7;
   width: 100%;
-  height: 40vh;
+  height: 200px;
   opacity: .4;
 }
 
@@ -57,21 +53,8 @@
   padding-bottom: 20px;
 }
 
-.card-body h4, .card-body .rating {
-  position: absolute;
-  bottom: 0;
-}
-
-.card-body h4 {
-  bottom: 50px;
-}
-
-.card-body .rating {
-  bottom: 10px;
-}
-
 .rating {
-  color: #dadada; /* Warna bintang */
+  color: #dadada;
 }
 
 .star {
@@ -79,24 +62,5 @@
 }
 
 .star.filled {
-  color: #ffcc00; /* Warna bintang terisi */
-}
-
-@media (max-width: 920px) {
-  .hero-bg .content {
-    height: 100vh;
-  }
-
-  .hero-bg img {
-    margin-top: 0px;
-  }
-
-  .hero-bg .overlay {
-    height: 100vh;
-    margin-top: 0px;
-  }
-
-  .event {
-    margin-top: 5rem !important;
-  }
+  color: #ffcc00;
 }
