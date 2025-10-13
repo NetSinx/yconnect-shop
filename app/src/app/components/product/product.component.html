@@ -2,51 +2,34 @@
   <div class="row">
     <div class="col-lg-3 sidebar overflow-auto position-sticky vh-100">
       <div class="list-group">
-        <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
-          The current link item
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" [class.active]="activeSidebar === 'pakaian'" (click)="setActiveSidebar('pakaian')">
+          Pakaian
+          <span class="badge text-bg-primary rounded-pill">14</span>
         </a>
-        <a href="#" class="list-group-item list-group-item-action">A second link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A third link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fourth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fifth link item</a>
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" [class.active]="activeSidebar === 'makanan'" (click)="setActiveSidebar('makanan')">
+          Makanan
+          <span class="badge text-bg-primary rounded-pill">10</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" [class.active]="activeSidebar === 'minuman'" (click)="setActiveSidebar('minuman')">
+          Minuman
+          <span class="badge text-bg-primary rounded-pill">10</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" [class.active]="activeSidebar === 'detergen'" (click)="setActiveSidebar('detergen')">
+          Detergen
+          <span class="badge text-bg-primary rounded-pill">24</span>
+        </a>
       </div>
     </div>
     <div class="col-lg-9 content">
-      <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+      <div id="carouselExampleIndicators" class="carousel slide px-4" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+            aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+            aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+            aria-label="Slide 3"></button>
+        </div>
         <div class="carousel-inner">
           <div class="carousel-item active">
             <img ngSrc="assets/img/banner1.jpeg" class="d-block w-100 rounded-3" width="1000" height="400" priority>
@@ -58,12 +41,12 @@
             <img ngSrc="assets/img/banner3.jpeg" class="d-block w-100 rounded-3" width="1000" height="400">
           </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
           data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying"
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
           data-bs-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
@@ -71,33 +54,6 @@
       </div>
 
       <div class="container pb-5">
-        <div class="row justify-content-evenly mt-5 event">
-          <div class="card banner-info col-lg-4 bg-primary text-white mb-3">
-            <h3 class="card-header">Promo Seru!</h3>
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <button class="btn btn-warning" (click)="scrollToProduct($event)">Go somewhere</button>
-            </div>
-          </div>
-          <div class="card banner-info col-lg-3 bg-danger text-white mb-3">
-            <h3 class="card-header">Flash Sale!</h3>
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <button class="btn btn-warning" (click)="scrollToFlashSale($event)">Go somewhere</button>
-            </div>
-          </div>
-          <div class="card banner-info col-lg-3 bg-success text-white">
-            <h3 class="card-header">Diskon sampai 40%!</h3>
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <button class="btn btn-warning" (click)="scrollToDiskon($event)">Go somewhere</button>
-            </div>
-          </div>
-        </div>
-
         <div class="text-center my-4">
           <h2 class="title-menu font-sans fw-bold mt-4">Promo Seru!</h2>
         </div>
@@ -108,7 +64,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim1.jpg" width="300" height="300" priority>
+                  <img ngSrc="assets/img/baju_muslim1.jpg" class="w-100" width="300" height="300" priority>
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Keren & Kekinian</p>
@@ -129,7 +85,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim2.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
@@ -150,7 +106,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim3.jpg" width="300" height="300">
+                  <img ngSrc="assets/img/baju_muslim3.jpg" class="w-100" width="300" height="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Premium</p>
@@ -171,7 +127,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim4.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Koko Pria Murah Berkualitas</p>
@@ -199,7 +155,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim1.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim1.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Keren & Kekinian</p>
@@ -220,7 +176,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim2.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
@@ -241,7 +197,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim3.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Premium</p>
@@ -262,7 +218,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim4.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Koko Pria Murah Berkualitas</p>
@@ -283,7 +239,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim1.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim1.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Keren & Kekinian</p>
@@ -304,7 +260,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim2.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
@@ -325,7 +281,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim3.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Premium</p>
@@ -346,7 +302,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim4.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Koko Pria Murah Berkualitas</p>
@@ -374,7 +330,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim1.jpg" width="300" height="300">
+                  <img ngSrc="assets/img/baju_muslim1.jpg" class="w-100" width="300" height="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Keren & Kekinian</p>
@@ -395,7 +351,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim2.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
@@ -416,7 +372,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim3.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Premium</p>
@@ -437,7 +393,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim4.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Koko Pria Murah Berkualitas</p>
@@ -458,7 +414,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim1.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim1.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Keren & Kekinian</p>
@@ -479,7 +435,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim2.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim2.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
@@ -500,7 +456,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim3.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim3.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Baju Muslim Premium</p>
@@ -521,7 +477,7 @@
               <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                 <div class="image overflow-hidden">
                   <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim4.jpg" height="300" width="300">
+                  <img ngSrc="assets/img/baju_muslim4.jpg" class="w-100" height="300" width="300">
                 </div>
                 <div class="card-body">
                   <p class="fs-5">Koko Pria Murah Berkualitas</p>

@@ -15,6 +15,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './components/register/register.component';
 import { authInterceptor } from './interceptor/auth/auth.interceptor';
 import { HomeComponent } from './components/home/home.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 @NgModule({
     declarations: [
@@ -26,7 +27,8 @@ import { HomeComponent } from './components/home/home.component';
         LoginComponent,
         PageNotFoundComponent,
         DashboardComponent,
-        HomeComponent
+        HomeComponent,
+        FooterComponent
     ],
     bootstrap: [AppComponent],
     imports: [
@@ -41,6 +43,7 @@ import { HomeComponent } from './components/home/home.component';
         LoginComponent,
         ProductDetailComponent,
         HomeComponent,
+        FooterComponent,
         provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor, authInterceptor]), withFetch()),
         provideClientHydration(withEventReplay())
     ]

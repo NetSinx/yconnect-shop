@@ -2,6 +2,10 @@
   top: 87px;
 }
 
+.list-group-item-action.active {
+  background-color: rgb(0, 0, 0);
+}
+
 .card-product {
   display: inline-block;
   color: black;
@@ -76,21 +80,6 @@
 
 .star.filled {
   color: #ffcc00; /* Warna bintang terisi */
-}
-
-footer {
-  padding-top: 2rem;
-  padding-bottom: 1rem;
-}
-
-footer ul li {
-  list-style: none;
-  margin-bottom: 10px;
-}
-
-footer a {
-  text-decoration: none;
-  color: #fff;
 }
 
 @media (max-width: 920px) {

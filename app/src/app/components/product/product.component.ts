@@ -12,6 +12,7 @@ import { LoadingService } from 'src/app/services/loading/loading.service';
 
 export class ProductComponent implements OnInit {
   products: Product[] = []
+  activeSidebar: string = ""
 
   constructor(private productService: ProductService, private loadingService: LoadingService) {}
   
@@ -44,5 +45,9 @@ export class ProductComponent implements OnInit {
     event.target?.addEventListener('click', () => {
       window.scrollTo({top: 2520, behavior: 'smooth'})
     })
+  }
+
+  public setActiveSidebar(sidebar: string): void {
+    this.activeSidebar = sidebar
   }
 }
