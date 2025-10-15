@@ -15,7 +15,7 @@ import { HomeComponent } from './components/home/home.component';
 
 const productDetailRoute: ResolveFn<string> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): string | Observable<string> | Promise<string> => {
   return inject(ProductService).getDetailProduct(route.paramMap.get("slug")!).pipe(
-    map(product => `Y-Connect Shop | ${product.data.name}`)
+    map(product => `Y-Connect Shop | ${product.data.nama}`)
   )
 }
 

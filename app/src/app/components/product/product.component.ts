@@ -11,17 +11,17 @@ import { LoadingService } from 'src/app/services/loading/loading.service';
 })
 
 export class ProductComponent implements OnInit {
-  products: Product[] = []
+  promoProducts: Product[] = []
   activeSidebar: string = ""
 
   constructor(private productService: ProductService, private loadingService: LoadingService) {
-    this.products = [
+    this.promoProducts = [
       {
         id: 1,
         nama: "Baju Muslim Keren & Kekinian",
         images: "assets/img/baju_muslim1.jpg",
         slug: 'baju-muslim-keren-kekinian',
-        deskripsi: 'Baju Muslim Keren & Kekinian',
+        deskripsi: 'Baju muslim keren dan kekinian',
         kategori_id: 1,
         harga: 17000,
         stok: 25,
@@ -32,10 +32,21 @@ export class ProductComponent implements OnInit {
         nama: "Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL",
         images: "assets/img/baju_muslim2.jpg",
         slug: 'baju-koko-pria-beragam-ukuran',
-        deskripsi: 'Baju Koko Pria Beragam Ukuran',
+        deskripsi: 'Baju koko pria beragam ukuran',
         kategori_id: 1,
         harga: 17000,
         stok: 12,
+        rating: 5.0
+      },
+      {
+        id: 3,
+        nama: "Koko Pria Murah Berkualitas",
+        images: "assets/img/baju_muslim3.jpg",
+        slug: 'koko-pria-murah-berkualitas',
+        deskripsi: 'Baju koko pria murah dan berkualitas',
+        kategori_id: 1,
+        harga: 25000,
+        stok: 8,
         rating: 5.0
       }
     ]
@@ -49,7 +60,7 @@ export class ProductComponent implements OnInit {
     this.productService.getProducts().subscribe(
       resp => {
         this.loadingService.setLoading(false)
-        this.products = resp.data
+        this.promoProducts = resp.data
       }
     )
   }
