@@ -65,17 +65,16 @@
                 <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
                   <div class="image overflow-hidden">
                     <div class="cover"></div>
-                    <img ngSrc="assets/img/baju_muslim1.jpg" class="w-100" width="300" height="200" priority>
+                    <img ngSrc="{{ promoProduct.images }}" class="w-100" width="300" height="200" priority>
                   </div>
                   <div class="card-body">
                     <p class="fs-5">{{ promoProduct.nama }}</p>
                     <h4>{{ promoProduct.harga | currency: "Rp " }}</h4>
                     <div class="rating">
-                      @for (star of [1, 2, 3, 4, 5]; track star) {
-                      <span class="star" [class.filled]="star <= 4">
+                      <span class="star">
                         &#9733;
                       </span>
-                      }
+                      4.9
                     </div>
                   </div>
                 </a>
