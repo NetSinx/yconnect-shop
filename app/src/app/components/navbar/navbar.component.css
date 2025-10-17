@@ -12,6 +12,10 @@ nav a.logo {
   font-style: normal;
 }
 
+nav .category {
+  display: none;
+}
+
 nav .preferensi a {
   padding: 10px;
 }
@@ -22,26 +26,6 @@ nav .preferensi a:hover {
 
 nav .navbar-brand button {
   display: none;
-}
-
-nav .category {
-  order: 3;
-  margin-top: 15px;
-}
-
-nav .category ul {
-  list-style-type: none;
-  margin-bottom: 5px;
-}
-
-nav .category a {
-  text-decoration: none;
-  color: black;
-  padding: 10px 30px 10px 30px;
-}
-
-nav .category a:hover {
-  background-color: #cfcfcf;
 }
 
 .showLogin {
@@ -59,6 +43,27 @@ nav .category a:hover {
 
   nav .search {
     margin-top: 10px;
+  }
+
+  nav .category {
+    display: block;
+    order: 3;
+    margin-top: 15px;
+  }
+
+  nav .category ul {
+    list-style-type: none;
+    margin-bottom: 5px;
+  }
+
+  nav .category a {
+    text-decoration: none;
+    color: black;
+    padding: 10px 30px 10px 30px;
+  }
+
+  nav .category a:hover {
+    background-color: #cfcfcf;
   }
 
   nav .navbar-brand {

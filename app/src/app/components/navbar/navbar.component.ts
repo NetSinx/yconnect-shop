@@ -1,10 +1,14 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { Component, ElementRef, HostListener, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { Category } from 'src/app/interfaces/category';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CategoryService } from 'src/app/services/category/category.service';
 import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
 import { LoadingService } from 'src/app/services/loading/loading.service';
+import { TransferState, makeStateKey } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+
+const IS_LOGGED_IN_KEY = makeStateKey<boolean>('isLoggedIn')
 
 @Component({
     selector: 'app-navbar',
@@ -22,28 +26,32 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
-    private router: Router,
     private loadingService: LoadingService,
     private authService: AuthService,
-    private csrfService: GenCsrfService
-  ) {
-    this.router.events.subscribe(
-      nav => {
-        if (nav instanceof NavigationEnd) {
-          this.currentRoute = nav.url
-        }
-      }
-    )
-  }
+    private csrfService: GenCsrfService,
+    private state: TransferState,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
   
   ngOnInit(): void {
-    this.csrfService.getCSRF().subscribe(
-      () => {
-        this.authService.refreshToken().subscribe(
-          () => this.isLoggedIn = true
-        )
-      }
-    )
+    const savedAPIResp = this.state.get(IS_LOGGED_IN_KEY, null)
+    if (savedAPIResp) {
+      this.isLoggedIn = savedAPIResp
+    } else {
+      this.csrfService.getCSRF().subscribe(
+        () => {
+          this.authService.refreshToken().subscribe(
+            () => {
+              if (isPlatformServer(this.platformId)) {
+                this.isLoggedIn = true
+                this.state.set(IS_LOGGED_IN_KEY, this.isLoggedIn)
+              }
+            }
+          )
+        }
+      )
+    }
+
     // this.getCategories()
   }
   
