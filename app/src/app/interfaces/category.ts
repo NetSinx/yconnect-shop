@@ -1,5 +1,6 @@
-export interface Category {
+export interface Kategori {
   id: number;
-  name: string;
+  nama: string;
   slug: string;
+  total: number;
 }

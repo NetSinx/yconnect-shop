@@ -17,6 +17,7 @@ export const guestGuard: CanActivateFn = (route, state) => {
           }),
           catchError(() => of(true))
         )
-      })
+      }),
+      catchError(() => of(true))
     )
 };

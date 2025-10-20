@@ -19,10 +19,14 @@
         </div>
         <div class="category">
           <ul>
-            <li><a href="#">Pakaian</a></li>
-            <li><a href="#">Makanan</a></li>
-            <li><a href="#">Minuman</a></li>
-            <li><a href="#">Detergen</a></li>
+            @for(category of categories(); track category.id) {
+              <li>
+                <a href="#" (click)="$event.preventDefault()">
+                  {{ category.nama }}
+                  <span class="badge text-bg-primary float-end me-2 rounded-pill">{{ category.total }}</span>
+                </a>
+              </li>
+            }
           </ul>
         </div>
       </div>

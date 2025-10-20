@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, input, OnInit, signal } from '@angular/core';
 import { ProductService } from '../../services/product/product.service';
 import { Product } from 'src/app/interfaces/product';
 import { LoadingService } from 'src/app/services/loading/loading.service';
+import { Kategori } from 'src/app/interfaces/category';
 
 @Component({
     selector: 'app-product',
@@ -13,7 +14,8 @@ import { LoadingService } from 'src/app/services/loading/loading.service';
 export class ProductComponent implements OnInit {
   promoProducts: Product[] = []
   flashSaleProducts: Product[] = []
-  activeSidebar: string = ""
+  activeSidebar = signal<string>('')
+  categorySidebar = input.required<Kategori[]>()
 
   constructor(private productService: ProductService, private loadingService: LoadingService) {
     this.promoProducts = [
@@ -153,8 +155,10 @@ export class ProductComponent implements OnInit {
     })
   }
 
-  public setActiveSidebar(sidebar: string): void {
-    this.activeSidebar = sidebar
+  public setActiveSidebar(event: Event, sidebar: string): void {
+    console.log(`clicked is: ${sidebar}`)
+    event.preventDefault()
+    this.activeSidebar.set(sidebar)
   }
 
   public ratingNumber(n: number): number[] {

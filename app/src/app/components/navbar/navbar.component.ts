@@ -1,6 +1,6 @@
-import { Component, ElementRef, HostListener, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, Inject, input, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Category } from 'src/app/interfaces/category';
+import { Kategori } from 'src/app/interfaces/category';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CategoryService } from 'src/app/services/category/category.service';
 import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
@@ -17,7 +17,7 @@ const IS_LOGGED_IN_KEY = makeStateKey<boolean>('isLoggedIn')
     standalone: false
 })
 export class NavbarComponent implements OnInit {
-  categories: Category[] = []
+  categories = input.required<Kategori[]>()
   currentRoute: string = ""
   isLoggedIn: boolean | null = null
   username: string | null = null
@@ -25,8 +25,6 @@ export class NavbarComponent implements OnInit {
   isDropDownOpen: boolean = false
 
   constructor(
-    private categoryService: CategoryService,
-    private loadingService: LoadingService,
     private authService: AuthService,
     private csrfService: GenCsrfService,
     private state: TransferState,
@@ -34,6 +32,8 @@ export class NavbarComponent implements OnInit {
   ) {}
   
   ngOnInit(): void {
+    this.categories
+
     const savedAPIResp = this.state.get(IS_LOGGED_IN_KEY, null)
     if (savedAPIResp) {
       this.isLoggedIn = savedAPIResp
@@ -55,14 +55,14 @@ export class NavbarComponent implements OnInit {
     // this.getCategories()
   }
   
-  public getCategories(): void {
-    this.categoryService.getCategories().subscribe(
-      resp => {
-        this.loadingService.setLoading(false)
-        this.categories = resp.data
-      }
-    )
-  }
+  // public getCategories(): void {
+  //   this.categoryService.getCategories().subscribe(
+  //     resp => {
+  //       this.loadingService.setLoading(false)
+  //       this.categories = resp.data
+  //     }
+  //   )
+  // }
 
   public toggleDropdown(event: MouseEvent): void {
     event.stopPropagation()
