@@ -2,9 +2,12 @@
   <div class="row">
     <div class="col-lg-3 sidebar overflow-auto position-sticky vh-100">
       <div class="list-group">
+        <li class="list-group-item d-flex justify-content-center fw-bold align-items-center">
+          Menu Kategori
+        </li>
         @for(category of categorySidebar(); track category.id) {
           <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" [class.active]="activeSidebar() === category.slug" (click)="setActiveSidebar($event, category.slug)">
-            {{ category.nama }}
+          {{ category.nama }}
             <span class="badge text-bg-primary rounded-pill">{{ category.total }}</span>
           </a>
         }
@@ -22,13 +25,13 @@
         </div>
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img ngSrc="assets/img/banner1.jpeg" class="object-fit-cover d-block w-100 rounded-3" width="1000" height="400" priority>
+            <img ngSrc="assets/img/banner1.jpeg" class="object-fit-fill d-block w-100 rounded-3" width="1000" height="400" priority>
           </div>
           <div class="carousel-item">
-            <img ngSrc="assets/img/banner2.jpeg" class="object-fit-cover d-block w-100 rounded-3" width="1000" height="400">
+            <img ngSrc="assets/img/banner2.jpeg" class="object-fit-fill d-block w-100 rounded-3" width="1000" height="400">
           </div>
           <div class="carousel-item">
-            <img ngSrc="assets/img/banner3.jpeg" class="object-fit-cover d-block w-100 rounded-3" width="1000" height="400">
+            <img ngSrc="assets/img/banner3.jpeg" class="object-fit-fill d-block w-100 rounded-3" width="1000" height="400">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators"
