@@ -1,46 +1,179 @@
 <div class="container-xxl mt-4">
   <div class="row">
-    <div class="col-lg-3 sidebar overflow-auto position-sticky vh-100">
+    <div class="col-lg-3 sidebar overflow-auto position-sticky">
       <div class="list-group">
-        <li class="list-group-item d-flex justify-content-center fw-bold align-items-center">
+        <li
+          class="list-group-item d-flex justify-content-center fw-bold fs-5 align-items-center"
+        >
           Menu Kategori
         </li>
         @for(category of categorySidebar(); track category.id) {
-          <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" [class.active]="activeSidebar() === category.slug" (click)="setActiveSidebar($event, category.slug)">
+        <a
+          href="#"
+          class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+          [class.active]="activeSidebar() === category.slug"
+          (click)="setActiveSidebar($event, category.slug)"
+        >
           {{ category.nama }}
-            <span class="badge text-bg-primary rounded-pill">{{ category.total }}</span>
-          </a>
+          <span class="badge text-bg-primary rounded-pill">{{
+            category.total
+          }}</span>
+        </a>
         }
+      </div>
+      <div class="list-group mt-4">
+        <li
+          class="list-group-item d-flex justify-content-center fw-bold fs-5 align-items-center"
+        >
+          Filters
+        </li>
+        <li class="list-group-item d-flex fw-bold align-items-center">
+          Lokasi
+        </li>
+        <li class="list-group-item d-flex align-items-center">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="checkChecked1"
+              checked
+            />
+            <label class="form-check-label" for="checkChecked1">
+              Jabodetabek
+            </label>
+          </div>
+        </li>
+        <li class="list-group-item d-flex align-items-center">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="check1"
+            />
+            <label class="form-check-label" for="check1"> DKI Jakarta </label>
+          </div>
+        </li>
+        <li class="list-group-item d-flex align-items-center">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="check2"
+            />
+            <label class="form-check-label" for="check2"> Jawa Barat </label>
+          </div>
+        </li>
+        <li class="list-group-item d-flex align-items-center">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="check3"
+            />
+            <label class="form-check-label" for="check3"> Jawa Tengah </label>
+          </div>
+        </li>
+        <li class="list-group-item d-flex align-items-center">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="check4"
+            />
+            <label class="form-check-label" for="check4"> Jawa Timur </label>
+          </div>
+        </li>
+        <li class="list-group-item d-flex fw-bold align-items-center">
+          Metode Pembayaran
+        </li>
+        <li class="list-group-item d-flex align-items-center">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="checkDefault"
+            />
+            <label class="form-check-label" for="checkDefault"> COD (Bayar di Tempat) </label>
+          </div>
+        </li>
       </div>
     </div>
     <div class="col-lg-9 content">
-      <div id="carouselIndicators" class="carousel slide px-4" data-bs-ride="carousel">
+      <div
+        id="carouselIndicators"
+        class="carousel slide px-4"
+        data-bs-ride="carousel"
+      >
         <div class="carousel-indicators">
-          <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="0" class="active"
-            aria-current="true" aria-label="Slide 1"></button>
-          <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="1"
-            aria-label="Slide 2"></button>
-          <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="2"
-            aria-label="Slide 3"></button>
+          <button
+            type="button"
+            data-bs-target="#carouselIndicators"
+            data-bs-slide-to="0"
+            class="active"
+            aria-current="true"
+            aria-label="Slide 1"
+          ></button>
+          <button
+            type="button"
+            data-bs-target="#carouselIndicators"
+            data-bs-slide-to="1"
+            aria-label="Slide 2"
+          ></button>
+          <button
+            type="button"
+            data-bs-target="#carouselIndicators"
+            data-bs-slide-to="2"
+            aria-label="Slide 3"
+          ></button>
         </div>
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img ngSrc="assets/img/banner1.jpeg" class="object-fit-fill d-block w-100 rounded-3" width="1000" height="400" priority>
+            <img
+              ngSrc="assets/img/banner1.jpeg"
+              class="object-fit-fill d-block w-100 rounded-3"
+              width="1000"
+              height="400"
+              priority
+            />
           </div>
           <div class="carousel-item">
-            <img ngSrc="assets/img/banner2.jpeg" class="object-fit-fill d-block w-100 rounded-3" width="1000" height="400">
+            <img
+              ngSrc="assets/img/banner2.jpeg"
+              class="object-fit-fill d-block w-100 rounded-3"
+              width="1000"
+              height="400"
+            />
           </div>
           <div class="carousel-item">
-            <img ngSrc="assets/img/banner3.jpeg" class="object-fit-fill d-block w-100 rounded-3" width="1000" height="400">
+            <img
+              ngSrc="assets/img/banner3.jpeg"
+              class="object-fit-fill d-block w-100 rounded-3"
+              width="1000"
+              height="400"
+            />
           </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators"
-          data-bs-slide="prev">
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carouselIndicators"
+          data-bs-slide="prev"
+        >
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators"
-          data-bs-slide="next">
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carouselIndicators"
+          data-bs-slide="next"
+        >
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
         </button>
@@ -53,228 +186,315 @@
 
         <div class="row pt-3 justify-content-start">
           @for (promoProduct of promoProducts; track promoProduct.id) {
-            <div class="col-lg-3 col-6 mb-4">
-              <div class="border rounded-3 overflow-hidden shadow" style="min-height: 25rem;">
-                <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-                  <div class="image overflow-hidden">
-                    <div class="cover"></div>
-                    <img ngSrc="{{ promoProduct.images }}" class="w-100" width="300" height="200" priority>
+          <div class="col-lg-3 col-6 mb-4">
+            <div
+              class="border rounded-3 overflow-hidden shadow"
+              style="min-height: 25rem"
+            >
+              <a
+                routerLink="/product/tes"
+                class="card-product position-relative text-decoration-none"
+              >
+                <div class="image overflow-hidden">
+                  <div class="cover"></div>
+                  <img
+                    ngSrc="{{ promoProduct.images }}"
+                    class="w-100"
+                    width="300"
+                    height="200"
+                    priority
+                  />
+                </div>
+                <div class="card-body">
+                  <p class="fs-5 text-truncate">{{ promoProduct.nama }}</p>
+                  <h4>{{ promoProduct.harga | currency : "Rp " }}</h4>
+                  <div class="rating">
+                    <span class="star"> &#9733; </span>
+                    {{ promoProduct.rating | number : "1.1-2" }}
                   </div>
-                  <div class="card-body">
-                    <p class="fs-5 text-truncate">{{ promoProduct.nama }}</p>
-                    <h4>{{ promoProduct.harga | currency: "Rp " }}</h4>
-                    <div class="rating">
-                      <span class="star">
-                        &#9733;
-                      </span>
-                      {{ promoProduct.rating | number:'1.1-2' }}
-                    </div>
-                  </div>
-                </a>
-              </div>
+                </div>
+              </a>
             </div>
+          </div>
           }
 
-        <div class="text-center my-4">
-          <h2 class="title-menu font-sans fw-bold mt-4">Flash Sale!</h2>
-        </div>
+          <div class="text-center my-4">
+            <h2 class="title-menu font-sans fw-bold mt-4">Flash Sale!</h2>
+          </div>
 
-        <div class="row pt-3 justify-content-start">
-          @for (product of flashSaleProducts; track product.id) {
+          <div class="row pt-3 justify-content-start">
+            @for (product of flashSaleProducts; track product.id) {
             <div class="col-lg-3 col-6 mb-4">
               <div class="border rounded-3 overflow-hidden shadow">
-                <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
+                <a
+                  routerLink="/product/tes"
+                  class="card-product position-relative text-decoration-none"
+                >
                   <div class="image overflow-hidden">
                     <div class="cover"></div>
-                    <img ngSrc="{{ product.images }}" class="w-100" height="200" width="300">
+                    <img
+                      ngSrc="{{ product.images }}"
+                      class="w-100"
+                      height="200"
+                      width="300"
+                    />
                   </div>
                   <div class="card-body">
                     <p class="fs-5">{{ product.nama }}</p>
-                    <h4>{{ product.harga | currency: "Rp " }}</h4>
+                    <h4>{{ product.harga | currency : "Rp " }}</h4>
                     <div class="rating">
-                      <span class="star">
-                        &#9733;
-                      </span>
-                      {{ product.rating | number:'1.1-2' }}
+                      <span class="star"> &#9733; </span>
+                      {{ product.rating | number : "1.1-2" }}
                     </div>
                   </div>
                 </a>
               </div>
             </div>
-          }
-        </div>
+            }
+          </div>
 
-        <div class="text-center my-4">
-          <h2 class="title-menu font-sans fw-bold mt-4">Diskon sampai 40%!</h2>
-        </div>
+          <div class="text-center my-4">
+            <h2 class="title-menu font-sans fw-bold mt-4">
+              Diskon sampai 40%!
+            </h2>
+          </div>
 
-        <div class="row pt-3 justify-content-start">
-          <div class="col-lg-3 col-6 mb-4">
-            <div class="border rounded-3 overflow-hidden shadow">
-              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-                <div class="image overflow-hidden">
-                  <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim1.jpg" class="w-100" width="300" height="300">
-                </div>
-                <div class="card-body">
-                  <p class="fs-5">Baju Muslim Keren & Kekinian</p>
-                  <h4>Rp 17.000,00</h4>
-                  <div class="rating">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                    <span class="star" [class.filled]="star <= 4">
-                      &#9733;
-                    </span>
-                    }
+          <div class="row pt-3 justify-content-start">
+            <div class="col-lg-3 col-6 mb-4">
+              <div class="border rounded-3 overflow-hidden shadow">
+                <a
+                  routerLink="/product/tes"
+                  class="card-product position-relative text-decoration-none"
+                >
+                  <div class="image overflow-hidden">
+                    <div class="cover"></div>
+                    <img
+                      ngSrc="assets/img/baju_muslim1.jpg"
+                      class="w-100"
+                      width="300"
+                      height="300"
+                    />
                   </div>
-                </div>
-              </a>
+                  <div class="card-body">
+                    <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+                    <h4>Rp 17.000,00</h4>
+                    <div class="rating">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span class="star" [class.filled]="star <= 4">
+                        &#9733;
+                      </span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-3 col-6 mb-4">
-            <div class="border rounded-3 overflow-hidden shadow">
-              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-                <div class="image overflow-hidden">
-                  <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim2.jpg" class="w-100" height="300" width="300">
-                </div>
-                <div class="card-body">
-                  <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
-                  <h4>Rp 17.000,00</h4>
-                  <div class="rating">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                    <span class="star" [class.filled]="star <= 5">
-                      &#9733;
-                    </span>
-                    }
+            <div class="col-lg-3 col-6 mb-4">
+              <div class="border rounded-3 overflow-hidden shadow">
+                <a
+                  routerLink="/product/tes"
+                  class="card-product position-relative text-decoration-none"
+                >
+                  <div class="image overflow-hidden">
+                    <div class="cover"></div>
+                    <img
+                      ngSrc="assets/img/baju_muslim2.jpg"
+                      class="w-100"
+                      height="300"
+                      width="300"
+                    />
                   </div>
-                </div>
-              </a>
+                  <div class="card-body">
+                    <p class="fs-5">
+                      Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL
+                    </p>
+                    <h4>Rp 17.000,00</h4>
+                    <div class="rating">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span class="star" [class.filled]="star <= 5">
+                        &#9733;
+                      </span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-3 col-6 mb-4">
-            <div class="border rounded-3 overflow-hidden shadow">
-              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-                <div class="image overflow-hidden">
-                  <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim3.jpg" class="w-100" height="300" width="300">
-                </div>
-                <div class="card-body">
-                  <p class="fs-5">Baju Muslim Premium</p>
-                  <h4>Rp 17.000,00</h4>
-                  <div class="rating">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                    <span class="star" [class.filled]="star <= 4">
-                      &#9733;
-                    </span>
-                    }
+            <div class="col-lg-3 col-6 mb-4">
+              <div class="border rounded-3 overflow-hidden shadow">
+                <a
+                  routerLink="/product/tes"
+                  class="card-product position-relative text-decoration-none"
+                >
+                  <div class="image overflow-hidden">
+                    <div class="cover"></div>
+                    <img
+                      ngSrc="assets/img/baju_muslim3.jpg"
+                      class="w-100"
+                      height="300"
+                      width="300"
+                    />
                   </div>
-                </div>
-              </a>
+                  <div class="card-body">
+                    <p class="fs-5">Baju Muslim Premium</p>
+                    <h4>Rp 17.000,00</h4>
+                    <div class="rating">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span class="star" [class.filled]="star <= 4">
+                        &#9733;
+                      </span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-3 col-6 mb-4">
-            <div class="border rounded-3 overflow-hidden shadow">
-              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-                <div class="image overflow-hidden">
-                  <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim4.jpg" class="w-100" height="300" width="300">
-                </div>
-                <div class="card-body">
-                  <p class="fs-5">Koko Pria Murah Berkualitas</p>
-                  <h4>Rp 17.000,00</h4>
-                  <div class="rating">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                    <span class="star" [class.filled]="star <= 5">
-                      &#9733;
-                    </span>
-                    }
+            <div class="col-lg-3 col-6 mb-4">
+              <div class="border rounded-3 overflow-hidden shadow">
+                <a
+                  routerLink="/product/tes"
+                  class="card-product position-relative text-decoration-none"
+                >
+                  <div class="image overflow-hidden">
+                    <div class="cover"></div>
+                    <img
+                      ngSrc="assets/img/baju_muslim4.jpg"
+                      class="w-100"
+                      height="300"
+                      width="300"
+                    />
                   </div>
-                </div>
-              </a>
+                  <div class="card-body">
+                    <p class="fs-5">Koko Pria Murah Berkualitas</p>
+                    <h4>Rp 17.000,00</h4>
+                    <div class="rating">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span class="star" [class.filled]="star <= 5">
+                        &#9733;
+                      </span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-3 col-6 mb-4">
-            <div class="border rounded-3 overflow-hidden shadow">
-              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-                <div class="image overflow-hidden">
-                  <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim1.jpg" class="w-100" height="300" width="300">
-                </div>
-                <div class="card-body">
-                  <p class="fs-5">Baju Muslim Keren & Kekinian</p>
-                  <h4>Rp 17.000,00</h4>
-                  <div class="rating">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                    <span class="star" [class.filled]="star <= 4">
-                      &#9733;
-                    </span>
-                    }
+            <div class="col-lg-3 col-6 mb-4">
+              <div class="border rounded-3 overflow-hidden shadow">
+                <a
+                  routerLink="/product/tes"
+                  class="card-product position-relative text-decoration-none"
+                >
+                  <div class="image overflow-hidden">
+                    <div class="cover"></div>
+                    <img
+                      ngSrc="assets/img/baju_muslim1.jpg"
+                      class="w-100"
+                      height="300"
+                      width="300"
+                    />
                   </div>
-                </div>
-              </a>
+                  <div class="card-body">
+                    <p class="fs-5">Baju Muslim Keren & Kekinian</p>
+                    <h4>Rp 17.000,00</h4>
+                    <div class="rating">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span class="star" [class.filled]="star <= 4">
+                        &#9733;
+                      </span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-3 col-6 mb-4">
-            <div class="border rounded-3 overflow-hidden shadow">
-              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-                <div class="image overflow-hidden">
-                  <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim2.jpg" class="w-100" height="300" width="300">
-                </div>
-                <div class="card-body">
-                  <p class="fs-5">Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL</p>
-                  <h4>Rp 17.000,00</h4>
-                  <div class="rating">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                    <span class="star" [class.filled]="star <= 5">
-                      &#9733;
-                    </span>
-                    }
+            <div class="col-lg-3 col-6 mb-4">
+              <div class="border rounded-3 overflow-hidden shadow">
+                <a
+                  routerLink="/product/tes"
+                  class="card-product position-relative text-decoration-none"
+                >
+                  <div class="image overflow-hidden">
+                    <div class="cover"></div>
+                    <img
+                      ngSrc="assets/img/baju_muslim2.jpg"
+                      class="w-100"
+                      height="300"
+                      width="300"
+                    />
                   </div>
-                </div>
-              </a>
+                  <div class="card-body">
+                    <p class="fs-5">
+                      Baju Koko Pria Beragam Ukuran S/M/L/XL/XXL
+                    </p>
+                    <h4>Rp 17.000,00</h4>
+                    <div class="rating">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span class="star" [class.filled]="star <= 5">
+                        &#9733;
+                      </span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-3 col-6 mb-4">
-            <div class="border rounded-3 overflow-hidden shadow">
-              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-                <div class="image overflow-hidden">
-                  <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim3.jpg" class="w-100" height="300" width="300">
-                </div>
-                <div class="card-body">
-                  <p class="fs-5">Baju Muslim Premium</p>
-                  <h4>Rp 17.000,00</h4>
-                  <div class="rating">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                    <span class="star" [class.filled]="star <= 4">
-                      &#9733;
-                    </span>
-                    }
+            <div class="col-lg-3 col-6 mb-4">
+              <div class="border rounded-3 overflow-hidden shadow">
+                <a
+                  routerLink="/product/tes"
+                  class="card-product position-relative text-decoration-none"
+                >
+                  <div class="image overflow-hidden">
+                    <div class="cover"></div>
+                    <img
+                      ngSrc="assets/img/baju_muslim3.jpg"
+                      class="w-100"
+                      height="300"
+                      width="300"
+                    />
                   </div>
-                </div>
-              </a>
+                  <div class="card-body">
+                    <p class="fs-5">Baju Muslim Premium</p>
+                    <h4>Rp 17.000,00</h4>
+                    <div class="rating">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span class="star" [class.filled]="star <= 4">
+                        &#9733;
+                      </span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-3 col-6 mb-4">
-            <div class="border rounded-3 overflow-hidden shadow">
-              <a routerLink="/product/tes" class="card-product position-relative text-decoration-none">
-                <div class="image overflow-hidden">
-                  <div class="cover"></div>
-                  <img ngSrc="assets/img/baju_muslim4.jpg" class="w-100" height="300" width="300">
-                </div>
-                <div class="card-body">
-                  <p class="fs-5">Koko Pria Murah Berkualitas</p>
-                  <h4>Rp 17.000,00</h4>
-                  <div class="rating">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                    <span class="star" [class.filled]="star <= 5">
-                      &#9733;
-                    </span>
-                    }
+            <div class="col-lg-3 col-6 mb-4">
+              <div class="border rounded-3 overflow-hidden shadow">
+                <a
+                  routerLink="/product/tes"
+                  class="card-product position-relative text-decoration-none"
+                >
+                  <div class="image overflow-hidden">
+                    <div class="cover"></div>
+                    <img
+                      ngSrc="assets/img/baju_muslim4.jpg"
+                      class="w-100"
+                      height="300"
+                      width="300"
+                    />
                   </div>
-                </div>
-              </a>
+                  <div class="card-body">
+                    <p class="fs-5">Koko Pria Murah Berkualitas</p>
+                    <h4>Rp 17.000,00</h4>
+                    <div class="rating">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span class="star" [class.filled]="star <= 5">
+                        &#9733;
+                      </span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </div>
