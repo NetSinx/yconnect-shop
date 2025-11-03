@@ -14,16 +14,16 @@ export class HomeComponent implements OnInit {
   constructor(private categoryService: CategoryService) {
     this.categories = [
       {
-        id: 1, nama: "Pakaian", slug: "pakaian", total: 14
+        id: 1, nama: "Pakaian", slug: "pakaian", gambar: "assets/img/clothes-rack.png"
       },
       {
-        id: 2, nama: "Makanan", slug: "makanan", total: 25
+        id: 2, nama: "Makanan", slug: "makanan", gambar: "assets/img/food-category.png"
       },
       {
-        id: 3, nama: "Minuman", slug: "minuman", total: 10
+        id: 3, nama: "Minuman", slug: "minuman", gambar: ""
       },
       {
-        id: 4, nama: "Detergen", slug: "detergen", total: 8
+        id: 4, nama: "Detergen", slug: "detergen", gambar: ""
       }
     ]
   }

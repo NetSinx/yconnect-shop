@@ -14,6 +14,7 @@ import { Kategori } from 'src/app/interfaces/category';
 export class ProductComponent implements OnInit {
   promoProducts: Product[] = []
   flashSaleProducts: Product[] = []
+  diskon40Persen: Product[] = []
   activeSidebar = signal<string>('')
   categorySidebar = input.required<Kategori[]>()
 
@@ -50,6 +51,17 @@ export class ProductComponent implements OnInit {
         kategori_id: 1,
         harga: 250000,
         stok: 8,
+        rating: 5.0
+      },
+      {
+        id: 4,
+        nama: "Koko Pria Berbagai Ukuran",
+        images: "assets/img/baju_muslim4.jpg",
+        slug: 'koko-pria-murah-berkualitas',
+        deskripsi: 'Baju koko pria murah dan berkualitas',
+        kategori_id: 1,
+        harga: 150000,
+        stok: 15,
         rating: 5.0
       }
     ]
@@ -90,36 +102,50 @@ export class ProductComponent implements OnInit {
       },
       {
         id: 4,
-        nama: "Air Pods Max Nouveau",
-        images: "assets/img/Air pods max nouveau.jpeg",
-        slug: 'air-pods-max-nouveau',
-        deskripsi: 'Air Pods Max Nouveau',
+        nama: "Nikon Camera",
+        images: "assets/img/nikon-camera.jpeg",
+        slug: 'nikon-camera',
+        deskripsi: 'Nikon camera',
         kategori_id: 3,
-        harga: 32000,
+        harga: 6700000,
         stok: 55,
         rating: 4.8
       },
       {
         id: 5,
-        nama: "Air Pods Max Nouveau",
-        images: "assets/img/Air pods max nouveau.jpeg",
-        slug: 'air-pods-max-nouveau',
-        deskripsi: 'Air Pods Max Nouveau',
+        nama: "Silicone Case Apple Iphone 13",
+        images: "assets/img/silicone-case-apple-iphone-13.jpeg",
+        slug: 'silicon-case-apple-iphone-13',
+        deskripsi: 'Silicone Case Apple Iphone 13',
         kategori_id: 3,
-        harga: 32000,
+        harga: 25000,
         stok: 55,
         rating: 4.8
       },
       {
         id: 6,
-        nama: "Air Pods Max Nouveau",
-        images: "assets/img/Air pods max nouveau.jpeg",
-        slug: 'air-pods-max-nouveau',
-        deskripsi: 'Air Pods Max Nouveau',
+        nama: "Nike Sneaker Dunk",
+        images: "assets/img/nike-sneaker-dunk.jpeg",
+        slug: 'nike-sneaker-dunk',
+        deskripsi: 'Nike Sneaker Dunk',
         kategori_id: 3,
-        harga: 32000,
-        stok: 55,
+        harga: 350000,
+        stok: 100,
         rating: 4.8
+      },
+    ]
+
+    this.diskon40Persen = [
+      {
+        id: 1,
+        nama: "Wired Mouse",
+        images: "assets/img/wired-mouse.jpeg",
+        slug: 'wired-mouse',
+        deskripsi: 'Wired Mouse',
+        kategori_id: 2,
+        harga: 17000,
+        stok: 10,
+        rating: 5.0
       },
     ]
   }
