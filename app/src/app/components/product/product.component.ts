@@ -147,6 +147,28 @@ export class ProductComponent implements OnInit {
         stok: 10,
         rating: 5.0
       },
+      {
+        id: 2,
+        nama: "Lenovo Thinkpad X270 Intel Core i5-7300U",
+        images: "assets/img/lenovo-thinkpax-x270.jpeg",
+        slug: 'lenovo-thinkpad-x270-intel-core-i5-7300u',
+        deskripsi: 'Lenovo Thinkpad X270',
+        kategori_id: 2,
+        harga: 1500000,
+        stok: 8,
+        rating: 5.0
+      },
+      {
+        id: 3,
+        nama: "Kompor Portable",
+        images: "assets/img/kompor-portable.jpeg",
+        slug: 'kompor-portable',
+        deskripsi: 'Kompor Portable',
+        kategori_id: 2,
+        harga: 17000,
+        stok: 10,
+        rating: 5.0
+      },
     ]
   }
   

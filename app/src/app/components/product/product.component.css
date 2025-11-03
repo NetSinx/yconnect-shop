@@ -3,9 +3,20 @@
   cursor: pointer;
 }
 
+.carousel-item img {
+  width: 1000px;
+  height: 428px;
+}
+
 .kategori-menu a:hover {
   box-shadow: 0px 0px 5px rgba(0, 0, 0, .5);
   transition: all .3s;
+}
+
+.marker {
+  display: inline-block;
+  width: 15px;
+  height: 25px;
 }
 
 .card-product {
@@ -72,7 +83,8 @@
   }
 
   .carousel-item img {
-    height: 300px;
+    width: 1000px;
+    height: 228px;
   }
 
   .card-body p {

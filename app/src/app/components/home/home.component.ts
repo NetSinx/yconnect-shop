@@ -20,10 +20,10 @@ export class HomeComponent implements OnInit {
         id: 2, nama: "Makanan", slug: "makanan", gambar: "assets/img/food-category.png"
       },
       {
-        id: 3, nama: "Minuman", slug: "minuman", gambar: ""
+        id: 3, nama: "Minuman", slug: "minuman", gambar: "assets/img/soft-drink.png"
       },
       {
-        id: 4, nama: "Detergen", slug: "detergen", gambar: ""
+        id: 4, nama: "Detergen", slug: "detergen", gambar: "assets/img/laundry-detergent.png"
       }
     ]
   }
