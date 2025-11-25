@@ -1,0 +1,14 @@
+.add-to-cart:hover {
+  background-color: rgb(243, 243, 243);
+  color: black;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
