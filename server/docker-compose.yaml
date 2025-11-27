@@ -6,7 +6,7 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - netsinx_default
+      - gateway_network
     ports:
       - "80:80"
       - "443:443"
@@ -65,8 +65,8 @@ services:
     depends_on:
       - product-db
     networks:
-      - netsinx_default
-      - server_default
+      - gateway_network
+      - server_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.product-service.rule=PathPrefix(`/api/products`) && Method(`GET`)"
@@ -99,8 +99,8 @@ services:
     depends_on:
       - category-db
     networks:
-      - netsinx_default
-      - server_default
+      - gateway_network
+      - server_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.category-service.rule=PathPrefix(`/api/category`) && Method(`GET`)"
@@ -133,8 +133,8 @@ services:
     depends_on:
       - user-db
     networks:
-      - netsinx_default
-      - server_default
+      - gateway_network
+      - server_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user-service.rule=PathPrefix(`/api/user`)"
@@ -211,8 +211,8 @@ services:
     restart: on-failure
     pull_policy: if_not_present
     networks:
-      - netsinx_default
-      - server_default
+      - gateway_network
+      - server_network
     depends_on:
       - auth-db
     labels:
@@ -244,7 +244,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - netsinx_default
+      - gateway_network
 
   rabbitmq-svc:
     container_name: rabbitmq
@@ -255,10 +255,10 @@ services:
       - "5672:5672"
       - "15672:15672"
     networks:
-      - netsinx_default
+      - gateway_network
 
 networks:
-  netsinx_default:
+  gateway_network:
     external: true
-  server_default:
+  server_network:
     external: true
