@@ -27,7 +27,7 @@ services:
 
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=netsinx_default"
+      - "--providers.docker.network=gateway_network"
 
       - "--api.dashboard=true"
       - "--api.insecure=false"
