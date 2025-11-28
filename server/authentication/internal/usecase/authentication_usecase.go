@@ -96,7 +96,7 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, registerRequest *model.R
 			return nil, echo.ErrInternalServerError
 		}
 
-		if _, err = http.Post("http://localhost:8082/user/register", "application/json", bytes.NewReader(dataByte)); err != nil {
+		if _, err = http.Post("http://user-service:8082/user/register", "application/json", bytes.NewReader(dataByte)); err != nil {
 			a.Log.WithError(err).Error("error getting response from user service")
 			return nil, echo.ErrInternalServerError
 		}

@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math"
-	"time"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/entity"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/gateway/messaging"
 	"github.com/NetSinx/yconnect-shop/server/category/internal/helpers"
@@ -18,6 +16,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"math"
+	"time"
 )
 
 type CategoryUseCase struct {
@@ -45,17 +45,17 @@ func NewCategoryUseCase(config *viper.Viper, db *gorm.DB, log *logrus.Logger, re
 
 func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *model.ListCategoryRequest) (*model.DataResponse[[]model.CategoryResponse], error) {
 	if categoryRequest.Page <= 0 {
-		categoryRequest.Page = 0
+		categoryRequest.Page = 1
 	}
 	if categoryRequest.Size <= 0 {
-		categoryRequest.Size = 0
+		categoryRequest.Size = 20
 	}
 
 	if err := c.Validator.Struct(categoryRequest); err != nil {
 		c.Log.WithError(err).Error("error validating request body")
 		return nil, echo.ErrBadRequest
 	}
-	
+
 	if c.Config.GetBool("redis.enabled") {
 		key := fmt.Sprintf("categoriesCache:%d:%d", categoryRequest.Page, categoryRequest.Size)
 		result, err := c.RedisClient.Get(key).Result()
@@ -64,11 +64,11 @@ func (c *CategoryUseCase) ListCategory(ctx context.Context, categoryRequest *mod
 			if err := json.Unmarshal([]byte(result), categories); err != nil {
 				return nil, echo.ErrInternalServerError
 			}
-	
+
 			return categories, nil
 		}
 	}
-	
+
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -220,23 +220,23 @@ func (c *CategoryUseCase) GetCategoryBySlug(ctx context.Context, categoryRequest
 		c.Log.WithError(err).Error("error validating request body")
 		return nil, echo.ErrBadRequest
 	}
-	
+
 	if c.Config.GetBool("redis.enabled") {
-		result, err := c.RedisClient.Get("categoryCache:"+categoryRequest.Slug).Result()
+		result, err := c.RedisClient.Get("categoryCache:" + categoryRequest.Slug).Result()
 		if err == nil {
 			categoryResponse := new(model.CategoryResponse)
 			if err := json.Unmarshal([]byte(result), categoryResponse); err != nil {
 				c.Log.WithError(err).Error("error unmarshaling data")
 				return nil, echo.ErrInternalServerError
 			}
-	
+
 			return categoryResponse, nil
 		}
 	}
-	
+
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
-	
+
 	category := new(entity.Category)
 	if err := c.CategoryRepository.GetCategoryBySlug(tx, category, categoryRequest.Slug); err != nil {
 		c.Log.WithError(err).Error("error getting category")

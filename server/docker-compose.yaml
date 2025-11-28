@@ -1,7 +1,7 @@
 services:
   traefik-svc:
     container_name: traefik
-    image: traefik:v3.4
+    image: traefik:v3.6
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -51,6 +51,8 @@ services:
     image: mysql
     restart: always
     pull_policy: if_not_present
+    networks:
+      - server_network
     environment:
       MYSQL_ROOT_PASSWORD: "12345678"
       MYSQL_USER: "test"
@@ -85,6 +87,8 @@ services:
     image: mysql
     restart: on-failure
     pull_policy: if_not_present
+    networks:
+      - server_network
     environment:
       MYSQL_ROOT_PASSWORD: "12345678"
       MYSQL_USER: "test"
@@ -119,6 +123,8 @@ services:
     image: mysql
     restart: on-failure
     pull_policy: if_not_present
+    networks:
+      - server_network
     environment:
       MYSQL_ROOT_PASSWORD: "12345678"
       MYSQL_USER: "test"
@@ -199,6 +205,8 @@ services:
     image: mysql
     restart: on-failure
     pull_policy: if_not_present
+    networks:
+      - server_network
     environment:
       MYSQL_ROOT_PASSWORD: "12345678"
       MYSQL_USER: "test"

@@ -1,11 +1,11 @@
 {
     "app": {
         "name": "yconnect_shop_user_service",
-        "host": "localhost",
+        "host": "0.0.0.0",
         "port": 8082
     },
     "database": {
-        "host": "localhost",
+        "host": "db-user",
         "port": 3306,
         "username": "test",
         "password": "test123",

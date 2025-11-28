@@ -17,14 +17,14 @@
         }
     },
     "rabbitmq": {
-        "enabled": true,
+        "enabled": false,
         "host": "rabbitmq",
         "port": 5672,
         "username": "guest",
         "password": "guest"
     },
     "redis": {
-        "enabled": true,
+        "enabled": false,
         "host": "redis",
         "port": 6379,
         "password": "",
