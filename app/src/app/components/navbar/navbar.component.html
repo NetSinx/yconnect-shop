@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg w-100 bg-light sticky-top" #nav>
+  <div class="container-xl">
+    <div class="row align-items-center justify-content-between w-100">
+      <div class="col-lg-3 navbar-brand">
+        <a href="#" class="text-decoration-none text-dark d-flex logo">
+          <img ngSrc="assets/img/y-logo.png" width="40" height="40" priority>
+          <h3 class="m-auto ms-2">Y-Connect Shop</h3>
+        </a>
+        <button class="btn" #button (click)="hamburgerMenu(button, nav, dropdownCategory, preferensi)">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div class="col-lg-6 dropdown-category" #dropdownCategory>
+        <div class="input-group search">
+          <input type="text" class="form-control" placeholder="Cari..." aria-label="Cari..." aria-describedby="button-addon2">
+          <button class="btn btn-dark" type="button" id="button-addon2">Cari</button>
+        </div>
+        <div class="category">
+          <ul>
+            @for(category of categories(); track category.id) {
+              <li>
+                <a href="#" (click)="$event.preventDefault()">
+                  {{ category.nama }}
+                  <!-- <span class="badge text-bg-primary float-end me-2 rounded-pill">{{ category.total }}</span> -->
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-2 preferensi" #preferensi>
+        @if (!isLoggedIn) {
+          <a routerLink="/login" routerLinkActive="showLogin" class="text-decoration-none text-dark fs-5 rounded login p-2">Login <i class="bi bi-box-arrow-in-right"></i></a>
+        }
+        @if (isLoggedIn) {
+          <div class="dropdown-center">
+            <a class="text-decoration-none text-dark dropdown-toggle fs-6 rounded" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img ngSrc="favicon.ico" width="30" height="30" priority>
+              netsinx_15
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" routerLink="/dashboard"><i class="bi bi-graph-up"></i> Dashboard</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+            </ul>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</nav>

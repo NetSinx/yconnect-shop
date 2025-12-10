@@ -1,9 +1,8 @@
 export interface User {
-  name: string;
+  nama_lengkap: string;
   username: string;
-  avatar: string;
   email: string;
-  alamat: string;
-  no_telp: string;
+  no_hp: string;
   password: string;
+  konfirmasi_password: string;
 }

@@ -1,0 +1,7 @@
+.btn-brown {
+    background-color: rgb(43, 27, 27);
+}
+
+.btn-brown:active {
+    background-color: rgb(22, 14, 14);
+}

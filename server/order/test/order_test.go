@@ -48,7 +48,6 @@ func TestAddOrder(t *testing.T) {
 			Stok: 10,
 			Rating: 4.8,
 		},
-		Username: "agus12",
 		Kuantitas: 5,
 		Status: "Dalam pengiriman",
 		Estimasi: time.Now().AddDate(0, 0, 3),

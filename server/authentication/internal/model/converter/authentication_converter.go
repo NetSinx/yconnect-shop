@@ -1,0 +1,18 @@
+package converter
+
+import (
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/entity"
+	"github.com/NetSinx/yconnect-shop/server/authentication/internal/model"
+)
+
+func UserRegisterToResponse(entity *entity.UserAuthentication) *model.RegisterResponse {
+	return &model.RegisterResponse{
+		ID:          entity.ID,
+		NamaLengkap: entity.NamaLengkap,
+		Username:    entity.Username,
+		Email:       entity.Email,
+		NoHP:        entity.NoHP,
+		CreatedAt:   entity.CreatedAt,
+		UpdatedAt:   entity.UpdatedAt,
+	}
+}

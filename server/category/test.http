@@ -1,0 +1,9 @@
+GET http://localhost:8080/api/category
+###
+POST http://localhost:8080/api/admin/category
+Content-Type: application/json
+Cookie: csrf_token=iMPyxmXcQVLhAERsIdXLmOwNkAbDTnL; Path=/; HttpOnly; Secure; SameSite=Strict
+
+{
+    "nama": "Elegant"
+}

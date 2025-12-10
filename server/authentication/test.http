@@ -1,0 +1,25 @@
+GET http://localhost:8086/api/auth/csrf-token
+###
+POST http://localhost:8086/api/auth/login
+Content-Type: application/json
+Cookie: csrf_token=KSTkWRenXwiHMwVRyGAiODtBFWnBpUEp; Path=/; Expires=Thu, 11 Sep 2025 03:47:40 GMT; HttpOnly; Secure; SameSite=Strict
+X-CSRF-Token: KSTkWRenXwiHMwVRyGAiODtBFWnBpUEp
+
+{
+    "email": "yasin@gmail.com",
+    "password": "yasin123"
+}
+###
+POST http://localhost:8086/api/auth/register
+Content-Type: application/json
+Cookie: csrf_token=dFZdVaqxBfrfPDcPBJUKNRvcxRLdqVfF; Path=/; Expires=Tue, 09 Sep 2025 14:56:03 GMT; HttpOnly; Secure; SameSite=Strict
+X-CSRF-Token: dFZdVaqxBfrfPDcPBJUKNRvcxRLdqVfF
+
+{
+    "nama_lengkap": "Yasin Ayatulloh Hakim",
+    "username": "netsinx",
+    "email": "yasin@gmail.com",
+    "no_hp": "089676798686",
+    "password": "@Abyasinah22123",
+    "konfirmasi_password": "@Abyasinah22123"
+}

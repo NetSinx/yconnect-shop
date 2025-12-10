@@ -1,27 +1,22 @@
 node('default-node') {
-  environment {
-    DOCKER_IMAGE = "yasinah22/product-img"
-    IMAGE_TAG = "latest"
-  }
+  withEnv(["DOCKER_IMAGE=yasinah22/product-img", "IMAGE_TAG=latest", "SERVICE_NAME=product"]) {
+    try {
+      stage('Checkout') {
+        git url: 'https://github.com/NetSinx/yconnect-shop', branch: 'master'
+      }
 
-  stage('Checkout') {
-    git url: 'https://github.com/NetSinx/yconnect-shop', branch: 'master'
-  }
+      stage('Build') {
+        docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}", "server/${SERVICE_NAME}/.")
+      }
 
-  stage('Build') {
-    docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}")
-  }
-
-  stage('Deploy') {
-    def app = docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}")
-    
-    docker.withRegistry('', 'docker-reg') {
-      app.push()
-    }
-  }
-
-  post {
-    cleanup {
+      stage('Deploy') {
+        def app = docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}")
+        
+        docker.withRegistry('', 'docker-reg') {
+          app.push()
+        }
+      }
+    } finally {
       sh "docker rmi ${DOCKER_IMAGE}:${IMAGE_TAG}"
     }
   }

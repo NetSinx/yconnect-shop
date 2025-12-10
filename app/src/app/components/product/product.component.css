@@ -1,45 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Playwrite+DK+Loopet:wght@100..400&display=swap');
-
-.hero-bg .content {
-  height: 86vh;
+.sidebar input,
+.sidebar label {
+  cursor: pointer;
 }
 
-.hero-bg .overlay h1 {
-  font-family: "Playwrite DK Loopet", cursive;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 50px;
+.carousel-item img {
+  width: 1000px;
+  height: 428px;
 }
 
-.hero-bg img {
-  margin-top: 1rem;
+.kategori-menu a:hover {
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, .5);
+  transition: all .3s;
 }
 
-.hero-bg .overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-  position: relative;
-  height: inherit;
-  z-index: 2;
-}
-
-.title-menu {
-  border-bottom: 2px solid #0099ff;
-  display: inline;
-}
-
-.banner-info {
-  height: 300px;
+.marker {
+  display: inline-block;
+  width: 15px;
+  height: 25px;
 }
 
 .card-product {
-  display: inline-block;
   color: black;
   width: 100%;
   background-color: #fff;
   box-sizing: border-box;
   transition: all ease-in-out;
   transition-duration: 300ms;
-  height: 450px;
 }
 
 .card-product:hover {
@@ -47,15 +33,11 @@
 }
 
 .card-product .image {
-  position: relative;
-  height: 40vh;
+  height: 200px;
 }
 
 .card-product .image img {
-  width: 100%;
-  height: 100%;
   background-size: cover;
-  position: absolute;
   transition: all ease-in-out;
   transition-duration: 300ms;
 }
@@ -74,61 +56,42 @@
   z-index: 5;
   background-color: #e7e7e7;
   width: 100%;
-  height: 40vh;
+  height: 200px;
   opacity: .4;
 }
 
+.card-product .text-truncate {
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+
 .card-body {
-  padding-left: 20px;
-  padding-top: 10px;
-  padding-bottom: 20px;
+  padding: 15px;
 }
 
-.rating {
-  color: #dadada; /* Warna bintang */
-}
-
-.star {
-  font-size: 1.5em;
-}
-
-.star.filled {
-  color: #ffcc00; /* Warna bintang terisi */
-}
-
-footer {
-  padding-top: 2rem;
-  padding-bottom: 1rem;
-}
-
-footer ul li {
-  list-style: none;
-  margin-bottom: 10px;
-}
-
-footer a {
-  text-decoration: none;
-  color: #fff;
+.rating .star {
+  font-size: 20px;
+  color: #ffcc00;
 }
 
 @media (max-width: 920px) {
-  .hero-bg .content {
-    height: 100vh;
+  .sidebar {
+    display: none;
   }
 
-  .hero-bg img {
-    margin-top: 0px;
+  .carousel-item img {
+    width: 1000px;
+    height: 228px;
   }
 
-  .hero-bg .overlay {
-    height: 100vh;
+  .card-body p {
+    font-size: 16px;
   }
 
-  .event {
-    margin-top: 5rem !important;
-  }
-
-  .card-product {
-    height: 550px;
+  .card-body h4 {
+    font-size: 20px;
   }
 }

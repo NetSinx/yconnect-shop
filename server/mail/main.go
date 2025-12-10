@@ -60,15 +60,20 @@ func sendMail(ctx context.Context, config *oauth2.Config, token *oauth2.Token, r
 		return err
 	}
 
-	messageStr := []byte(
-		"From: yasin03ckm@gmail.com\r\n"+
-		"To: "+ receive +"\r\n"+
-		"Subject: Tester Mail\r\n"+
-		"Content-Type: text/html; charset=utf-8\r\n\r\n"+
-		"<h1>Welcome to Y-Connect Shop</h1>"+
-		"<p>Your OTP Code: " + otpCode + "</p>")
+	emailAccount := os.Getenv("EMAIL_ACCOUNT")
+	message := []byte(fmt.Sprintf(
+		   `From: %s
+			To: receive
+			Subject: Email Verification
+			Content-Type: text/html; charset=utf-8
+			
+			
+			<h1>Welcome to Y-Connect Shop</h1>
+			<p>Your OTP Code: %s</p>`
+		, emailAccount, otpCode)
+	)
 
-	_, err = gmailService.Users.Messages.Send("me", &gmail.Message{Raw: base64.URLEncoding.EncodeToString(messageStr)}).Do()
+	_, err = gmailService.Users.Messages.Send("me", &gmail.Message{Raw: base64.URLEncoding.EncodeToString(message)}).Do()
 	if err != nil {
 		return err
 	}
@@ -78,7 +83,7 @@ func sendMail(ctx context.Context, config *oauth2.Config, token *oauth2.Token, r
 
 func SendOTP() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if (r.Method == "POST" && r.URL.Path == "/sendOTP") {
+		if (r.Method == "POST" && r.URL.Path == "/send-otp") {
 			var reqUser domain.ReqUser
 
 			w.Header().Set("Content-Type", "application/json")

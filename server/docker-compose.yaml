@@ -1,0 +1,272 @@
+services:
+  traefik-svc:
+    container_name: traefik
+    image: traefik:v3.6
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - gateway_network
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs:/certs:ro
+      - ./dynamic:/dynamic:ro
+    command:
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+
+      - "--providers.file.filename=/dynamic/tls.yaml"
+
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=gateway_network"
+
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+
+      - "--log.level=INFO"
+      - "--accesslog=true"
+      - "--metrics.prometheus=true"
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.localhost`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls=true"
+
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$VlzSzdUv$$6mCd67FVs7J5hg1XIySf.1"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
+
+  product-db:
+    container_name: db-product
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    networks:
+      - server_network
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "db_product"
+
+  product:
+    container_name: product-service
+    image: product-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - product-db
+    networks:
+      - gateway_network
+      - server_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.product-service.rule=PathPrefix(`/api/products`) && Method(`GET`)"
+      - "traefik.http.routers.product-service.entrypoints=websecure"
+      - "traefik.http.routers.product-service.tls=true"
+      - "traefik.http.routers.product-service.service=product-service"
+      - "traefik.http.routers.product-service-admin.rule=PathPrefix(`/api/admin/products`)"
+      - "traefik.http.routers.product-service-admin.entrypoints=websecure"
+      - "traefik.http.routers.product-service-admin.tls=true"
+      - "traefik.http.routers.product-service-admin.middlewares=auth"
+      - "traefik.http.routers.product-service-admin.service=product-service"
+      - "traefik.http.services.product-service.loadbalancer.server.port=8081"
+
+  category-db:
+    container_name: db-category
+    image: mysql
+    restart: on-failure
+    pull_policy: if_not_present
+    networks:
+      - server_network
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "db_category"
+
+  category:
+    container_name: category-service
+    image: category-img
+    restart: on-failure
+    pull_policy: if_not_present
+    depends_on:
+      - category-db
+    networks:
+      - gateway_network
+      - server_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.category-service.rule=PathPrefix(`/api/category`) && Method(`GET`)"
+      - "traefik.http.routers.category-service.entrypoints=websecure"
+      - "traefik.http.routers.category-service.tls=true"
+      - "traefik.http.routers.category-service.service=category-service"
+      - "traefik.http.routers.category-service-admin.rule=PathPrefix(`/api/admin/category`)"
+      - "traefik.http.routers.category-service-admin.entrypoints=websecure"
+      - "traefik.http.routers.category-service-admin.tls=true"
+      - "traefik.http.routers.category-service-admin.middlewares=auth"
+      - "traefik.http.routers.category-service-admin.service=category-service"
+      - "traefik.http.services.category-service.loadbalancer.server.port=8080"
+
+  user-db:
+    container_name: db-user
+    image: mysql
+    restart: on-failure
+    pull_policy: if_not_present
+    networks:
+      - server_network
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "db_user"
+
+  user:
+    container_name: user-service
+    image: user-img
+    restart: on-failure
+    pull_policy: if_not_present
+    depends_on:
+      - user-db
+    networks:
+      - gateway_network
+      - server_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user-service.rule=PathPrefix(`/api/user`)"
+      - "traefik.http.routers.user-service.entrypoints=websecure"
+      - "traefik.http.routers.user-service.tls=true"
+      - "traefik.http.routers.user-service.middlewares=auth"
+      - "traefik.http.routers.user-service.service=user-service"
+      - "traefik.http.services.user-service.loadbalancer.server.port=8082"
+
+  cart-db:
+    container_name: db-cart
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "test_db"
+
+  cart:
+    container_name: cart-service
+    image: cart-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - cart-db
+    environment:
+      - DB_USER=test
+      - DB_PASSWORD=test123
+      - DB_HOST=db-cart
+      - DB_PORT=3306
+      - DB_DATABASE=test_db
+
+  order-db:
+    container_name: db-order
+    image: mysql
+    restart: always
+    pull_policy: if_not_present
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "test_db"
+
+  order:
+    container_name: order-service
+    image: order-img
+    restart: always
+    pull_policy: if_not_present
+    depends_on:
+      - order-db
+    environment:
+      - DB_USER=test
+      - DB_PASSWORD=test123
+      - DB_HOST=db-order
+      - DB_PORT=3306
+      - DB_DATABASE=test_db
+
+  auth-db:
+    container_name: db-auth
+    image: mysql
+    restart: on-failure
+    pull_policy: if_not_present
+    networks:
+      - server_network
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test123"
+      MYSQL_DATABASE: "db_auth"
+
+  auth:
+    container_name: auth-service
+    image: auth-img
+    restart: on-failure
+    pull_policy: if_not_present
+    networks:
+      - gateway_network
+      - server_network
+    depends_on:
+      - auth-db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth-service-get.rule=PathPrefix(`/api/auth`) && Method(`GET`)"
+      - "traefik.http.routers.auth-service-get.entrypoints=websecure"
+      - "traefik.http.routers.auth-service-get.tls=true"
+      - "traefik.http.routers.auth-service-get.service=auth-service"
+      - "traefik.http.routers.auth-service-post.rule=PathPrefix(`/api/auth`) && Method(`POST`)"
+      - "traefik.http.routers.auth-service-post.entrypoints=websecure"
+      - "traefik.http.routers.auth-service-post.tls=true"
+      - "traefik.http.routers.auth-service-post.service=auth-service"
+      - "traefik.http.services.auth-service.loadbalancer.server.port=8086"
+      - "traefik.http.middlewares.auth.forwardauth.address=https://auth-service:8086/api/auth/verify"
+      - "traefik.http.middlewares.auth.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.auth.forwardauth.authResponseHeaders=X-User-ID,X-User-Role"
+
+  mail:
+    container_name: mail-service
+    image: mail-img
+    restart: on-failure
+    pull_policy: if_not_present
+
+  redis-svc:
+    container_name: redis
+    pull_policy: if_not_present
+    image: redis
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    networks:
+      - gateway_network
+
+  rabbitmq-svc:
+    container_name: rabbitmq
+    image: rabbitmq:4-management
+    pull_policy: if_not_present
+    restart: on-failure
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - gateway_network
+
+networks:
+  gateway_network:
+    external: true
+  server_network:
+    external: true

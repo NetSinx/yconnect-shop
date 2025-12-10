@@ -1,36 +1,53 @@
 <div class="container">
-  <div class="row justify-content-center align-items-center" style="height: 90vh;">
-    <div class="col-lg-4 col-md-8 col-9 bg-light rounded shadow px-5 pt-3 pb-5">
+  <div class="row justify-content-center align-items-center vh-100">
+    <div class="col-lg-5 col-md-8 col-9 bg-light rounded shadow px-5 pt-3 pb-5">
+      <a routerLink="/"><i class="bi bi-arrow-left fs-3 text-black"></i></a>
       <div class="d-flex justify-content-center">
-        <img src="../../../assets/y-logo.png" width="70" class="rounded-circle">
+        <a routerLink="/">
+          <img src="../../../assets/img/y-logo.png" width="70" class="rounded-circle">
+        </a>
       </div>
-      <h1 class="text-center">Login</h1>
-      <div class="alert alert-danger mt-4" role="alert" *ngIf="errorLogin">
-        {{ errorLogin }}
-      </div>
+      <h3 class="text-center mt-3">Login | Y-Connect Shop</h3>
+      @if (errorLogin) {
+        <div class="alert alert-danger mt-4" role="alert">
+          {{ errorLogin }}
+        </div>
+      } @else if (successMessage) {
+        <div class="alert alert-success mt-4" role="alert">
+          {{ successMessage }}
+        </div>
+      }
       <div class="form-login mt-4">
         <form [formGroup]="formGroup"(ngSubmit)="userLogin()">
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" formControlName="UsernameorEmail" id="UsernameorEmail" placeholder="Email / Username" autofocus>
-            <label for="UsernameorEmail">Email / Username</label>
-            <div *ngIf="f['UsernameorEmail'].invalid && (f['UsernameorEmail'].dirty || f['UsernameorEmail'].touched)">
-              <p class="text-danger" *ngIf="f['UsernameorEmail'].errors?.['required']">
-                *Username / Email wajib diisi!
-              </p>
-            </div>
+            <input type="text" class="form-control" formControlName="email" id="email" placeholder="Email" autofocus>
+            <label for="email">Email</label>
+            @if (email.invalid && (email.dirty || email.touched)) {
+              <div>
+                @if (email.hasError("required")) {
+                  <p class="text-danger">
+                    *Email wajib diisi!
+                  </p>
+                }
+              </div>
+            }
           </div>
           <div class="form-floating mb-3">
             <input type="password" class="form-control" formControlName="password" id="password" placeholder="Password">
             <label for="password">Password</label>
-            <div *ngIf="f['password']?.invalid && (f['password'].dirty || f['password'].touched)">
-              <p class="text-danger" *ngIf="f['password'].errors?.['required']">
-                *Password wajib diisi!
-              </p>
-            </div>
+            @if (password.invalid && (password.dirty || password.touched)) {
+              <div>
+                @if (password.hasError('required')) {
+                  <p class="text-danger">
+                    *Password wajib diisi!
+                  </p>
+                }
+              </div>
+            }
           </div>
           <p class="text-center">Tidak punya akun? <a routerLink="/register">Daftar</a></p>
           <div class="row mt-4 px-2">
-            <button type="submit" class="btn btn-primary" [disabled]="formGroup.invalid">Login</button>
+            <button type="submit" class="btn btn-brown text-white" [disabled]="formGroup.invalid">Login</button>
           </div>
         </form>
       </div>
