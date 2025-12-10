@@ -18,11 +18,15 @@
     </div>
   </div> -->
   <!-- @if (product) { -->
-  <div class="row border rounded mt-4">
+  <div class="row shadow rounded mt-4">
     <div class="col-lg-5 my-4">
       <!-- @for (img of product.images; track img) { -->
       <img src="assets/img/kompor-portable.jpeg" class="w-100" />
       <!-- } -->
+      <button class="btn btn-transparent float-end mt-2 border-0">
+        <i class="bi bi-heart fs-5 me-1 text-danger"></i>
+        Favorit (900)
+      </button>
     </div>
     <div class="col-lg-7 mt-4">
       <h4 class="fw-bold">Kompor Portable</h4>
@@ -85,35 +89,53 @@
           </tr>
         </table>
       </div>
-      <button class="btn btn-outline-dark me-3 add-to-cart">Tambah ke Keranjang</button>
+      <button class="btn btn-outline-dark me-3 add-to-cart">
+        <i class="bi bi-cart-plus"></i>
+        Tambah ke Keranjang
+      </button>
       <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
         Beli Sekarang
       </button>
-      <div
-        class="modal fade"
-        id="staticBackdrop"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        tabindex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">...</div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Understood</button>
-            </div>
+    </div>
+    <div
+      class="modal fade"
+      id="staticBackdrop"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="staticBackdropLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">...</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Understood</button>
           </div>
         </div>
       </div>
     </div>
   </div>
   <!-- } -->
+  <div class="row shadow mt-4">
+    <div class="col-lg m-3">
+      <h4 class="p-2 bg-body-tertiary">Spesifikasi Produk</h4>
+      <table class="product-spec mt-4">
+        <tr>
+          <td><b>Kategori</b></td>
+          <td>Kompor</td>
+        </tr>
+        <tr>
+          <td><b>Merek</b></td>
+          <td>Ashutchi</td>
+        </tr>
+      </table>
+    </div>
+  </div>
 </div>
 <app-footer />
