@@ -16,3 +16,47 @@ input[type='number'] {
 .spesifikasi-produk table td {
   padding-left: 120px;
 }
+
+.user-comment .details p {
+  margin: 0;
+}
+
+.user-comment .details p.tanggal {
+  font-size: 12px;
+}
+
+.star-display {
+  display: inline-block;
+  font-size: 24px;
+  font-family: sans-serif;
+  line-height: 1;
+  position: relative;
+  color: #e0e0e0;
+}
+
+.star-display::before {
+  content: '★★★★★';
+  letter-spacing: 2px;
+}
+
+.star-display::after {
+  content: '★★★★★';
+  letter-spacing: 2px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--rating-width);
+  overflow: hidden;
+  color: #ffcc00;
+  white-space: nowrap;
+}
+
+.rating-product {
+  font-size: 32px;
+  color: #fca903;
+}
+
+.rating {
+  font-size: 32px;
+  font-weight: 500;
+}
