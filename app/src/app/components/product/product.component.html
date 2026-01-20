@@ -1,198 +1,28 @@
 <div class="container-xl mt-4">
   <div class="row">
     <div class="col-lg content">
-      <div
-        id="carouselIndicators"
-        class="carousel slide px-4"
-        data-bs-ride="carousel"
-      >
-        <div class="carousel-indicators">
-          <button
-            type="button"
-            data-bs-target="#carouselIndicators"
-            data-bs-slide-to="0"
-            class="active"
-            aria-current="true"
-            aria-label="Slide 1"
-          ></button>
-          <button
-            type="button"
-            data-bs-target="#carouselIndicators"
-            data-bs-slide-to="1"
-            aria-label="Slide 2"
-          ></button>
-          <button
-            type="button"
-            data-bs-target="#carouselIndicators"
-            data-bs-slide-to="2"
-            aria-label="Slide 3"
-          ></button>
-        </div>
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img
-              src="assets/img/banner1.jpeg"
-              class="object-fit-fill d-block w-100 rounded-3"
-            />
-          </div>
-          <div class="carousel-item">
-            <img
-              src="assets/img/banner2.jpeg"
-              class="object-fit-fill d-block w-100 rounded-3"
-            />
-          </div>
-          <div class="carousel-item">
-            <img
-              src="assets/img/banner3.jpeg"
-              class="object-fit-fill d-block w-100 rounded-3"
-            />
-          </div>
-        </div>
-        <button
-          class="carousel-control-prev"
-          type="button"
-          data-bs-target="#carouselIndicators"
-          data-bs-slide="prev"
-        >
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button
-          class="carousel-control-next"
-          type="button"
-          data-bs-target="#carouselIndicators"
-          data-bs-slide="next"
-        >
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-      </div>
-
       <div class="container pb-5">
-        <div class="kategori-menu border rounded mt-4">
-          <p class="fs-5 fw-bold mt-3 ms-3">Kategori</p>
-          <div class="row justify-content-center align-items-center text-center px-3">
-            @for (kategori of categorySidebar(); track kategori.id) {
-            <a class="col-lg border text-decoration-none pt-4 text-black" href="#">
-              <img ngSrc="{{ kategori.gambar }}" class="mb-3" width="60" height="60">
-              <p>{{ kategori.nama }}</p>
-            </a>
-            }
-          </div>
-        </div>
-
-        <div class="my-4">
-          <span class="marker me-2 bg-dark"></span>
-          <h2 class="title-menu font-sans fw-bold mt-4 d-inline-block">Promo Seru!</h2>
-        </div>
-
         <div class="row pt-3 justify-content-start">
-          @for (product of promoProducts; track product.id) {
-          <div class="col-lg-3 col-6 mb-4">
-            <div
-              class="border rounded-3 overflow-hidden shadow"
-              style="min-height: 20rem"
-            >
-              <a
-                routerLink="/product/{{ product.slug }}"
-                class="card-product position-relative text-decoration-none"
-              >
-                <div class="image overflow-hidden">
-                  <div class="cover"></div>
-                  <img
-                    ngSrc="{{ product.images }}"
-                    class="w-100"
-                    width="300"
-                    height="300"
-                    priority
-                  />
-                </div>
-                <div class="card-body">
-                  <p class="fs-5 text-truncate">{{ product.nama }}</p>
-                  <h4>{{ product.harga | currency : "Rp " }}</h4>
-                  <div class="rating">
-                    <span class="star"> &#9733; </span>
-                    {{ product.rating | number : "1.1-2" }}
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div>
-          }
-
-          <div class="my-4">
-            <span class="marker me-2 bg-dark"></span>
-            <h2 class="title-menu font-sans fw-bold mt-4 d-inline-block">Flash Sale!</h2>
-          </div>
-
-          <div class="row pt-3 justify-content-start">
-            @for (product of flashSaleProducts; track product.id) {
-            <div class="col-lg-3 col-6 mb-4">
-              <div class="border rounded-3 overflow-hidden shadow" style="min-height: 20rem">
-                <a
-                  routerLink="/product/{{ product.slug }}"
-                  class="card-product position-relative text-decoration-none"
-                >
-                  <div class="image overflow-hidden">
-                    <div class="cover"></div>
-                    <img
-                      ngSrc="{{ product.images }}"
-                      class="w-100"
-                      height="300"
-                      width="300"
-                    />
-                  </div>
-                  <div class="card-body">
-                    <p class="fs-5">{{ product.nama }}</p>
-                    <h4>{{ product.harga | currency : "Rp " }}</h4>
-                    <div class="rating">
-                      <span class="star"> &#9733; </span>
-                      {{ product.rating | number : "1.1-2" }}
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </div>
-            }
-          </div>
-
-          <div class="my-4">
-            <span class="marker me-2 bg-dark"></span>
-            <h2 class="title-menu font-sans fw-bold mt-4 d-inline-block">
-              Diskon sampai 40%!
-            </h2>
-          </div>
-
-          <div class="row pt-3 justify-content-start">
-            @for (product of diskon40Persen; track product.id) {
+          @for (product of products; track product.id) {
             <div class="col-lg-3 col-6 mb-4">
               <div class="border rounded-3 overflow-hidden shadow">
-                <a
-                  routerLink="/product/{{ product.slug }}"
-                  class="card-product position-relative text-decoration-none"
-                >
+                <a routerLink="/product/{{ product.slug }}" class="card-product position-relative text-decoration-none">
                   <div class="image overflow-hidden">
                     <div class="cover"></div>
-                    <img
-                      ngSrc="{{ product.images }}"
-                      class="w-100"
-                      width="300"
-                      height="300"
-                    />
+                    <img ngSrc="{{ product.images }}" class="w-100" width="300" height="300" priority />
                   </div>
                   <div class="card-body">
-                    <p class="fs-5">{{ product.nama }}</p>
-                    <h4>{{ product.harga | currency: "Rp " }}</h4>
+                    <p class="fs-5 text-truncate">{{ product.nama }}</p>
+                    <h4>{{ product.harga | currency: 'Rp ' }}</h4>
                     <div class="rating">
-                      <span class="star"> &#9733; </span>
-                      {{ product.rating | number : "1.1-2" }}
+                      <span class="star">&#9733;</span>
+                      {{ product.rating | number: '1.1-2' }}
                     </div>
                   </div>
                 </a>
               </div>
             </div>
-            }
-          </div>
+          }
         </div>
       </div>
     </div>
