@@ -18,7 +18,7 @@
     </div>
   </div> -->
   <!-- @if (product) { -->
-  <div class="row border rounded mt-4">
+  <div class="row border rounded mt-4 pb-4">
     <div class="col-lg-5 my-4">
       <!-- @for (img of product.images; track img) { -->
       <img src="assets/img/kompor-portable.jpeg" class="w-100" />
@@ -47,7 +47,7 @@
                 <label class="form-check-label" for="tipe">Portable</label>
               </div>
               <div class="form-check d-inline-block ms-3">
-                <input class="form-check-input" type="radio" name="radioDefault" id="tipe2" checked />
+                <input class="form-check-input" type="radio" name="radioDefault" id="tipe2" />
                 <label class="form-check-label" for="tipe2">Elektrik</label>
               </div>
             </td>
@@ -85,32 +85,49 @@
           </tr>
         </table>
       </div>
-      <button class="btn btn-outline-dark me-3 add-to-cart">Tambah ke Keranjang</button>
-      <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-        Beli Sekarang
+      <button class="btn btn-outline-dark me-3 add-to-cart">
+        <i class="bi bi-cart-plus"></i>
+        Tambah ke Keranjang
       </button>
-      <div
-        class="modal fade"
-        id="staticBackdrop"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        tabindex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">...</div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Understood</button>
-            </div>
-          </div>
-        </div>
+      <button type="button" class="btn btn-dark">Beli Sekarang</button>
+    </div>
+  </div>
+  <div class="row border rounded mt-2 p-3">
+    <div class="spesifikasi-produk mb-5">
+      <p class="fs-5 fw-bold p-2 bg-body-tertiary">Spesifikasi Produk</p>
+      <table cellpadding="10">
+        <tr>
+          <th>Kategori</th>
+          <td>Kompor</td>
+        </tr>
+        <tr>
+          <th>Merek</th>
+          <td>Asutchi</td>
+        </tr>
+        <tr>
+          <th>Stok</th>
+          <td>Tersedia</td>
+        </tr>
+        <tr>
+          <th>Jenis Garansi</th>
+          <td>Resmi</td>
+        </tr>
+      </table>
+    </div>
+    <div class="deskripsi-produk">
+      <p class="fs-5 fw-bold p-2 bg-body-tertiary">Deskripsi Produk</p>
+      <p class="ps-2">Kompor ini adalah kompor portable yang simple dan efisien.</p>
+    </div>
+  </div>
+  <div class="row border rounded mt-2 p-3">
+    <p class="fs-5 fw-bold p-2 bg-body-tertiary">Peniilaian Produk</p>
+    <div class="user-comment d-flex">
+      <div class="profile-img">
+        <img src="assets/img/account.png" width="40" />
+      </div>
+      <div class="details ms-2">
+        <p class="fw-bold">netsinx</p>
+        <p class="tanggal">20-01-2026</p>
       </div>
     </div>
   </div>
