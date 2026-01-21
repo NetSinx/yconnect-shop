@@ -14,7 +14,8 @@
   opacity: 0;
   height: 100vh;
   position: fixed;
-  top: 90px;
+  top: 85px;
+  left: 0;
   align-self: flex-start;
   overflow-y: auto;
   transition: all 0.3s ease-in-out;
@@ -34,13 +35,16 @@
 }
 
 .content-wrapper {
-  flex-grow: 1;
-  transition: all 0.3s ease-in-out;
-  height: 100%;
-  overflow-y: auto;
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
 }
 
-.carousel-item img {
+.content-wrapper.pushed {
+  margin-left: 250px;
+}
+
+carousel-item img {
   width: 1000px;
   height: 428px;
 }
