@@ -171,7 +171,7 @@ export class ProductComponent implements OnInit {
   public getProducts(): void {
     this.productService.getProducts().subscribe(resp => {
       this.loadingService.setLoading(false);
-      this.promoProducts = resp.data;
+      this.products = resp.data;
     });
   }
 

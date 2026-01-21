@@ -12,25 +12,28 @@ import { PageForbiddenComponent } from './components/page-forbidden/page-forbidd
 import { guestGuard } from './guard/guest/guest.guard';
 import { HomeComponent } from './components/home/home.component';
 
-const productDetailRoute: ResolveFn<string> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): string | Observable<string> | Promise<string> => {
-  return inject(ProductService).getDetailProduct(route.paramMap.get("slug")!).pipe(
-    map(product => `${product.data.nama} | Y-Connect Shop`)
-  )
-}
+const productDetailRoute: ResolveFn<string> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+): string | Observable<string> | Promise<string> => {
+  return inject(ProductService)
+    .getDetailProduct(route.paramMap.get('slug')!)
+    .pipe(map(product => `${product.data.nama} | Y-Connect Shop`));
+};
 
 const routes: Routes = [
-  {path: '', component: HomeComponent, title: 'Y-Connect Shop'},
-  {path: 'product/:slug', component: ProductDetailComponent},
-  {path: 'register', component: RegisterComponent, title: "Register | Y-Connect Shop", canActivate: [guestGuard]},
-  {path: 'login', component: LoginComponent, title: "Login | Y-Connect Shop", canActivate: [guestGuard]},
-  {path: 'dashboard', component: DashboardComponent, title: "Dashboard | Y-Connect Shop", canActivate: [authGuard]},
-  {path: 'forbidden', component: PageForbiddenComponent, title: "Forbidden | Y-Connect Shop"},
-  {path: '**', component: PageNotFoundComponent, title: "Upss... | Y-Connect Shop"}
+  { path: '', component: HomeComponent, title: 'Y-Connect Shop' },
+  { path: 'product/:slug', component: ProductDetailComponent },
+  { path: 'register', component: RegisterComponent, title: 'Register | Y-Connect Shop', canActivate: [guestGuard] },
+  { path: 'login', component: LoginComponent, title: 'Login | Y-Connect Shop', canActivate: [guestGuard] },
+  { path: 'dashboard', component: DashboardComponent, title: 'Dashboard | Y-Connect Shop', canActivate: [authGuard] },
+  { path: 'forbidden', component: PageForbiddenComponent, title: 'Forbidden | Y-Connect Shop' },
+  { path: '**', component: PageNotFoundComponent, title: 'Upss... | Y-Connect Shop' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' })],
   exports: [RouterModule]
 })
+export class AppRoutingModule {}
 
-export class AppRoutingModule { }
