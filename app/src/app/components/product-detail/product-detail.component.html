@@ -23,6 +23,10 @@
       <!-- @for (img of product.images; track img) { -->
       <img src="assets/img/kompor-portable.jpeg" class="w-100" />
       <!-- } -->
+      <button class="btn btn-favorit d-flex align-items-center float-end" (click)="toggleFavorit()">
+        <i class="bi fs-5 me-2 text-danger" [class.bi-heart]="!isFavorite" [class.bi-heart-fill]="isFavorite"></i>
+        Favorit (2)
+      </button>
     </div>
     <div class="col-lg-7 mt-4">
       <h4 class="fw-bold">Kompor Portable</h4>
@@ -119,7 +123,7 @@
       <p class="ps-2">Kompor ini adalah kompor portable yang simple dan efisien.</p>
     </div>
   </div>
-  <div class="row border rounded mt-2 p-3">
+  <div class="row border rounded mt-2 mb-4 p-3">
     <p class="fs-5 fw-bold p-2 bg-body-tertiary">Penilaian Produk</p>
     <div class="border rounded bg-body-tertiary mb-3 ps-4">
       <p class="fs-5 m-0">

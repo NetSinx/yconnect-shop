@@ -60,3 +60,13 @@ input[type='number'] {
   font-size: 32px;
   font-weight: 500;
 }
+
+.btn-favorit {
+  border: none;
+}
+
+.btn-favorit:focus,
+.btn-favorit:active {
+  outline: none;
+  box-shadow: none;
+}

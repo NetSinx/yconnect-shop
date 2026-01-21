@@ -1,39 +1,108 @@
-<div class="container-xl mt-4">
-  <div class="row">
-    <div class="col-lg content">
-      <div class="container pb-5">
-        <div class="row pt-3 justify-content-start">
-          @for (product of products; track product.id) {
-            <div class="col-lg-3 col-6 mb-4 d-flex align-items-stretch">
-              <div class="border rounded-3 overflow-hidden shadow h-100 w-100">
-                <a
-                  routerLink="/product/{{ product.slug }}"
-                  class="card-product position-relative text-decoration-none d-flex flex-column h-100"
-                >
-                  <div class="image overflow-hidden">
-                    <div class="cover"></div>
-                    <img
-                      ngSrc="{{ product.images }}"
-                      class="w-100"
-                      width="300"
-                      height="300"
-                      style="object-fit: cover"
-                    />
-                  </div>
-                  <div class="card-body d-flex flex-column p-3">
-                    <p class="fs-5 text-truncate mb-2">{{ product.nama }}</p>
-                    <div class="mt-auto">
-                      <h4>{{ product.harga | currency: 'Rp ' }}</h4>
-                      <div class="rating">
-                        <span class="star">&#9733;</span>
-                        {{ product.rating | number: '1.1-2' }}
+<div class="d-flex main-layout">
+  <div class="sidebar border-end bg-white" [class.open]="layoutService.sidebarOpen()">
+    <div class="sidebar-content p-3">
+      <h5 class="mb-3 fw-bold">Kategori</h5>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-laptop me-2"></i>
+          Elektronik
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-person me-2"></i>
+          Pakaian Pria
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+        <li class="list-group-item list-group-item-action border-0 rounded">
+          <i class="bi bi-phone me-2"></i>
+          Gadget
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="content-wrapper flex-grow-1 bg-light">
+    <div class="container-fluid p-4">
+      <div class="row">
+        <div class="col-lg content">
+          <div class="container pb-5">
+            <div class="row pt-3 justify-content-start">
+              @for (product of products; track product.id) {
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12 mb-4 d-flex align-items-stretch">
+                  <div class="border rounded-3 overflow-hidden shadow h-100 w-100 bg-white">
+                    <a
+                      routerLink="/product/{{ product.slug }}"
+                      class="card-product position-relative text-decoration-none d-flex flex-column h-100"
+                    >
+                      <div class="image overflow-hidden position-relative" style="height: 250px">
+                        <div class="cover"></div>
+                        <img
+                          ngSrc="{{ product.images }}"
+                          class="w-100 h-100"
+                          width="300"
+                          height="300"
+                          style="object-fit: cover"
+                        />
                       </div>
-                    </div>
+
+                      <div class="card-body d-flex flex-column p-3">
+                        <p class="fs-5 text-truncate mb-2 text-dark">{{ product.nama }}</p>
+                        <div class="mt-auto">
+                          <h4 class="text-dark">{{ product.harga | currency: 'Rp ' : 'symbol' : '1.0-0' }}</h4>
+                          <div class="rating">
+                            <span class="star text-warning">&#9733;</span>
+                            <span class="text-muted">{{ product.rating | number: '1.1-2' }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
                   </div>
-                </a>
-              </div>
+                </div>
+              }
             </div>
-          }
+          </div>
         </div>
       </div>
     </div>

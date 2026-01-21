@@ -16,6 +16,7 @@ export class ProductDetailComponent implements OnInit {
   categories: Kategori[] = [];
   isLoading: Observable<boolean>;
   error: boolean = false;
+  isFavorite: boolean = false;
 
   constructor(
     private productService: ProductService,
@@ -88,5 +89,9 @@ export class ProductDetailComponent implements OnInit {
     if (parseInt(el.value) < 0) {
       el.value = '1';
     }
+  }
+
+  public toggleFavorit(): void {
+    this.isFavorite = !this.isFavorite;
   }
 }

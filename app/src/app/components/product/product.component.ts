@@ -1,8 +1,9 @@
-import { Component, input, OnInit, signal } from '@angular/core';
+import { Component, input, OnInit, signal, inject } from '@angular/core';
 import { ProductService } from '../../services/product/product.service';
 import { Product } from 'src/app/interfaces/product';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 import { Kategori } from 'src/app/interfaces/category';
+import { LayoutService } from 'src/app/services/layout/layout.service';
 
 @Component({
   selector: 'app-product',
@@ -14,6 +15,7 @@ export class ProductComponent implements OnInit {
   products: Product[] = [];
   activeSidebar = signal<string>('');
   categorySidebar = input.required<Kategori[]>();
+  layoutService = inject(LayoutService);
 
   constructor(
     private productService: ProductService,
