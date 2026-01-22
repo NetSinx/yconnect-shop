@@ -9,16 +9,6 @@
   overflow-y: auto;
 }
 
-.content-wrapper {
-  margin-left: 0;
-  transition: margin-left 0.3s ease;
-  min-height: 100vh;
-}
-
-.content-wrapper.pushed {
-  margin-left: 250px;
-}
-
 .carousel-item img {
   width: 1000px;
   height: 428px;

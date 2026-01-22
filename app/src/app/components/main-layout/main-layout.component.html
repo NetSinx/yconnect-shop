@@ -1,4 +1,6 @@
 <app-navbar [categories]="categories" />
 <app-sidebar />
-<router-outlet />
-<app-footer />
+<div class="content-wrapper" [class.pushed]="layoutService.sidebarOpen()">
+  <router-outlet />
+  <app-footer />
+</div>

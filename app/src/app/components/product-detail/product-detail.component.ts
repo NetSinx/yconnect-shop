@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 import { ProductService } from 'src/app/services/product/product.service';
+import { LayoutService } from '../../services/layout/layout.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -15,6 +16,7 @@ export class ProductDetailComponent implements OnInit {
   isLoading: Observable<boolean>;
   error: boolean = false;
   isFavorite: boolean = false;
+  layoutService: LayoutService = inject(LayoutService);
 
   constructor(
     private productService: ProductService,

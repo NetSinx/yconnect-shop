@@ -5,7 +5,6 @@
   position: fixed;
   top: 85px;
   left: 0;
-  align-self: flex-start;
   overflow-y: auto;
   transition: all 0.3s ease-in-out;
   background-color: white;
@@ -22,7 +21,7 @@
 }
 
 .list-group-item:hover {
-  background-color: blue;
+  background-color: #595858;
   color: white;
   cursor: pointer;
 }

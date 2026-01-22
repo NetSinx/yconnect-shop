@@ -3,6 +3,10 @@ footer {
   padding-bottom: 1rem;
 }
 
+footer.pushed {
+  margin-left: 250px;
+}
+
 footer ul li {
   list-style: none;
   margin-bottom: 10px;

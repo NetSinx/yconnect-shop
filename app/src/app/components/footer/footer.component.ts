@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { LayoutService } from '../../services/layout/layout.service';
 
 @Component({
   selector: 'app-footer',
@@ -6,4 +7,8 @@ import { Component } from '@angular/core';
   styleUrl: './footer.component.css',
   standalone: false
 })
-export class FooterComponent {}
+export class FooterComponent {
+  layoutService: LayoutService = inject(LayoutService);
+
+  constructor() {}
+}
