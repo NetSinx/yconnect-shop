@@ -5,22 +5,16 @@
         <div class="col-lg content">
           <div class="container pb-5">
             <div class="row pt-3 justify-content-start">
-              @for (product of products; track product.id) {
+              @for (product of products; track product.id; let i = $index) {
                 <div class="col-xl-3 col-lg-4 col-md-6 col-12 mb-4 d-flex align-items-stretch">
                   <div class="border rounded-3 overflow-hidden shadow h-100 w-100 bg-white">
                     <a
-                      routerLink="/product/{{ product.slug }}"
+                      [routerLink]="['/product', product.slug]"
                       class="card-product position-relative text-decoration-none d-flex flex-column h-100"
                     >
                       <div class="image overflow-hidden position-relative" style="height: 250px">
                         <div class="cover"></div>
-                        <img
-                          ngSrc="{{ product.images }}"
-                          class="w-100 h-100"
-                          width="300"
-                          height="300"
-                          style="object-fit: cover"
-                        />
+                        <img ngSrc="{{ product.images }}" class="img-fluid" fill [priority]="i === 1" />
                       </div>
 
                       <div class="card-body d-flex flex-column p-3">

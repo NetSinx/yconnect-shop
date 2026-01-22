@@ -16,133 +16,133 @@
 
     </div>
   </div> -->
-  <!-- @if (product) { -->
-  <div class="row border rounded mt-4 pb-4 product-detail">
-    <div class="col-lg-5 my-4">
-      <!-- @for (img of product.images; track img) { -->
-      <img src="assets/img/kompor-portable.jpeg" class="w-100" />
-      <!-- } -->
-      <button class="btn btn-favorit d-flex align-items-center float-end" (click)="toggleFavorit()">
-        <i class="bi fs-5 me-2 text-danger" [class.bi-heart]="!isFavorite" [class.bi-heart-fill]="isFavorite"></i>
-        Favorit (2)
-      </button>
-    </div>
-    <div class="col-lg-7 mt-4">
-      <h4 class="fw-bold">Kompor Portable</h4>
-      <div class="col-harga bg-body-tertiary p-3">
-        <h2 class="">Rp500.000</h2>
+  @if (product) {
+    <div class="row border rounded mt-4 pb-4 product-detail">
+      <div class="col-lg-5 my-4">
+        <img ngSrc="{{ product.images }}" fill class="img-fluid rounded" priority />
+        <button class="btn btn-favorit d-flex align-items-center float-end" (click)="toggleFavorit()">
+          <i class="bi fs-5 me-2 text-danger" [class.bi-heart]="!isFavorite" [class.bi-heart-fill]="isFavorite"></i>
+          Favorit (2)
+        </button>
       </div>
-      <div class="mb-5">
-        <table [cellPadding]="15">
+      <div class="col-lg-7 mt-4">
+        <h4 class="fw-bold">{{ product.nama }}</h4>
+        <div class="col-harga bg-body-tertiary p-3">
+          <h2>{{ product.harga | currency: 'Rp ' : 'symbol' : '1.0-0' }}</h2>
+        </div>
+        <div class="mb-5">
+          <table [cellPadding]="15">
+            <tbody>
+              <tr>
+                <td>Pengiriman</td>
+                <td class="fw-bold">Gratis Ongkir</td>
+              </tr>
+              <tr>
+                <td>Jaminan</td>
+                <td class="fw-bold">Bebas Pengembalian</td>
+              </tr>
+              <tr>
+                <td>Tipe</td>
+                <td class="fw-bold">
+                  <div class="form-check d-inline-block">
+                    <input class="form-check-input" type="radio" name="radioDefault" id="tipe" checked />
+                    <label class="form-check-label" for="tipe">Portable</label>
+                  </div>
+                  <div class="form-check d-inline-block ms-3">
+                    <input class="form-check-input" type="radio" name="radioDefault" id="tipe2" />
+                    <label class="form-check-label" for="tipe2">Elektrik</label>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>Kuantitas</td>
+                <td>
+                  <div class="input-group">
+                    <button
+                      (click)="decreaseQuantity(qty)"
+                      class="btn btn-outline-dark btn-transparent fs-3 py-0"
+                      type="button"
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      class="form-control p-0 text-center"
+                      placeholder=""
+                      style="width: 50px !important; flex-grow: 0"
+                      min="1"
+                      value="1"
+                      #qty
+                      (input)="qtyValidation(qty)"
+                    />
+                    <button
+                      (click)="increaseQuantity(qty)"
+                      class="btn btn-outline-dark btn-transparent fs-4 py-0"
+                      type="button"
+                    >
+                      +
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn btn-outline-dark me-3 add-to-cart">
+          <i class="bi bi-cart-plus"></i>
+          Tambah ke Keranjang
+        </button>
+        <button type="button" class="btn btn-dark">Beli Sekarang</button>
+      </div>
+    </div>
+    <div class="row border rounded mt-2 p-3">
+      <div class="spesifikasi-produk mb-5">
+        <p class="fs-5 fw-bold p-2 bg-body-tertiary">Spesifikasi Produk</p>
+        <table cellpadding="10">
           <tr>
-            <td>Pengiriman</td>
-            <td class="fw-bold">Gratis Ongkir</td>
+            <th>Kategori</th>
+            <td>Kompor</td>
           </tr>
           <tr>
-            <td>Jaminan</td>
-            <td class="fw-bold">Bebas Pengembalian</td>
+            <th>Merek</th>
+            <td>Asutchi</td>
           </tr>
           <tr>
-            <td>Tipe</td>
-            <td class="fw-bold">
-              <div class="form-check d-inline-block">
-                <input class="form-check-input" type="radio" name="radioDefault" id="tipe" checked />
-                <label class="form-check-label" for="tipe">Portable</label>
-              </div>
-              <div class="form-check d-inline-block ms-3">
-                <input class="form-check-input" type="radio" name="radioDefault" id="tipe2" />
-                <label class="form-check-label" for="tipe2">Elektrik</label>
-              </div>
-            </td>
+            <th>Stok</th>
+            <td>Tersedia</td>
           </tr>
           <tr>
-            <td>Kuantitas</td>
-            <td>
-              <div class="input-group">
-                <button
-                  (click)="decreaseQuantity(qty)"
-                  class="btn btn-outline-dark btn-transparent fs-3 py-0"
-                  type="button"
-                >
-                  -
-                </button>
-                <input
-                  type="number"
-                  class="form-control p-0 text-center"
-                  placeholder=""
-                  style="width: 50px !important; flex-grow: 0"
-                  min="1"
-                  value="1"
-                  #qty
-                  (input)="qtyValidation(qty)"
-                />
-                <button
-                  (click)="increaseQuantity(qty)"
-                  class="btn btn-outline-dark btn-transparent fs-4 py-0"
-                  type="button"
-                >
-                  +
-                </button>
-              </div>
-            </td>
+            <th>Jenis Garansi</th>
+            <td>Resmi</td>
           </tr>
         </table>
       </div>
-      <button class="btn btn-outline-dark me-3 add-to-cart">
-        <i class="bi bi-cart-plus"></i>
-        Tambah ke Keranjang
-      </button>
-      <button type="button" class="btn btn-dark">Beli Sekarang</button>
-    </div>
-  </div>
-  <div class="row border rounded mt-2 p-3">
-    <div class="spesifikasi-produk mb-5">
-      <p class="fs-5 fw-bold p-2 bg-body-tertiary">Spesifikasi Produk</p>
-      <table cellpadding="10">
-        <tr>
-          <th>Kategori</th>
-          <td>Kompor</td>
-        </tr>
-        <tr>
-          <th>Merek</th>
-          <td>Asutchi</td>
-        </tr>
-        <tr>
-          <th>Stok</th>
-          <td>Tersedia</td>
-        </tr>
-        <tr>
-          <th>Jenis Garansi</th>
-          <td>Resmi</td>
-        </tr>
-      </table>
-    </div>
-    <div class="deskripsi-produk">
-      <p class="fs-5 fw-bold p-2 bg-body-tertiary">Deskripsi Produk</p>
-      <p class="ps-2">Kompor ini adalah kompor portable yang simple dan efisien.</p>
-    </div>
-  </div>
-  <div class="row border rounded mt-2 mb-4 p-3">
-    <p class="fs-5 fw-bold p-2 bg-body-tertiary">Penilaian Produk</p>
-    <div class="border rounded bg-body-tertiary mb-3 ps-4">
-      <p class="fs-5 m-0">
-        <span class="rating">4.9</span>
-        dari
-        <span class="max-rating">5</span>
-      </p>
-      <p class="rating-product m-0">★★★★★</p>
-    </div>
-    <div class="user-comment d-flex">
-      <div class="profile-img">
-        <img src="assets/img/account.png" width="40" />
-      </div>
-      <div class="details ms-2">
-        <p class="fw-bold">netsinx</p>
-        <div class="star-display" style="--rating-width: 100%"></div>
-        <p class="tanggal">20-01-2026</p>
-        <p class="comment mt-2">kompornya sangat baguss sekalii....</p>
+      <div class="deskripsi-produk">
+        <p class="fs-5 fw-bold p-2 bg-body-tertiary">Deskripsi Produk</p>
+        <p class="ps-2">Kompor ini adalah kompor portable yang simple dan efisien.</p>
       </div>
     </div>
-  </div>
-  <!-- } -->
+    <div class="row border rounded mt-2 mb-4 p-3">
+      <p class="fs-5 fw-bold p-2 bg-body-tertiary">Penilaian Produk</p>
+      <div class="border rounded bg-body-tertiary mb-3 ps-4">
+        <p class="fs-5 m-0">
+          <span class="rating">4.9</span>
+          dari
+          <span class="max-rating">5</span>
+        </p>
+        <p class="rating-product m-0">★★★★★</p>
+      </div>
+      <div class="user-comment d-flex">
+        <div class="profile-img">
+          <img src="assets/img/account.png" width="40" />
+        </div>
+        <div class="details ms-2">
+          <p class="fw-bold">netsinx</p>
+          <div class="star-display" style="--rating-width: 100%"></div>
+          <p class="tanggal">20-01-2026</p>
+          <p class="comment mt-2">kompornya sangat baguss sekalii....</p>
+        </div>
+      </div>
+    </div>
+  }
 </div>

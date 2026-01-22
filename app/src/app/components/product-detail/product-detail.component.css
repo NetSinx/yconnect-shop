@@ -18,8 +18,7 @@ input[type='number'] {
 }
 
 .container.pushed {
-  width: 65rem;
-  margin-left: 260px;
+  width: 100%;
 }
 
 .spesifikasi-produk table td {

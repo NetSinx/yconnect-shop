@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CategoryService } from './services/category/category.service';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { Kategori } from './interfaces/category';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +24,7 @@ export class AppComponent implements OnInit {
     private loadingService: LoadingService,
     private categoryService: CategoryService
   ) {
-    this.isLoading = this.loadingService.loading;
+    this.isLoading = this.loadingService.loading.pipe(delay(0));
     this.categories = [
       {
         id: 1,
