@@ -9,31 +9,6 @@
   overflow-y: auto;
 }
 
-.sidebar {
-  width: 0;
-  opacity: 0;
-  height: 100vh;
-  position: fixed;
-  top: 85px;
-  left: 0;
-  align-self: flex-start;
-  overflow-y: auto;
-  transition: all 0.3s ease-in-out;
-  background-color: white;
-  flex-shrink: 0;
-}
-
-.sidebar.open {
-  width: 250px;
-  opacity: 1;
-}
-
-.list-group-item:hover {
-  background-color: blue;
-  color: white;
-  cursor: pointer;
-}
-
 .content-wrapper {
   margin-left: 0;
   transition: margin-left 0.3s ease;
@@ -44,7 +19,7 @@
   margin-left: 250px;
 }
 
-carousel-item img {
+.carousel-item img {
   width: 1000px;
   height: 428px;
 }

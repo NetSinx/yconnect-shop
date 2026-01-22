@@ -1,9 +1,11 @@
 import { Component, input, OnInit, signal, inject } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { ProductService } from '../../services/product/product.service';
 import { Product } from 'src/app/interfaces/product';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 import { Kategori } from 'src/app/interfaces/category';
 import { LayoutService } from 'src/app/services/layout/layout.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-product',

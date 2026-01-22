@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Kategori } from 'src/app/interfaces/category';
 import { LoadingService } from 'src/app/services/loading/loading.service';
 import { ProductService } from 'src/app/services/product/product.service';
 
@@ -13,7 +12,6 @@ import { ProductService } from 'src/app/services/product/product.service';
 })
 export class ProductDetailComponent implements OnInit {
   product: any;
-  categories: Kategori[] = [];
   isLoading: Observable<boolean>;
   error: boolean = false;
   isFavorite: boolean = false;
@@ -24,32 +22,6 @@ export class ProductDetailComponent implements OnInit {
     private loadingService: LoadingService
   ) {
     this.isLoading = this.loadingService.loading;
-    this.categories = [
-      {
-        id: 1,
-        nama: 'Pakaian',
-        slug: 'pakaian',
-        gambar: 'assets/img/clothes-rack.png'
-      },
-      {
-        id: 2,
-        nama: 'Makanan',
-        slug: 'makanan',
-        gambar: 'assets/img/food-category.png'
-      },
-      {
-        id: 3,
-        nama: 'Minuman',
-        slug: 'minuman',
-        gambar: 'assets/img/soft-drink.png'
-      },
-      {
-        id: 4,
-        nama: 'Detergen',
-        slug: 'detergen',
-        gambar: 'assets/img/laundry-detergent.png'
-      }
-    ];
   }
 
   ngOnInit(): void {

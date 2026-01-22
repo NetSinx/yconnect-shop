@@ -9,39 +9,35 @@ import { LoginComponent } from './components/login/login.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ProductComponent } from './components/product/product.component';
-import { NgOptimizedImage, registerLocaleData } from '@angular/common';
+import { NgOptimizedImage, registerLocaleData, DecimalPipe } from '@angular/common';
 import { loadingInterceptor } from './interceptor/loading/loading.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './components/register/register.component';
 import { authInterceptor } from './interceptor/auth/auth.interceptor';
-import { HomeComponent } from './components/home/home.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 import localeId from '@angular/common/locales/id';
+import { MainLayoutComponent } from './components/main-layout/main-layout.component';
 
 registerLocaleData(localeId, 'id');
 
 @NgModule({
   declarations: [
     AppComponent,
-    ProductComponent,
     NavbarComponent,
+    ProductComponent,
     ProductDetailComponent,
     RegisterComponent,
     LoginComponent,
+    SidebarComponent,
     PageNotFoundComponent,
     DashboardComponent,
-    HomeComponent,
-    FooterComponent
+    FooterComponent,
+    MainLayoutComponent
   ],
   bootstrap: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule, NgOptimizedImage, ReactiveFormsModule],
+  imports: [BrowserModule, AppRoutingModule, NgOptimizedImage, ReactiveFormsModule, DecimalPipe],
   providers: [
-    ProductComponent,
-    NavbarComponent,
-    LoginComponent,
-    ProductDetailComponent,
-    HomeComponent,
-    FooterComponent,
     provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor, authInterceptor]), withFetch()),
     provideClientHydration(withEventReplay()),
     { provide: LOCALE_ID, useValue: 'id-ID' }

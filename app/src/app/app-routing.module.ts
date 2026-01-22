@@ -2,6 +2,7 @@ import { NgModule, inject } from '@angular/core';
 import { RouterModule, Routes, ActivatedRouteSnapshot, ResolveFn, RouterStateSnapshot } from '@angular/router';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductService } from './services/product/product.service';
+import { ProductComponent } from './components/product/product.component';
 import { Observable, map } from 'rxjs';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
@@ -10,7 +11,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { authGuard } from './guard/auth/auth.guard';
 import { PageForbiddenComponent } from './components/page-forbidden/page-forbidden.component';
 import { guestGuard } from './guard/guest/guest.guard';
-import { HomeComponent } from './components/home/home.component';
+import { MainLayoutComponent } from './components/main-layout/main-layout.component';
 
 const productDetailRoute: ResolveFn<string> = (
   route: ActivatedRouteSnapshot,
@@ -22,8 +23,15 @@ const productDetailRoute: ResolveFn<string> = (
 };
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, title: 'Y-Connect Shop' },
-  { path: 'product/:slug', component: ProductDetailComponent },
+  {
+    path: '',
+    component: MainLayoutComponent,
+    title: 'Y-Connect Shop',
+    children: [
+      { path: '', component: ProductComponent },
+      { path: 'product/:slug', component: ProductDetailComponent }
+    ]
+  },
   { path: 'register', component: RegisterComponent, title: 'Register | Y-Connect Shop', canActivate: [guestGuard] },
   { path: 'login', component: LoginComponent, title: 'Login | Y-Connect Shop', canActivate: [guestGuard] },
   { path: 'dashboard', component: DashboardComponent, title: 'Dashboard | Y-Connect Shop', canActivate: [authGuard] },
@@ -36,4 +44,3 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule {}
-
