@@ -1,10 +1,12 @@
-<div class="container" [class.pushed]="layoutService.sidebarOpen()">
+<div class="container">
   <nav aria-label="breadcrumb" class="mt-3">
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
         <a class="text-decoration-none" routerLink="">Home</a>
       </li>
-      <li class="breadcrumb-item active" aria-current="page">Order</li>
+      @if (product) {
+        <li class="breadcrumb-item active" aria-current="page">{{ product.nama }}</li>
+      }
     </ol>
   </nav>
 
@@ -17,10 +19,16 @@
     </div>
   </div> -->
   @if (product) {
-    <div class="row border rounded mt-4 pb-4 product-detail">
-      <div class="col-lg-5 my-4">
-        <img ngSrc="{{ product.images }}" fill class="img-fluid rounded" priority />
-        <button class="btn btn-favorit d-flex align-items-center float-end" (click)="toggleFavorit()">
+    <div class="row border rounded mt-4 pb-4 product-detail" style="min-height: 400px">
+      <div class="col-lg-5 p-4 position-relative">
+        <div class="ratio ratio-1x1 border rounded position-relative overflow-hidden">
+          <img ngSrc="{{ product.images }}" fill class="img-fluid" priority style="object-fit: contain" />
+        </div>
+        <button
+          class="btn btn-favorit d-flex align-items-center bg-white shadow-sm float-end"
+          (click)="toggleFavorit()"
+          style="z-index: 10"
+        >
           <i class="bi fs-5 me-2 text-danger" [class.bi-heart]="!isFavorite" [class.bi-heart-fill]="isFavorite"></i>
           Favorit (2)
         </button>

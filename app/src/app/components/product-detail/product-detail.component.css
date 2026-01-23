@@ -71,6 +71,7 @@ input[type='number'] {
 
 .btn-favorit {
   border: none;
+  bottom: -60px;
 }
 
 .btn-favorit:focus,
