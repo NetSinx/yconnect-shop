@@ -15,7 +15,7 @@
           <span></span>
         </button>
       </div>
-      <div class="col-lg-6 d-flex dropdown-category" #dropdownCategory>
+      <div class="col-lg-4 d-flex dropdown-category" #dropdownCategory>
         <div class="input-group search">
           <input
             type="text"
@@ -39,15 +39,33 @@
           </ul>
         </div>
       </div>
-      <div class="col-lg preferensi" #preferensi>
+      <div class="col-lg-3 preferensi" #preferensi>
         @if (!isLoggedIn) {
-          <a routerLink="/login" routerLinkActive="showLogin" class="text-decoration-none text-dark fs-5 rounded">
+          <a
+            routerLink="/login"
+            routerLinkActive="showLogin"
+            class="text-decoration-none text-dark fs-5 rounded float-end"
+          >
             Login
             <i class="bi bi-box-arrow-in-right"></i>
           </a>
         }
         @if (isLoggedIn) {
-          <div class="dropdown-center">
+          <button type="button" class="btn position-relative">
+            <i class="bi bi-cart fs-4"></i>
+            <span class="position-absolute top-0 translate-middle badge rounded-pill bg-danger">
+              0
+              <span class="visually-hidden">cart</span>
+            </span>
+          </button>
+          <button type="button" class="btn position-relative">
+            <i class="bi bi-heart fs-4"></i>
+            <span class="position-absolute top-0 translate-middle badge rounded-pill bg-danger">
+              0
+              <span class="visually-hidden">cart</span>
+            </span>
+          </button>
+          <div class="dropdown-center d-inline">
             <a
               class="text-decoration-none text-dark dropdown-toggle fs-6 rounded"
               role="button"

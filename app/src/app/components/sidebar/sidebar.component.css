@@ -15,13 +15,3 @@
   width: 250px;
   opacity: 1;
 }
-
-.list-group-item {
-  color: black;
-}
-
-.list-group-item:hover {
-  background-color: #595858;
-  color: white;
-  cursor: pointer;
-}

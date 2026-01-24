@@ -5,7 +5,7 @@
         <div class="col-lg content">
           <div class="container pb-5">
             <div class="row pt-3 justify-content-start">
-              @for (product of products; track product.id; let i = $index) {
+              @for (product of displayProducts; track product.id; let i = $index) {
                 <div class="col-xl-3 col-lg-4 col-md-6 col-12 mb-4 d-flex align-items-stretch">
                   <div class="border rounded-3 overflow-hidden shadow h-100 w-100 bg-white">
                     <a
@@ -29,6 +29,12 @@
                       </div>
                     </a>
                   </div>
+                </div>
+              }
+              @if (displayProducts.length === 0) {
+                <div class="col-12 text-center mt-5">
+                  <h3>Produk tidak ditemukan di kategori ini.</h3>
+                  <a routerLink="/" class="btn btn-dark mt-3">Lihat Semua Produk</a>
                 </div>
               }
             </div>

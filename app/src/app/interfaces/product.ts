@@ -4,7 +4,7 @@ export interface Product {
   images: string;
   slug: string;
   deskripsi: string;
-  kategori_id: number;
+  kategori: string;
   harga: number;
   stok: number;
   rating: number;

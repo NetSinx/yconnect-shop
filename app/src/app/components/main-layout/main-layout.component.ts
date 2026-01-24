@@ -17,7 +17,21 @@ export class MainLayoutComponent {
   constructor() {
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
-        this.layoutService.sidebarOpen.set(false);
+        this.layoutService.sidebarOpen.set(true);
+
+        const isGoingToDetail = event.url.includes('/product/');
+
+        const isAuthPage = event.url.includes('/login') || event.url.includes('/register');
+
+        const isMobile = window.innerWidth < 992;
+
+        if (isMobile) {
+          this.layoutService.sidebarOpen.set(false);
+        } else {
+          if (isGoingToDetail || isAuthPage) {
+            this.layoutService.sidebarOpen.set(false);
+          }
+        }
       }
     });
 
