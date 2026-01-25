@@ -11,60 +11,65 @@ import { LoadingService } from 'src/app/services/loading/loading.service';
   standalone: false
 })
 export class LoginComponent implements OnInit {
-  formGroup: FormGroup
-  formBuilder: FormBuilder = new FormBuilder()
-  errorLogin: string | undefined
-  successMessage: string = ""
+  formGroup: FormGroup;
+  formBuilder: FormBuilder = new FormBuilder();
+  errorLogin: string | undefined;
+  successMessage: string = '';
 
   constructor(
     private router: Router,
     private loadingService: LoadingService,
-    private authService: AuthService,
+    private authService: AuthService
   ) {
     this.formGroup = this.formBuilder.group({
-      email: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required]),
-    })
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required])
+    });
   }
 
   ngOnInit(): void {
     if (history.state && history.state.success) {
-      this.successMessage = history.state.success
+      this.successMessage = history.state.success;
     }
 
     if (this.successMessage) {
-      history.replaceState({}, "")
+      history.replaceState({}, '');
     }
   }
 
-  get email() { return this.formGroup.get("email")! }
-  get password() { return this.formGroup.get("password")! }
+  get email() {
+    return this.formGroup.get('email')!;
+  }
+  get password() {
+    return this.formGroup.get('password')!;
+  }
 
   public userLogin(): void {
     let dataLogin = {
-      email: "",
-      password: ""
-    }
+      email: '',
+      password: ''
+    };
 
-    dataLogin.email = this.formGroup.value.email
-    dataLogin.password = this.formGroup.value.password
+    dataLogin.email = this.formGroup.value.email;
+    dataLogin.password = this.formGroup.value.password;
 
     this.authService.loginUser(dataLogin).subscribe(
       () => {
         this.authService.verifyUser().subscribe(
           () => {
-            this.loadingService.setLoading(false)
-            this.router.navigate(["/dashboard"])
+            this.loadingService.setLoading(false);
+            this.router.navigate(['/dashboard']);
           },
           () => {
-            this.loadingService.setLoading(false)
-            this.router.navigate(["/forbidden"])
+            this.loadingService.setLoading(false);
+            this.router.navigate(['/forbidden']);
           }
-        )
-      }, () => {
-        this.loadingService.setLoading(false)
-        this.errorLogin = "Email / password Anda salah!"
+        );
+      },
+      () => {
+        this.loadingService.setLoading(false);
+        this.errorLogin = 'Email / password Anda salah!';
       }
-    )
+    );
   }
 }

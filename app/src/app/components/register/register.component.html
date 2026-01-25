@@ -4,7 +4,7 @@
       <a routerLink="/"><i class="bi bi-arrow-left fs-3 text-black"></i></a>
       <div class="d-flex justify-content-center">
         <a routerLink="/">
-          <img src="../../../assets/img/y-logo.png" width="70" class="rounded-circle">
+          <img src="../../../assets/img/y-logo.png" width="70" class="rounded-circle" />
         </a>
       </div>
       <h3 class="text-center mt-3">Register | Y-Connect Shop</h3>
@@ -18,19 +18,22 @@
           <div class="row">
             <div class="col-md">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="nama_lengkap" placeholder="Nama Lengkap" autofocus formControlName="nama_lengkap">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="nama_lengkap"
+                  placeholder="Nama Lengkap"
+                  autofocus
+                  formControlName="nama_lengkap"
+                />
                 <label for="nama_lengkap">Nama Lengkap</label>
                 @if (nama_lengkap.invalid && (nama_lengkap.dirty || nama_lengkap.touched)) {
                   <div>
                     @if (nama_lengkap.hasError('required')) {
-                      <p class="text-danger">
-                        *Nama lengkap wajib diisi!
-                      </p>
+                      <p class="text-danger">*Nama lengkap wajib diisi!</p>
                     }
                     @if (nama_lengkap.hasError('minlength')) {
-                      <p class="text-danger">
-                        *Nama lengkap minimal 3 karakter!
-                      </p>
+                      <p class="text-danger">*Nama lengkap minimal 3 karakter!</p>
                     }
                   </div>
                 }
@@ -38,18 +41,20 @@
             </div>
             <div class="col-md">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="username" placeholder="Username" formControlName="username">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  placeholder="Username"
+                  formControlName="username"
+                />
                 @if (username.invalid && (username.dirty || username.touched)) {
                   <div>
                     @if (username.hasError('required')) {
-                      <p class="text-danger">
-                        *Username wajib diisi!
-                      </p>
+                      <p class="text-danger">*Username wajib diisi!</p>
                     }
                     @if (username.hasError('minlength')) {
-                      <p class="text-danger">
-                        *Username minimal 3 karakter!
-                      </p>
+                      <p class="text-danger">*Username minimal 3 karakter!</p>
                     }
                   </div>
                 }
@@ -61,19 +66,15 @@
           <div class="row">
             <div class="col-md">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="email" placeholder="Email" formControlName="email">
+                <input type="email" class="form-control" id="email" placeholder="Email" formControlName="email" />
                 <label for="email">Email</label>
                 @if (email.invalid && (email.dirty || email.touched)) {
                   <div>
                     @if (email.hasError('required')) {
-                      <p class="text-danger">
-                        *Email wajib diisi!
-                      </p>
+                      <p class="text-danger">*Email wajib diisi!</p>
                     }
                     @if (email.hasError('email')) {
-                      <p class="text-danger">
-                        *Email harus menggunakan '&#64;' dan domain seperti '.com'!
-                      </p>
+                      <p class="text-danger">*Email harus menggunakan '&#64;' dan domain seperti '.com'!</p>
                     }
                   </div>
                 }
@@ -81,19 +82,15 @@
             </div>
             <div class="col-md">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="no_hp" placeholder="No. HP" formControlName="no_hp">
+                <input type="text" class="form-control" id="no_hp" placeholder="No. HP" formControlName="no_hp" />
                 <label for="no_hp">No. HP</label>
                 @if (no_hp.invalid && (no_hp.dirty || no_hp.touched)) {
                   <div>
                     @if (no_hp.hasError('required')) {
-                      <p class="text-danger">
-                        *No.Telepon wajib diisi!
-                      </p>
+                      <p class="text-danger">*No.Telepon wajib diisi!</p>
                     }
                     @if (no_hp.hasError('minlength')) {
-                      <p class="text-danger">
-                        *No.Telepon minimal 8 karakter!
-                      </p>
+                      <p class="text-danger">*No.Telepon minimal 8 karakter!</p>
                     }
                   </div>
                 }
@@ -103,37 +100,41 @@
 
           <div class="row">
             <div class="form-floating mb-3">
-              <input type="password" class="form-control" id="password" placeholder="Password" formControlName="password">
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Password"
+                formControlName="password"
+              />
               <label for="password" class="ms-3">Password</label>
               @if (password.invalid && (password.dirty || password.touched)) {
                 <div>
                   @if (password.hasError('required')) {
-                    <p class="text-danger">
-                      *Password wajib diisi!
-                    </p>
+                    <p class="text-danger">*Password wajib diisi!</p>
                   }
                   @if (password.hasError('minlength')) {
-                    <p class="text-danger">
-                      *Password minimal 5 karakter!
-                    </p>
+                    <p class="text-danger">*Password minimal 5 karakter!</p>
                   }
                 </div>
               }
             </div>
             <div class="form-floating mb-3">
-              <input type="password" class="form-control" id="confirmpassword" placeholder="Konfirmasi Password" formControlName="confirmpassword">
+              <input
+                type="password"
+                class="form-control"
+                id="confirmpassword"
+                placeholder="Konfirmasi Password"
+                formControlName="confirmpassword"
+              />
               <label for="confirmpassword" class="ms-3">Konfirmasi Password</label>
               @if (confirmpassword.dirty || confirmpassword.touched) {
                 <div>
                   @if (confirmpassword.hasError('required')) {
-                    <p class="text-danger">
-                      *Konfirmasi password wajib diisi!
-                    </p>
+                    <p class="text-danger">*Konfirmasi password wajib diisi!</p>
                   }
                   @if (confirmpassword.hasError('minlength')) {
-                    <p class="text-danger">
-                      *Konfirmasi password minimal 5 karakter!
-                    </p>
+                    <p class="text-danger">*Konfirmasi password minimal 5 karakter!</p>
                   }
                   @if (userProfileForm.hasError('passwordMismatch') && confirmpassword.dirty) {
                     <p class="text-danger">
@@ -145,8 +146,13 @@
             </div>
           </div>
           <div class="row mt-4 px-2">
-            <p class="text-center">Sudah punya akun? <a routerLink="/login">Login</a></p>
-            <button type="submit" class="btn btn-brown text-white" [disabled]="userProfileForm.invalid">Daftar Akun</button>
+            <p class="text-center">
+              Sudah punya akun?
+              <a routerLink="/login">Login</a>
+            </p>
+            <button type="submit" class="btn btn-dark text-white" [disabled]="userProfileForm.invalid">
+              Daftar Akun
+            </button>
           </div>
         </form>
       </div>

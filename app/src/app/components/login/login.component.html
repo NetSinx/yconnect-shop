@@ -4,7 +4,7 @@
       <a routerLink="/"><i class="bi bi-arrow-left fs-3 text-black"></i></a>
       <div class="d-flex justify-content-center">
         <a routerLink="/">
-          <img src="../../../assets/img/y-logo.png" width="70" class="rounded-circle">
+          <img src="../../../assets/img/y-logo.png" width="70" class="rounded-circle" />
         </a>
       </div>
       <h3 class="text-center mt-3">Login | Y-Connect Shop</h3>
@@ -18,36 +18,44 @@
         </div>
       }
       <div class="form-login mt-4">
-        <form [formGroup]="formGroup"(ngSubmit)="userLogin()">
+        <form [formGroup]="formGroup" (ngSubmit)="userLogin()">
           <div class="form-floating mb-3">
-            <input type="text" class="form-control" formControlName="email" id="email" placeholder="Email" autofocus>
+            <input type="email" class="form-control" formControlName="email" id="email" placeholder="Email" autofocus />
             <label for="email">Email</label>
             @if (email.invalid && (email.dirty || email.touched)) {
               <div>
-                @if (email.hasError("required")) {
-                  <p class="text-danger">
-                    *Email wajib diisi!
-                  </p>
+                @if (email.hasError('required')) {
+                  <p class="text-danger">*Email wajib diisi!</p>
+                }
+                @if (email.hasError('email')) {
+                  <p class="text-danger">*Email harus menggunakan '&#64;' dan domain seperti '.com'!</p>
                 }
               </div>
             }
           </div>
           <div class="form-floating mb-3">
-            <input type="password" class="form-control" formControlName="password" id="password" placeholder="Password">
+            <input
+              type="password"
+              class="form-control"
+              formControlName="password"
+              id="password"
+              placeholder="Password"
+            />
             <label for="password">Password</label>
             @if (password.invalid && (password.dirty || password.touched)) {
               <div>
                 @if (password.hasError('required')) {
-                  <p class="text-danger">
-                    *Password wajib diisi!
-                  </p>
+                  <p class="text-danger">*Password wajib diisi!</p>
                 }
               </div>
             }
           </div>
-          <p class="text-center">Tidak punya akun? <a routerLink="/register">Daftar</a></p>
+          <p class="text-center">
+            Tidak punya akun?
+            <a routerLink="/register">Daftar</a>
+          </p>
           <div class="row mt-4 px-2">
-            <button type="submit" class="btn btn-brown text-white" [disabled]="formGroup.invalid">Login</button>
+            <button type="submit" class="btn btn-dark text-white" [disabled]="formGroup.invalid">Login</button>
           </div>
         </form>
       </div>
