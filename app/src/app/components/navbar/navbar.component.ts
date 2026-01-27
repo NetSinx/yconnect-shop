@@ -42,7 +42,9 @@ export class NavbarComponent implements OnInit {
     private csrfService: GenCsrfService,
     private state: TransferState,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) {
+    this.isLoggedIn = true;
+  }
 
   ngOnInit(): void {
     this.categories;

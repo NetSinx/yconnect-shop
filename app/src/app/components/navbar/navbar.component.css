@@ -6,7 +6,7 @@ nav {
 }
 
 nav a.logo {
-  font-family: "Playwrite DK Loopet", cursive;
+  font-family: 'Playwrite DK Loopet', cursive;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
@@ -20,7 +20,7 @@ nav .preferensi a {
   padding: 10px;
 }
 
-nav .preferensi a:hover {
+nav .preferensi a.login:hover {
   background-color: #cfcfcf;
 }
 
@@ -80,7 +80,7 @@ nav .navbar-brand button {
     height: 3px;
     background-color: black;
     display: block;
-    transition: all .3s;
+    transition: all 0.3s;
     transform-origin: left;
   }
 
@@ -136,3 +136,4 @@ nav .navbar-brand button {
     background-color: #cfcfcf;
   }
 }
+

@@ -12,6 +12,7 @@ import { authGuard } from './guard/auth/auth.guard';
 import { PageForbiddenComponent } from './components/page-forbidden/page-forbidden.component';
 import { guestGuard } from './guard/guest/guest.guard';
 import { MainLayoutComponent } from './components/main-layout/main-layout.component';
+import { CartComponent } from './components/cart/cart.component';
 
 const productDetailRoute: ResolveFn<string> = (
   route: ActivatedRouteSnapshot,
@@ -29,7 +30,8 @@ const routes: Routes = [
     title: 'Y-Connect Shop',
     children: [
       { path: '', component: ProductComponent },
-      { path: 'product/:slug', component: ProductDetailComponent }
+      { path: 'product/:slug', component: ProductDetailComponent },
+      { path: 'cart', component: CartComponent }
     ]
   },
   { path: 'register', component: RegisterComponent, title: 'Register | Y-Connect Shop', canActivate: [guestGuard] },

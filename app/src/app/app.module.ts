@@ -18,6 +18,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import localeId from '@angular/common/locales/id';
 import { MainLayoutComponent } from './components/main-layout/main-layout.component';
+import { CartComponent } from './components/cart/cart.component';
 
 registerLocaleData(localeId, 'id');
 
@@ -33,7 +34,8 @@ registerLocaleData(localeId, 'id');
     PageNotFoundComponent,
     DashboardComponent,
     FooterComponent,
-    MainLayoutComponent
+    MainLayoutComponent,
+    CartComponent
   ],
   bootstrap: [AppComponent],
   imports: [BrowserModule, AppRoutingModule, NgOptimizedImage, ReactiveFormsModule, DecimalPipe],
