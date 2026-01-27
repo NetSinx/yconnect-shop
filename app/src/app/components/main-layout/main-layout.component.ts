@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Kategori } from '../../interfaces/category';
 import { LayoutService } from '../../services/layout/layout.service';
-import { Router, NavigationStart, Event } from '@angular/router';
+import { Router, NavigationEnd, Event } from '@angular/router';
 
 @Component({
   selector: 'app-main-layout',
@@ -16,19 +16,18 @@ export class MainLayoutComponent {
 
   constructor() {
     this.router.events.subscribe((event: Event) => {
-      if (event instanceof NavigationStart) {
+      if (event instanceof NavigationEnd) {
         this.layoutService.sidebarOpen.set(true);
 
         const isGoingToDetail = event.url.includes('/product/');
-
         const isAuthPage = event.url.includes('/login') || event.url.includes('/register');
-
         const isMobile = window.innerWidth < 992;
+        const isCartWishlistPage = event.url.includes('/cart') || event.url.includes('/wishlist');
 
         if (isMobile) {
           this.layoutService.sidebarOpen.set(false);
         } else {
-          if (isGoingToDetail || isAuthPage) {
+          if (isGoingToDetail || isAuthPage || isCartWishlistPage) {
             this.layoutService.sidebarOpen.set(false);
           }
         }
