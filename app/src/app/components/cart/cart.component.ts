@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { CartService } from '../../services/cart/cart.service';
 
 @Component({
   selector: 'app-cart',
@@ -7,7 +8,7 @@ import { Component, inject } from '@angular/core';
   standalone: false
 })
 export class CartComponent {
-  cartService = inject(CartService);
+  cartService: CartService = inject(CartService);
 
   onToggleAll(event: any) {
     const isChecked = event.target.checked;

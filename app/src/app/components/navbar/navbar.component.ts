@@ -19,6 +19,7 @@ import { LoadingService } from 'src/app/services/loading/loading.service';
 import { TransferState, makeStateKey } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { LayoutService } from 'src/app/services/layout/layout.service';
+import { CartService } from '../../services/cart/cart.service';
 
 const IS_LOGGED_IN_KEY = makeStateKey<boolean>('isLoggedIn');
 
@@ -35,7 +36,8 @@ export class NavbarComponent implements OnInit {
   username: string | null = null;
   @ViewChild('dropdownMenu') dropdownMenu: ElementRef | null = null;
   isDropDownOpen: boolean = false;
-  layoutService = inject(LayoutService);
+  layoutService: LayoutService = inject(LayoutService);
+  cartService: CartService = inject(CartService);
 
   constructor(
     private authService: AuthService,

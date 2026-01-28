@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
+import { CartItem } from '../../interfaces/cart-item';
 
 @Injectable({
   providedIn: 'root'
@@ -6,15 +7,15 @@ import { Injectable } from '@angular/core';
 export class CartService {
   cartItems = signal<CartItem[]>([]);
 
-  totalItems = computed(() => this.cartItems().reduce((acc, item) => acc + item.quantity, 0));
+  totalItems: any = computed(() => this.cartItems().reduce((acc, item) => acc + item.quantity, 0));
 
-  grandTotal = computed(() =>
+  grandTotal: any = computed(() =>
     this.cartItems()
       .filter(item => item.selected)
       .reduce((acc, item) => acc + item.harga * item.quantity, 0)
   );
 
-  isAllSelected = computed(() => {
+  isAllSelected: any = computed(() => {
     const items = this.cartItems();
     return items.length > 0 && items.every(item => item.selected);
   });

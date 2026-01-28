@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playwrite+DK+Loopet:wght@100..400&display=swap');
-
 nav {
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
   padding-bottom: 5px;
@@ -136,4 +134,3 @@ nav .navbar-brand button {
     background-color: #cfcfcf;
   }
 }
-
