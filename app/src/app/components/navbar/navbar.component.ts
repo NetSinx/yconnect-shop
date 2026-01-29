@@ -20,6 +20,7 @@ import { TransferState, makeStateKey } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { LayoutService } from 'src/app/services/layout/layout.service';
 import { CartService } from '../../services/cart/cart.service';
+import { WishlistService } from '../../services/wishlist/wishlist.service';
 
 const IS_LOGGED_IN_KEY = makeStateKey<boolean>('isLoggedIn');
 
@@ -38,6 +39,7 @@ export class NavbarComponent implements OnInit {
   isDropDownOpen: boolean = false;
   layoutService: LayoutService = inject(LayoutService);
   cartService: CartService = inject(CartService);
+  wishlistService: WishlistService = inject(WishlistService);
 
   constructor(
     private authService: AuthService,

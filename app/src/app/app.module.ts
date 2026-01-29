@@ -19,6 +19,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import localeId from '@angular/common/locales/id';
 import { MainLayoutComponent } from './components/main-layout/main-layout.component';
 import { CartComponent } from './components/cart/cart.component';
+import { WishlistComponent } from './components/wishlist/wishlist.component';
 
 registerLocaleData(localeId, 'id');
 
@@ -35,7 +36,8 @@ registerLocaleData(localeId, 'id');
     DashboardComponent,
     FooterComponent,
     MainLayoutComponent,
-    CartComponent
+    CartComponent,
+    WishlistComponent
   ],
   bootstrap: [AppComponent],
   imports: [BrowserModule, AppRoutingModule, NgOptimizedImage, ReactiveFormsModule, DecimalPipe],

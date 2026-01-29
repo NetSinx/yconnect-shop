@@ -5,6 +5,7 @@ import { LoadingService } from 'src/app/services/loading/loading.service';
 import { ProductService } from 'src/app/services/product/product.service';
 import { LayoutService } from '../../services/layout/layout.service';
 import { Title } from '@angular/platform-browser';
+import { WishlistService } from '../../services/wishlist/wishlist.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -17,10 +18,10 @@ export class ProductDetailComponent implements OnInit {
   product: any;
   isLoading: Observable<boolean>;
   error: boolean = false;
-  isFavorite: boolean = false;
   layoutService: LayoutService = inject(LayoutService);
   private route = inject(ActivatedRoute);
   private titleService = inject(Title);
+  wishlistService: WishlistService = inject(WishlistService);
 
   constructor(
     private productService: ProductService,
@@ -222,6 +223,12 @@ export class ProductDetailComponent implements OnInit {
   }
 
   public toggleFavorit(): void {
-    this.isFavorite = !this.isFavorite;
+    if (this.product) {
+      this.wishlistService.addToWishlist(this.product);
+    }
+  }
+
+  get isFavorite(): boolean {
+    return this.product ? this.wishlistService.isInWishlist(this.product.id) : false;
   }
 }

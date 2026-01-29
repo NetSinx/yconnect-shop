@@ -53,7 +53,7 @@
         @if (isLoggedIn) {
           <a routerLink="/cart" class="text-dark rounded">
             <i class="bi bi-cart fs-4"></i>
-            @if (cartService.cartItems().length !== 0) {
+            @if (cartService.cartItems().length > 0) {
               <span class="position-absolute translate-middle badge rounded-pill bg-danger">
                 {{ cartService.cartItems().length }}
                 <span class="visually-hidden">cart</span>
@@ -62,10 +62,12 @@
           </a>
           <a routerLink="/wishlist" class="text-dark rounded">
             <i class="bi bi-heart fs-4"></i>
-            <span class="position-absolute translate-middle badge rounded-pill bg-danger">
-              0
-              <span class="visually-hidden">cart</span>
-            </span>
+            @if (wishlistService.totalItems() > 0) {
+              <span class="position-absolute translate-middle badge rounded-pill bg-danger">
+                {{ wishlistService.wishlistItems().length }}
+                <span class="visually-hidden">cart</span>
+              </span>
+            }
           </a>
           <div class="dropdown-center d-inline">
             <a

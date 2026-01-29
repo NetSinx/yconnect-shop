@@ -3,6 +3,6 @@ export interface WishlistItem {
   nama: string;
   harga: number;
   images: string;
-  stock: boolean;
+  stok: boolean;
   selected: boolean;
 }
