@@ -20,6 +20,8 @@ import localeId from '@angular/common/locales/id';
 import { MainLayoutComponent } from './components/main-layout/main-layout.component';
 import { CartComponent } from './components/cart/cart.component';
 import { WishlistComponent } from './components/wishlist/wishlist.component';
+import { provideSweetAlert2 } from '@sweetalert2/ngx-sweetalert2';
+import { SwalComponent, SwalDirective } from '@sweetalert2/ngx-sweetalert2';
 
 registerLocaleData(localeId, 'id');
 
@@ -40,9 +42,21 @@ registerLocaleData(localeId, 'id');
     WishlistComponent
   ],
   bootstrap: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule, NgOptimizedImage, ReactiveFormsModule, DecimalPipe],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    NgOptimizedImage,
+    ReactiveFormsModule,
+    DecimalPipe,
+    SwalComponent,
+    SwalDirective
+  ],
   providers: [
     provideHttpClient(withInterceptorsFromDi(), withInterceptors([loadingInterceptor, authInterceptor]), withFetch()),
+    provideSweetAlert2({
+      fireOnInit: false,
+      dismissOnDestroy: true
+    }),
     provideClientHydration(withEventReplay()),
     { provide: LOCALE_ID, useValue: 'id-ID' }
   ]

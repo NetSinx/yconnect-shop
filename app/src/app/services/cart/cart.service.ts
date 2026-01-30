@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, effect } from '@angular/core';
 import { CartItem } from '../../interfaces/cart-item';
 
 @Injectable({
@@ -6,19 +6,27 @@ import { CartItem } from '../../interfaces/cart-item';
 })
 export class CartService {
   cartItems = signal<CartItem[]>([]);
-
   totalItems: any = computed(() => this.cartItems().reduce((acc, item) => acc + item.quantity, 0));
-
   grandTotal: any = computed(() =>
     this.cartItems()
       .filter(item => item.selected)
       .reduce((acc, item) => acc + item.harga * item.quantity, 0)
   );
-
   isAllSelected: any = computed(() => {
     const items = this.cartItems();
     return items.length > 0 && items.every(item => item.selected);
   });
+
+  constructor() {
+    if (typeof localStorage !== 'undefined') {
+      const savedCart = localStorage.getItem('my_cart');
+      if (savedCart) {
+        this.cartItems.set(JSON.parse(savedCart));
+      }
+
+      effect(() => localStorage.setItem('my_cart', JSON.stringify(this.cartItems())));
+    }
+  }
 
   addToCart(product: any, qty: number) {
     const currentItems = this.cartItems();

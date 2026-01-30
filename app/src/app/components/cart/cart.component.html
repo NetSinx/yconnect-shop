@@ -87,13 +87,28 @@
                   </td>
 
                   <td class="text-center">
-                    <button
-                      class="btn btn-sm btn-danger"
-                      (click)="cartService.removeFromCart(item.id)"
-                      title="Hapus Produk"
-                    >
+                    <button [swal]="deleteItemCart" class="btn btn-sm btn-danger" title="Hapus Produk">
                       <i class="bi bi-trash"></i>
                     </button>
+                    <swal
+                      #deleteItemCart
+                      title="Hapus Item?"
+                      text="Apakah Anda yakin ingin hapus?"
+                      icon="question"
+                      [focusCancel]="true"
+                      [showCancelButton]="true"
+                      confirmButtonText="Ya"
+                      cancelButtonText="Tidak"
+                      (confirm)="handleDeleteItemCart(item.id)"
+                    ></swal>
+                    <swal
+                      #successSwal
+                      title="Berhasil!"
+                      text="Item berhasil dihapus."
+                      icon="success"
+                      [timer]="1000"
+                      [showConfirmButton]="false"
+                    ></swal>
                   </td>
                 </tr>
               }

@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { CartService } from '../../services/cart/cart.service';
+import { SweetAlert2Module, SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 
 @Component({
   selector: 'app-cart',
@@ -10,6 +11,8 @@ import { CartService } from '../../services/cart/cart.service';
 export class CartComponent {
   cartService: CartService = inject(CartService);
 
+  @ViewChild('successSwal') public readonly successSwal!: SwalComponent;
+
   onToggleAll(event: any) {
     const isChecked = event.target.checked;
     this.cartService.toggleAllSelection(isChecked);
@@ -17,5 +20,10 @@ export class CartComponent {
 
   onToggleItem(id: number) {
     this.cartService.toggleItemSelection(id);
+  }
+
+  handleDeleteItemCart(id: number) {
+    this.cartService.removeFromCart(id);
+    this.successSwal.fire();
   }
 }

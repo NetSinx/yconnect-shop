@@ -1,4 +1,4 @@
-import { Injectable, inject, computed, signal } from '@angular/core';
+import { Injectable, inject, computed, signal, effect } from '@angular/core';
 import { WishlistItem } from '../../interfaces/wishlist-item';
 import { Product } from '../../interfaces/product';
 import { CartService } from '../../services/cart/cart.service';
@@ -9,17 +9,25 @@ import { CartService } from '../../services/cart/cart.service';
 export class WishlistService {
   cartService: CartService = inject(CartService);
   wishlistItems = signal<WishlistItem[]>([]);
-
   hasAnySelection = computed(() => {
     return this.wishlistItems().some(item => item.selected);
   });
-
   totalItems = computed(() => this.wishlistItems().length);
-
   isAllSelected = computed(() => {
     const items = this.wishlistItems();
     return items.length > 0 && items.every((item: any) => item.selected);
   });
+
+  constructor() {
+    if (typeof localStorage !== 'undefined') {
+      const savedWishlist = localStorage.getItem('my_wishlist');
+      if (savedWishlist) {
+        this.wishlistItems.set(JSON.parse(savedWishlist));
+      }
+
+      effect(() => localStorage.setItem('my_wishlist', JSON.stringify(this.wishlistItems())));
+    }
+  }
 
   addToWishlist(product: Product) {
     const existingItem = this.wishlistItems().find((item: any) => item.id === product.id);
