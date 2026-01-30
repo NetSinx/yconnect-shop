@@ -6,6 +6,7 @@ import { ProductService } from 'src/app/services/product/product.service';
 import { LayoutService } from '../../services/layout/layout.service';
 import { Title } from '@angular/platform-browser';
 import { WishlistService } from '../../services/wishlist/wishlist.service';
+import { CartService } from '../../services/cart/cart.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -198,6 +199,8 @@ export class ProductDetailComponent implements OnInit {
   //    }
   //  );
   //}
+
+  public addToCart(product: any, qty: number) {}
 
   public increaseQuantity(el: HTMLInputElement): void {
     let val = parseInt(el.value);
