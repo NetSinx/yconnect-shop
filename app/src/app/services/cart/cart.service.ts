@@ -43,7 +43,7 @@ export class CartService {
         harga: product.harga,
         images: product.images,
         quantity: qty,
-        selected: true
+        selected: false
       };
       this.cartItems.update(items => [...items, newItem]);
     }

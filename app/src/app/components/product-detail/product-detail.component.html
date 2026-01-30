@@ -96,7 +96,19 @@
             </tbody>
           </table>
         </div>
-        <button class="btn btn-outline-dark me-3 add-to-cart">
+        <swal
+          #addToCartSwal
+          title="Berhasil!"
+          text="Produk berhasil ditambahkan ke keranjang"
+          icon="success"
+          [timer]="1500"
+          [showConfirmButton]="false"
+        ></swal>
+        <button
+          [swal]="addToCartSwal"
+          class="btn btn-outline-dark me-3 add-to-cart"
+          (click)="addToCart(product, qty.value)"
+        >
           <i class="bi bi-cart-plus"></i>
           Tambah ke Keranjang
         </button>

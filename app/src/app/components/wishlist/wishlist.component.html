@@ -67,13 +67,28 @@
                 </td>
 
                 <td class="text-center">
-                  <button
-                    class="btn btn-sm btn-outline-danger"
-                    (click)="wishlistService.removeFromWishlist(item.id)"
-                    title="Hapus"
-                  >
+                  <button [swal]="deleteItemWishlist" class="btn btn-sm btn-outline-danger">
                     <i class="bi bi-trash"></i>
                   </button>
+                  <swal
+                    #deleteItemWishlist
+                    title="Hapus Item"
+                    text="Apakah Anda yakin ingin hapus?"
+                    icon="question"
+                    [focusCancel]="true"
+                    [showCancelButton]="true"
+                    confirmButtonText="Ya"
+                    cancelButtonText="Tidak"
+                    (confirm)="handleDeleteItemWishlist(item.id)"
+                  ></swal>
+                  <swal
+                    #successSwal
+                    title="Berhasil!"
+                    text="Item berhasil dihapus."
+                    icon="success"
+                    [timer]="1000"
+                    [showConfirmButton]="false"
+                  ></swal>
                 </td>
               </tr>
             }
@@ -83,7 +98,20 @@
 
       <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center">
         <span class="text-muted small">Pilih item untuk dipindahkan ke keranjang sekaligus.</span>
-        <button class="btn btn-dark" (click)="addToCartSelected()" [disabled]="!wishlistService.hasAnySelection()">
+        <swal
+          #moveToCart
+          title="Pindah Ke Keranjang"
+          text="Apakah Anda yakin ingin dipindahkan ke keranjang?"
+          icon="question"
+          confirmButtonText="Ya"
+          cancelButtonText="Tidak"
+          [focusCancel]="true"
+          [showCancelButton]="true"
+          [allowOutsideClick]="false"
+          [allowEscapeKey]="false"
+          (confirm)="handleMoveItemToCart()"
+        ></swal>
+        <button class="btn btn-dark" [swal]="moveToCart" [disabled]="!wishlistService.hasAnySelection()">
           <i class="bi bi-cart-plus me-2"></i>
           Pindahkan ke Keranjang
         </button>

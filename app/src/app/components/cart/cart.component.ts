@@ -1,6 +1,6 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { CartService } from '../../services/cart/cart.service';
-import { SweetAlert2Module, SwalComponent } from '@sweetalert2/ngx-sweetalert2';
+import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 
 @Component({
   selector: 'app-cart',

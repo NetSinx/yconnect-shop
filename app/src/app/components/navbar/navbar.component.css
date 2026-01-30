@@ -32,11 +32,11 @@ nav .navbar-brand button {
 
 @media (max-width: 920px) {
   nav .dropdown-category {
-    display: none;
+    display: none !important;
   }
 
   nav .dropdown-category.active {
-    display: block;
+    display: block !important;
   }
 
   nav .search {

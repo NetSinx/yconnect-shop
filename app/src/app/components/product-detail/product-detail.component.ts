@@ -23,6 +23,7 @@ export class ProductDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private titleService = inject(Title);
   wishlistService: WishlistService = inject(WishlistService);
+  cartService: CartService = inject(CartService);
 
   constructor(
     private productService: ProductService,
@@ -200,7 +201,9 @@ export class ProductDetailComponent implements OnInit {
   //  );
   //}
 
-  public addToCart(product: any, qty: number) {}
+  public addToCart(product: any, qty: string) {
+    this.cartService.addToCart(product, Number(qty));
+  }
 
   public increaseQuantity(el: HTMLInputElement): void {
     let val = parseInt(el.value);

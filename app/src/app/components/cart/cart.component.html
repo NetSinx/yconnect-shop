@@ -23,7 +23,6 @@
                     style="cursor: pointer"
                   />
                 </th>
-                <th scope="col">ID</th>
                 <th scope="col">Produk</th>
                 <th scope="col">Harga Satuan</th>
                 <th scope="col">Kuantitas</th>
@@ -43,8 +42,6 @@
                       style="cursor: pointer"
                     />
                   </td>
-
-                  <td>{{ item.id }}</td>
 
                   <td>
                     <div class="d-flex align-items-center">
@@ -92,7 +89,7 @@
                     </button>
                     <swal
                       #deleteItemCart
-                      title="Hapus Item?"
+                      title="Hapus Item"
                       text="Apakah Anda yakin ingin hapus?"
                       icon="question"
                       [focusCancel]="true"
