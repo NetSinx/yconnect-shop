@@ -96,6 +96,8 @@
                       [showCancelButton]="true"
                       confirmButtonText="Ya"
                       cancelButtonText="Tidak"
+                      [allowEscapeKey]="false"
+                      [allowOutsideClick]="false"
                       (confirm)="handleDeleteItemCart(item.id)"
                     ></swal>
                     <swal

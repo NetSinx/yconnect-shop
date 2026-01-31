@@ -11,6 +11,7 @@ import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 export class WishlistComponent {
   wishlistService: WishlistService = inject(WishlistService);
   @ViewChild('successSwal') public readonly successSwal!: SwalComponent;
+  @ViewChild('successMoveSwal') public readonly successMoveSwal!: SwalComponent;
 
   handleDeleteItemWishlist(id: number) {
     this.wishlistService.removeFromWishlist(id);
@@ -19,7 +20,7 @@ export class WishlistComponent {
 
   handleMoveItemToCart() {
     this.wishlistService.moveSelectedToCart();
-    this.successSwal.fire();
+    this.successMoveSwal.fire();
   }
 
   onToggleAll(event: any) {
@@ -28,10 +29,5 @@ export class WishlistComponent {
 
   onToggleItem(id: number) {
     this.wishlistService.toggleItemSelection(id);
-  }
-
-  addToCartSelected() {
-    this.wishlistService.moveSelectedToCart();
-    alert('Produk terpilih berhasil dipindahkan ke Keranjang!');
   }
 }

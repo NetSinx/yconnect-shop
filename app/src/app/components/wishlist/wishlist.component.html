@@ -79,6 +79,8 @@
                     [showCancelButton]="true"
                     confirmButtonText="Ya"
                     cancelButtonText="Tidak"
+                    [allowEscapeKey]="false"
+                    [allowOutsideClick]="false"
                     (confirm)="handleDeleteItemWishlist(item.id)"
                   ></swal>
                   <swal
@@ -110,6 +112,14 @@
           [allowOutsideClick]="false"
           [allowEscapeKey]="false"
           (confirm)="handleMoveItemToCart()"
+        ></swal>
+        <swal
+          #successMoveSwal
+          title="Berhasil!"
+          text="Item berhasil dipindahkan ke keranjang."
+          icon="success"
+          [timer]="1000"
+          [showConfirmButton]="false"
         ></swal>
         <button class="btn btn-dark" [swal]="moveToCart" [disabled]="!wishlistService.hasAnySelection()">
           <i class="bi bi-cart-plus me-2"></i>
