@@ -1,6 +1,5 @@
 nav {
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-  padding-bottom: 5px;
 }
 
 nav a.logo {
@@ -30,13 +29,28 @@ nav .navbar-brand button {
   display: none;
 }
 
-@media (max-width: 920px) {
+@media (max-width: 1024px) {
+  nav .btn-sidenav {
+    display: none !important;
+  }
+
   nav .dropdown-category {
     display: none !important;
   }
 
+  nav .preferensi {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    display: none !important;
+    justify-content: space-between !important;
+  }
+
   nav .dropdown-category.active {
     display: block !important;
+  }
+
+  nav .preferensi.active {
+    display: flex !important;
   }
 
   nav .search {

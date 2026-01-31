@@ -10,12 +10,9 @@ import {
   PLATFORM_ID,
   ViewChild
 } from '@angular/core';
-import { Router } from '@angular/router';
 import { Kategori } from 'src/app/interfaces/category';
 import { AuthService } from 'src/app/services/auth/auth.service';
-import { CategoryService } from 'src/app/services/category/category.service';
 import { GenCsrfService } from 'src/app/services/gen-csrf/gen-csrf.service';
-import { LoadingService } from 'src/app/services/loading/loading.service';
 import { TransferState, makeStateKey } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { LayoutService } from 'src/app/services/layout/layout.service';

@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg w-100 bg-light sticky-top p-0" #nav>
-  <div class="container-xl">
+  <div class="container">
     <div class="row align-items-center justify-content-between w-100">
       <div class="col-lg-4 navbar-brand d-flex">
-        <button class="btn btn-transparent d-flex" (click)="layoutService.toggleSidebar()">
+        <button class="btn btn-transparent d-flex btn-sidenav" (click)="layoutService.toggleSidebar()">
           <i class="bi bi-list fs-2"></i>
         </button>
         <a routerLink="/" class="text-decoration-none text-dark d-flex align-items-center logo">
@@ -39,7 +39,7 @@
           </ul>
         </div>
       </div>
-      <div class="col-lg-3 preferensi" #preferensi>
+      <div class="col-lg-3 preferensi d-flex justify-content-end" #preferensi>
         @if (!isLoggedIn) {
           <a
             routerLink="/login"
@@ -51,24 +51,26 @@
           </a>
         }
         @if (isLoggedIn) {
-          <a routerLink="/cart" class="text-dark rounded">
-            <i class="bi bi-cart fs-4"></i>
-            @if (cartService.cartItems().length > 0) {
-              <span class="position-absolute translate-middle badge rounded-pill bg-danger">
-                {{ cartService.cartItems().length }}
-                <span class="visually-hidden">cart</span>
-              </span>
-            }
-          </a>
-          <a routerLink="/wishlist" class="text-dark rounded">
-            <i class="bi bi-heart fs-4"></i>
-            @if (wishlistService.totalItems() > 0) {
-              <span class="position-absolute translate-middle badge rounded-pill bg-danger">
-                {{ wishlistService.wishlistItems().length }}
-                <span class="visually-hidden">cart</span>
-              </span>
-            }
-          </a>
+          <div class="wishlist-cart">
+            <a routerLink="/cart" class="text-dark rounded">
+              <i class="bi bi-cart fs-4"></i>
+              @if (cartService.cartItems().length > 0) {
+                <span class="position-absolute translate-middle badge rounded-pill bg-danger">
+                  {{ cartService.cartItems().length }}
+                  <span class="visually-hidden">cart</span>
+                </span>
+              }
+            </a>
+            <a routerLink="/wishlist" class="text-dark rounded">
+              <i class="bi bi-heart fs-4"></i>
+              @if (wishlistService.totalItems() > 0) {
+                <span class="position-absolute translate-middle badge rounded-pill bg-danger">
+                  {{ wishlistService.wishlistItems().length }}
+                  <span class="visually-hidden">cart</span>
+                </span>
+              }
+            </a>
+          </div>
           <div class="dropdown-center d-inline">
             <a
               class="text-decoration-none text-dark login dropdown-toggle fs-6 rounded"

@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { LoadingService } from './services/loading/loading.service';
 import { Observable } from 'rxjs';
-import { CategoryService } from './services/category/category.service';
-import { NavbarComponent } from './components/navbar/navbar.component';
 import { Kategori } from './interfaces/category';
 import { delay } from 'rxjs/operators';
 
@@ -21,8 +19,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private loadingService: LoadingService,
-    private categoryService: CategoryService
+    private loadingService: LoadingService
   ) {
     this.isLoading = this.loadingService.loading.pipe(delay(0));
     this.categories = [

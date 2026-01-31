@@ -7,3 +7,9 @@
 .content-wrapper.pushed {
   margin-left: 250px;
 }
+
+@media (max-width: 1024px) {
+  app-sidebar {
+    display: none;
+  }
+}
